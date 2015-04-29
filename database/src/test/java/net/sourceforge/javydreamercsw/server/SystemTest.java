@@ -13,6 +13,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.server.AccessServer;
 import net.sourceforge.javydreamercsw.msm.server.FieldServer;
 import net.sourceforge.javydreamercsw.msm.server.PersonServer;
+import net.sourceforge.javydreamercsw.msm.server.ServiceInstanceServer;
 import net.sourceforge.javydreamercsw.msm.server.ServiceServer;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -116,7 +117,8 @@ public class SystemTest extends AbstractServerTest {
             ss.write2DB();
             assertTrue(ss.getTmfieldList().size() > 0);
             //Create a service instance
-            
+            ServiceInstanceServer sis = new ServiceInstanceServer();
+            sis.createServiceInstance(ss.getId());
         } catch (UnsupportedEncodingException ex) {
             LOG.log(Level.SEVERE, null, ex);
             fail();

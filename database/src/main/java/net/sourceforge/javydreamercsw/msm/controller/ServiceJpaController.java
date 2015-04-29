@@ -15,11 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
-import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
+import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
+import net.sourceforge.javydreamercsw.msm.db.Service;
 
 /**
  *
@@ -36,7 +35,7 @@ public class ServiceJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Service service) throws PreexistingEntityException, Exception {
+    public void create(Service service) {
         if (service.getTmfieldList() == null) {
             service.setTmfieldList(new ArrayList<TMField>());
         }
@@ -48,9 +47,9 @@ public class ServiceJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             List<TMField> attachedTmfieldList = new ArrayList<TMField>();
-            for (TMField tmfieldListTmfieldToAttach : service.getTmfieldList()) {
-                tmfieldListTmfieldToAttach = em.getReference(tmfieldListTmfieldToAttach.getClass(), tmfieldListTmfieldToAttach.getId());
-                attachedTmfieldList.add(tmfieldListTmfieldToAttach);
+            for (TMField tmfieldListTMFieldToAttach : service.getTmfieldList()) {
+                tmfieldListTMFieldToAttach = em.getReference(tmfieldListTMFieldToAttach.getClass(), tmfieldListTMFieldToAttach.getId());
+                attachedTmfieldList.add(tmfieldListTMFieldToAttach);
             }
             service.setTmfieldList(attachedTmfieldList);
             List<PersonHasService> attachedPersonHasServiceList = new ArrayList<PersonHasService>();
@@ -60,9 +59,9 @@ public class ServiceJpaController implements Serializable {
             }
             service.setPersonHasServiceList(attachedPersonHasServiceList);
             em.persist(service);
-            for (TMField tmfieldListTmfield : service.getTmfieldList()) {
-                tmfieldListTmfield.getServiceList().add(service);
-                tmfieldListTmfield = em.merge(tmfieldListTmfield);
+            for (TMField tmfieldListTMField : service.getTmfieldList()) {
+                tmfieldListTMField.getServiceList().add(service);
+                tmfieldListTMField = em.merge(tmfieldListTMField);
             }
             for (PersonHasService personHasServiceListPersonHasService : service.getPersonHasServiceList()) {
                 Service oldServiceOfPersonHasServiceListPersonHasService = personHasServiceListPersonHasService.getService();
@@ -74,11 +73,6 @@ public class ServiceJpaController implements Serializable {
                 }
             }
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findService(service.getId()) != null) {
-                throw new PreexistingEntityException("Service " + service + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -109,9 +103,9 @@ public class ServiceJpaController implements Serializable {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
             List<TMField> attachedTmfieldListNew = new ArrayList<TMField>();
-            for (TMField tmfieldListNewTmfieldToAttach : tmfieldListNew) {
-                tmfieldListNewTmfieldToAttach = em.getReference(tmfieldListNewTmfieldToAttach.getClass(), tmfieldListNewTmfieldToAttach.getId());
-                attachedTmfieldListNew.add(tmfieldListNewTmfieldToAttach);
+            for (TMField tmfieldListNewTMFieldToAttach : tmfieldListNew) {
+                tmfieldListNewTMFieldToAttach = em.getReference(tmfieldListNewTMFieldToAttach.getClass(), tmfieldListNewTMFieldToAttach.getId());
+                attachedTmfieldListNew.add(tmfieldListNewTMFieldToAttach);
             }
             tmfieldListNew = attachedTmfieldListNew;
             service.setTmfieldList(tmfieldListNew);
@@ -123,16 +117,16 @@ public class ServiceJpaController implements Serializable {
             personHasServiceListNew = attachedPersonHasServiceListNew;
             service.setPersonHasServiceList(personHasServiceListNew);
             service = em.merge(service);
-            for (TMField tmfieldListOldTmfield : tmfieldListOld) {
-                if (!tmfieldListNew.contains(tmfieldListOldTmfield)) {
-                    tmfieldListOldTmfield.getServiceList().remove(service);
-                    tmfieldListOldTmfield = em.merge(tmfieldListOldTmfield);
+            for (TMField tmfieldListOldTMField : tmfieldListOld) {
+                if (!tmfieldListNew.contains(tmfieldListOldTMField)) {
+                    tmfieldListOldTMField.getServiceList().remove(service);
+                    tmfieldListOldTMField = em.merge(tmfieldListOldTMField);
                 }
             }
-            for (TMField tmfieldListNewTmfield : tmfieldListNew) {
-                if (!tmfieldListOld.contains(tmfieldListNewTmfield)) {
-                    tmfieldListNewTmfield.getServiceList().add(service);
-                    tmfieldListNewTmfield = em.merge(tmfieldListNewTmfield);
+            for (TMField tmfieldListNewTMField : tmfieldListNew) {
+                if (!tmfieldListOld.contains(tmfieldListNewTMField)) {
+                    tmfieldListNewTMField.getServiceList().add(service);
+                    tmfieldListNewTMField = em.merge(tmfieldListNewTMField);
                 }
             }
             for (PersonHasService personHasServiceListNewPersonHasService : personHasServiceListNew) {
@@ -187,9 +181,9 @@ public class ServiceJpaController implements Serializable {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
             List<TMField> tmfieldList = service.getTmfieldList();
-            for (TMField tmfieldListTmfield : tmfieldList) {
-                tmfieldListTmfield.getServiceList().remove(service);
-                tmfieldListTmfield = em.merge(tmfieldListTmfield);
+            for (TMField tmfieldListTMField : tmfieldList) {
+                tmfieldListTMField.getServiceList().remove(service);
+                tmfieldListTMField = em.merge(tmfieldListTMField);
             }
             em.remove(service);
             em.getTransaction().commit();
@@ -245,5 +239,4 @@ public class ServiceJpaController implements Serializable {
             em.close();
         }
     }
-    
 }
