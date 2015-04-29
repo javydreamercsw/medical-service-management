@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="MySQL-PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>net.sourceforge.javydreamercsw.tm.Access</class>
+    <class>net.sourceforge.javydreamercsw.tm.FieldType</class>
+    <class>net.sourceforge.javydreamercsw.tm.Person</class>
+    <class>net.sourceforge.javydreamercsw.tm.PersonHasService</class>
+    <class>net.sourceforge.javydreamercsw.tm.Range</class>
+    <class>net.sourceforge.javydreamercsw.tm.RangeType</class>
+    <class>net.sourceforge.javydreamercsw.tm.Service</class>
+    <class>net.sourceforge.javydreamercsw.tm.TMField</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://server:3306/tuberculosis-manager?zeroDateTimeBehavior=convertToNull"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.password" value=""/>
+      <property name="eclipselink.canonicalmodel.subpackage" value="mysql"/>
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="H2-PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>net.sourceforge.javydreamercsw.tm.Access</class>
+    <class>net.sourceforge.javydreamercsw.tm.FieldType</class>
+    <class>net.sourceforge.javydreamercsw.tm.Person</class>
+    <class>net.sourceforge.javydreamercsw.tm.PersonHasService</class>
+    <class>net.sourceforge.javydreamercsw.tm.Range</class>
+    <class>net.sourceforge.javydreamercsw.tm.RangeType</class>
+    <class>net.sourceforge.javydreamercsw.tm.Service</class>
+    <class>net.sourceforge.javydreamercsw.tm.TMField</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./target/data/test/tuberculosis-manager-test;AUTO_SERVER=TRUE"/>
+      <property name="javax.persistence.jdbc.password" value=""/>
+      <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="tm_user"/>
+      <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+      <property name="eclipselink.logging.logger" value="org.eclipse.persistence.logging.DefaultSessionLog"/>
+      <property name="eclipselink.logging.level" value="SEVERE"/>
+      <property name="eclipselink.jdbc.sequence-connection-pool" value="true"/>
+      <property name="eclipselink.canonicalmodel.subpackage" value="h2"/>
+      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="Test-PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>net.sourceforge.javydreamercsw.tm.Access</class>
+    <class>net.sourceforge.javydreamercsw.tm.FieldType</class>
+    <class>net.sourceforge.javydreamercsw.tm.Person</class>
+    <class>net.sourceforge.javydreamercsw.tm.PersonHasService</class>
+    <class>net.sourceforge.javydreamercsw.tm.Range</class>
+    <class>net.sourceforge.javydreamercsw.tm.RangeType</class>
+    <class>net.sourceforge.javydreamercsw.tm.Service</class>
+    <class>net.sourceforge.javydreamercsw.tm.TMField</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./target/data/test/tuberculosis-manager-test;AUTO_SERVER=TRUE"/>
+      <property name="javax.persistence.jdbc.password" value=""/>
+      <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="javax.persistence.jdbc.user" value="tm_user"/>
+      <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+      <property name="eclipselink.logging.logger" value="org.eclipse.persistence.logging.DefaultSessionLog"/>
+      <property name="eclipselink.logging.level" value="SEVERE"/>
+      <property name="eclipselink.jdbc.sequence-connection-pool" value="true"/>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="eclipselink.canonicalmodel.subpackage" value="test"/>
+    </properties>
+  </persistence-unit>
+</persistence>
