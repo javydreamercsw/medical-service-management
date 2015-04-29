@@ -4,16 +4,16 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sourceforge.javydreamercsw.tm.Person;
-import net.sourceforge.javydreamercsw.tm.PersonHasService;
-import net.sourceforge.javydreamercsw.tm.TMField;
-import net.sourceforge.javydreamercsw.tm.controller.TmfieldJpaController;
-import net.sourceforge.javydreamercsw.tm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.tm.db.manager.DataBaseManager;
-import net.sourceforge.javydreamercsw.tm.server.AccessServer;
-import net.sourceforge.javydreamercsw.tm.server.FieldServer;
-import net.sourceforge.javydreamercsw.tm.server.PersonServer;
-import net.sourceforge.javydreamercsw.tm.server.ServiceServer;
+import net.sourceforge.javydreamercsw.msm.db.Person;
+import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
+import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.controller.TmfieldJpaController;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
+import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.server.AccessServer;
+import net.sourceforge.javydreamercsw.msm.server.FieldServer;
+import net.sourceforge.javydreamercsw.msm.server.PersonServer;
+import net.sourceforge.javydreamercsw.msm.server.ServiceServer;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -115,6 +115,7 @@ public class SystemTest extends AbstractServerTest {
             ss.getTmfieldList().add(b);
             ss.write2DB();
             assertTrue(ss.getTmfieldList().size() > 0);
+            //Create a service instance
             
         } catch (UnsupportedEncodingException ex) {
             LOG.log(Level.SEVERE, null, ex);

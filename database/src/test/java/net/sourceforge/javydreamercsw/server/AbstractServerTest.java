@@ -1,6 +1,6 @@
 package net.sourceforge.javydreamercsw.server;
 
-import net.sourceforge.javydreamercsw.tm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

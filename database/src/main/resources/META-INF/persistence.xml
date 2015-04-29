@@ -2,14 +2,14 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="MySQL-PU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>net.sourceforge.javydreamercsw.tm.Access</class>
-    <class>net.sourceforge.javydreamercsw.tm.FieldType</class>
-    <class>net.sourceforge.javydreamercsw.tm.Person</class>
-    <class>net.sourceforge.javydreamercsw.tm.PersonHasService</class>
-    <class>net.sourceforge.javydreamercsw.tm.Range</class>
-    <class>net.sourceforge.javydreamercsw.tm.RangeType</class>
-    <class>net.sourceforge.javydreamercsw.tm.Service</class>
-    <class>net.sourceforge.javydreamercsw.tm.TMField</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.FieldType</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Service</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.TMField</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Person</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.PersonHasService</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Range</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Access</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.RangeType</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://server:3306/tuberculosis-manager?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
@@ -20,14 +20,14 @@
   </persistence-unit>
   <persistence-unit name="H2-PU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>net.sourceforge.javydreamercsw.tm.Access</class>
-    <class>net.sourceforge.javydreamercsw.tm.FieldType</class>
-    <class>net.sourceforge.javydreamercsw.tm.Person</class>
-    <class>net.sourceforge.javydreamercsw.tm.PersonHasService</class>
-    <class>net.sourceforge.javydreamercsw.tm.Range</class>
-    <class>net.sourceforge.javydreamercsw.tm.RangeType</class>
-    <class>net.sourceforge.javydreamercsw.tm.Service</class>
-    <class>net.sourceforge.javydreamercsw.tm.TMField</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.FieldType</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Service</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.TMField</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Person</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.PersonHasService</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Range</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Access</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.RangeType</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./target/data/test/tuberculosis-manager-test;AUTO_SERVER=TRUE"/>
       <property name="javax.persistence.jdbc.password" value=""/>
@@ -43,14 +43,14 @@
   </persistence-unit>
   <persistence-unit name="Test-PU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>net.sourceforge.javydreamercsw.tm.Access</class>
-    <class>net.sourceforge.javydreamercsw.tm.FieldType</class>
-    <class>net.sourceforge.javydreamercsw.tm.Person</class>
-    <class>net.sourceforge.javydreamercsw.tm.PersonHasService</class>
-    <class>net.sourceforge.javydreamercsw.tm.Range</class>
-    <class>net.sourceforge.javydreamercsw.tm.RangeType</class>
-    <class>net.sourceforge.javydreamercsw.tm.Service</class>
-    <class>net.sourceforge.javydreamercsw.tm.TMField</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.FieldType</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Service</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.TMField</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Person</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.PersonHasService</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Range</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Access</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.RangeType</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./target/data/test/tuberculosis-manager-test;AUTO_SERVER=TRUE"/>
       <property name="javax.persistence.jdbc.password" value=""/>

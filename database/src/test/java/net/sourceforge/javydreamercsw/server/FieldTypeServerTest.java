@@ -2,12 +2,12 @@ package net.sourceforge.javydreamercsw.server;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sourceforge.javydreamercsw.tm.FieldType;
-import net.sourceforge.javydreamercsw.tm.controller.FieldTypeJpaController;
-import net.sourceforge.javydreamercsw.tm.controller.exceptions.IllegalOrphanException;
-import net.sourceforge.javydreamercsw.tm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.tm.db.manager.DataBaseManager;
-import net.sourceforge.javydreamercsw.tm.server.FieldTypeServer;
+import net.sourceforge.javydreamercsw.msm.db.FieldType;
+import net.sourceforge.javydreamercsw.msm.controller.FieldTypeJpaController;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
+import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.server.FieldTypeServer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
