@@ -13,6 +13,11 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  */
 public class ServiceServer extends Service implements EntityServer<Service> {
 
+    public ServiceServer(int id) {
+        setId(id);
+        update();
+    }
+
     public ServiceServer(Service a) {
         update(ServiceServer.this, a);
     }
@@ -41,7 +46,7 @@ public class ServiceServer extends Service implements EntityServer<Service> {
     }
 
     @Override
-    public Service getEntity() throws IllegalArgumentException {
+    public Service getEntity() {
         ServiceJpaController c
                 = new ServiceJpaController(DataBaseManager.getEntityManagerFactory());
         return c.findService(getId());

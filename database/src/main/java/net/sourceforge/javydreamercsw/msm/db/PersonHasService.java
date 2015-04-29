@@ -24,10 +24,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "person_has_service")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PersonHasService.findAll", query = "SELECT p FROM PersonHasService p"),
-    @NamedQuery(name = "PersonHasService.findByPersonId", query = "SELECT p FROM PersonHasService p WHERE p.personHasServicePK.personId = :personId"),
-    @NamedQuery(name = "PersonHasService.findByServiceid", query = "SELECT p FROM PersonHasService p WHERE p.personHasServicePK.serviceid = :serviceid"),
-    @NamedQuery(name = "PersonHasService.findByDate", query = "SELECT p FROM PersonHasService p WHERE p.date = :date")})
+    @NamedQuery(name = "PersonHasService.findAll",
+            query = "SELECT p FROM PersonHasService p"),
+    @NamedQuery(name = "PersonHasService.findByPersonId",
+            query = "SELECT p FROM PersonHasService p WHERE "
+            + "p.personHasServicePK.personId = :personId"),
+    @NamedQuery(name = "PersonHasService.findByServiceid",
+            query = "SELECT p FROM PersonHasService p WHERE "
+            + "p.personHasServicePK.serviceid = :serviceid"),
+    @NamedQuery(name = "PersonHasService.findByDate",
+            query = "SELECT p FROM PersonHasService p WHERE p.date = :date")})
 public class PersonHasService implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -38,12 +44,18 @@ public class PersonHasService implements Serializable {
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-    @JoinColumn(name = "person_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "person_id", referencedColumnName = "id",
+            insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Person person;
-    @JoinColumn(name = "Service_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "Service_id", referencedColumnName = "id",
+            insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Service service;
+    @JoinColumn(name = "service_instance_id", referencedColumnName = "id",
+            insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private ServiceInstance serviceInstance;
 
     public PersonHasService() {
     }
@@ -119,4 +131,11 @@ public class PersonHasService implements Serializable {
                 + personHasServicePK + " ]";
     }
 
+    public ServiceInstance getServiceInstance() {
+        return serviceInstance;
+    }
+
+    public void setServiceInstance(ServiceInstance serviceInstance) {
+        this.serviceInstance = serviceInstance;
+    }
 }
