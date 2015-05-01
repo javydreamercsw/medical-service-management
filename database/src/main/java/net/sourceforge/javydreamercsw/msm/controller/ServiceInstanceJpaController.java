@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,11 @@ public class ServiceInstanceJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Service serviceId = serviceInstance.getServiceId();
+            if (serviceId != null) {
+                serviceId = em.getReference(serviceId.getClass(), serviceId.getId());
+                serviceInstance.setServiceId(serviceId);
+            }
             List<InstanceField> attachedInstanceFieldList = new ArrayList<InstanceField>();
             for (InstanceField instanceFieldListInstanceFieldToAttach : serviceInstance.getInstanceFieldList()) {
                 instanceFieldListInstanceFieldToAttach = em.getReference(instanceFieldListInstanceFieldToAttach.getClass(), instanceFieldListInstanceFieldToAttach.getInstanceFieldPK());
@@ -60,6 +66,10 @@ public class ServiceInstanceJpaController implements Serializable {
             }
             serviceInstance.setPersonHasServiceList(attachedPersonHasServiceList);
             em.persist(serviceInstance);
+            if (serviceId != null) {
+                serviceId.getServiceInstanceList().add(serviceInstance);
+                serviceId = em.merge(serviceId);
+            }
             for (InstanceField instanceFieldListInstanceField : serviceInstance.getInstanceFieldList()) {
                 ServiceInstance oldServiceInstanceOfInstanceFieldListInstanceField = instanceFieldListInstanceField.getServiceInstance();
                 instanceFieldListInstanceField.setServiceInstance(serviceInstance);
@@ -97,6 +107,8 @@ public class ServiceInstanceJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             ServiceInstance persistentServiceInstance = em.find(ServiceInstance.class, serviceInstance.getId());
+            Service serviceIdOld = persistentServiceInstance.getServiceId();
+            Service serviceIdNew = serviceInstance.getServiceId();
             List<InstanceField> instanceFieldListOld = persistentServiceInstance.getInstanceFieldList();
             List<InstanceField> instanceFieldListNew = serviceInstance.getInstanceFieldList();
             List<PersonHasService> personHasServiceListOld = persistentServiceInstance.getPersonHasServiceList();
@@ -121,6 +133,10 @@ public class ServiceInstanceJpaController implements Serializable {
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
+            if (serviceIdNew != null) {
+                serviceIdNew = em.getReference(serviceIdNew.getClass(), serviceIdNew.getId());
+                serviceInstance.setServiceId(serviceIdNew);
+            }
             List<InstanceField> attachedInstanceFieldListNew = new ArrayList<InstanceField>();
             for (InstanceField instanceFieldListNewInstanceFieldToAttach : instanceFieldListNew) {
                 instanceFieldListNewInstanceFieldToAttach = em.getReference(instanceFieldListNewInstanceFieldToAttach.getClass(), instanceFieldListNewInstanceFieldToAttach.getInstanceFieldPK());
@@ -136,6 +152,14 @@ public class ServiceInstanceJpaController implements Serializable {
             personHasServiceListNew = attachedPersonHasServiceListNew;
             serviceInstance.setPersonHasServiceList(personHasServiceListNew);
             serviceInstance = em.merge(serviceInstance);
+            if (serviceIdOld != null && !serviceIdOld.equals(serviceIdNew)) {
+                serviceIdOld.getServiceInstanceList().remove(serviceInstance);
+                serviceIdOld = em.merge(serviceIdOld);
+            }
+            if (serviceIdNew != null && !serviceIdNew.equals(serviceIdOld)) {
+                serviceIdNew.getServiceInstanceList().add(serviceInstance);
+                serviceIdNew = em.merge(serviceIdNew);
+            }
             for (InstanceField instanceFieldListNewInstanceField : instanceFieldListNew) {
                 if (!instanceFieldListOld.contains(instanceFieldListNewInstanceField)) {
                     ServiceInstance oldServiceInstanceOfInstanceFieldListNewInstanceField = instanceFieldListNewInstanceField.getServiceInstance();
@@ -204,6 +228,11 @@ public class ServiceInstanceJpaController implements Serializable {
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Service serviceId = serviceInstance.getServiceId();
+            if (serviceId != null) {
+                serviceId.getServiceInstanceList().remove(serviceInstance);
+                serviceId = em.merge(serviceId);
             }
             em.remove(serviceInstance);
             em.getTransaction().commit();

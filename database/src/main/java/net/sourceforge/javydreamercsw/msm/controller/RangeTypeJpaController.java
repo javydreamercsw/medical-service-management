@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import net.sourceforge.javydreamercsw.msm.db.RangeType;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
+import net.sourceforge.javydreamercsw.msm.db.RangeType;
 
 /**
  *

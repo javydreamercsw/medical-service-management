@@ -13,12 +13,12 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
+import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasServicePK;
-import net.sourceforge.javydreamercsw.msm.db.Service;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 
 /**
  *
@@ -40,29 +40,29 @@ public class PersonHasServiceJpaController implements Serializable {
             personHasService.setPersonHasServicePK(new PersonHasServicePK());
         }
         personHasService.getPersonHasServicePK().setPersonId(personHasService.getPerson().getId());
-        personHasService.getPersonHasServicePK().setServiceid(personHasService.getService().getId());
+        personHasService.getPersonHasServicePK().setServiceInstanceId(personHasService.getServiceInstance().getId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            ServiceInstance serviceInstance = personHasService.getServiceInstance();
+            if (serviceInstance != null) {
+                serviceInstance = em.getReference(serviceInstance.getClass(), serviceInstance.getId());
+                personHasService.setServiceInstance(serviceInstance);
+            }
             Person person = personHasService.getPerson();
             if (person != null) {
                 person = em.getReference(person.getClass(), person.getId());
                 personHasService.setPerson(person);
             }
-            Service service = personHasService.getService();
-            if (service != null) {
-                service = em.getReference(service.getClass(), service.getId());
-                personHasService.setService(service);
-            }
             em.persist(personHasService);
+            if (serviceInstance != null) {
+                serviceInstance.getPersonHasServiceList().add(personHasService);
+                serviceInstance = em.merge(serviceInstance);
+            }
             if (person != null) {
                 person.getPersonHasServiceList().add(personHasService);
                 person = em.merge(person);
-            }
-            if (service != null) {
-                service.getPersonHasServiceList().add(personHasService);
-                service = em.merge(service);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -79,25 +79,33 @@ public class PersonHasServiceJpaController implements Serializable {
 
     public void edit(PersonHasService personHasService) throws NonexistentEntityException, Exception {
         personHasService.getPersonHasServicePK().setPersonId(personHasService.getPerson().getId());
-        personHasService.getPersonHasServicePK().setServiceid(personHasService.getService().getId());
+        personHasService.getPersonHasServicePK().setServiceInstanceId(personHasService.getServiceInstance().getId());
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             PersonHasService persistentPersonHasService = em.find(PersonHasService.class, personHasService.getPersonHasServicePK());
+            ServiceInstance serviceInstanceOld = persistentPersonHasService.getServiceInstance();
+            ServiceInstance serviceInstanceNew = personHasService.getServiceInstance();
             Person personOld = persistentPersonHasService.getPerson();
             Person personNew = personHasService.getPerson();
-            Service serviceOld = persistentPersonHasService.getService();
-            Service serviceNew = personHasService.getService();
+            if (serviceInstanceNew != null) {
+                serviceInstanceNew = em.getReference(serviceInstanceNew.getClass(), serviceInstanceNew.getId());
+                personHasService.setServiceInstance(serviceInstanceNew);
+            }
             if (personNew != null) {
                 personNew = em.getReference(personNew.getClass(), personNew.getId());
                 personHasService.setPerson(personNew);
             }
-            if (serviceNew != null) {
-                serviceNew = em.getReference(serviceNew.getClass(), serviceNew.getId());
-                personHasService.setService(serviceNew);
-            }
             personHasService = em.merge(personHasService);
+            if (serviceInstanceOld != null && !serviceInstanceOld.equals(serviceInstanceNew)) {
+                serviceInstanceOld.getPersonHasServiceList().remove(personHasService);
+                serviceInstanceOld = em.merge(serviceInstanceOld);
+            }
+            if (serviceInstanceNew != null && !serviceInstanceNew.equals(serviceInstanceOld)) {
+                serviceInstanceNew.getPersonHasServiceList().add(personHasService);
+                serviceInstanceNew = em.merge(serviceInstanceNew);
+            }
             if (personOld != null && !personOld.equals(personNew)) {
                 personOld.getPersonHasServiceList().remove(personHasService);
                 personOld = em.merge(personOld);
@@ -105,14 +113,6 @@ public class PersonHasServiceJpaController implements Serializable {
             if (personNew != null && !personNew.equals(personOld)) {
                 personNew.getPersonHasServiceList().add(personHasService);
                 personNew = em.merge(personNew);
-            }
-            if (serviceOld != null && !serviceOld.equals(serviceNew)) {
-                serviceOld.getPersonHasServiceList().remove(personHasService);
-                serviceOld = em.merge(serviceOld);
-            }
-            if (serviceNew != null && !serviceNew.equals(serviceOld)) {
-                serviceNew.getPersonHasServiceList().add(personHasService);
-                serviceNew = em.merge(serviceNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -143,15 +143,15 @@ public class PersonHasServiceJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The personHasService with id " + id + " no longer exists.", enfe);
             }
+            ServiceInstance serviceInstance = personHasService.getServiceInstance();
+            if (serviceInstance != null) {
+                serviceInstance.getPersonHasServiceList().remove(personHasService);
+                serviceInstance = em.merge(serviceInstance);
+            }
             Person person = personHasService.getPerson();
             if (person != null) {
                 person.getPersonHasServiceList().remove(personHasService);
                 person = em.merge(person);
-            }
-            Service service = personHasService.getService();
-            if (service != null) {
-                service.getPersonHasServiceList().remove(personHasService);
-                service = em.merge(service);
             }
             em.remove(personHasService);
             em.getTransaction().commit();
