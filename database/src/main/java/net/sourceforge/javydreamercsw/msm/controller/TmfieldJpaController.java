@@ -12,22 +12,24 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import net.sourceforge.javydreamercsw.msm.db.FieldType;
 import net.sourceforge.javydreamercsw.msm.db.Range;
-import net.sourceforge.javydreamercsw.msm.db.Service;
+import net.sourceforge.javydreamercsw.msm.db.InstanceField;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
+import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
+import net.sourceforge.javydreamercsw.msm.db.TMField;
 
 /**
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class TmfieldJpaController implements Serializable {
+public class TMFieldJpaController implements Serializable {
 
-    public TmfieldJpaController(EntityManagerFactory emf) {
+    public TMFieldJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -36,47 +38,70 @@ public class TmfieldJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(TMField tmfield) throws PreexistingEntityException, Exception {
-        if (tmfield.getServiceList() == null) {
-            tmfield.setServiceList(new ArrayList<Service>());
+    public void create(TMField TMField) throws PreexistingEntityException, Exception {
+        if (TMField.getInstanceFieldList() == null) {
+            TMField.setInstanceFieldList(new ArrayList<InstanceField>());
+        }
+        if (TMField.getServiceHasFieldList() == null) {
+            TMField.setServiceHasFieldList(new ArrayList<ServiceHasField>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            FieldType fieldTypeId = tmfield.getFieldTypeId();
+            FieldType fieldTypeId = TMField.getFieldTypeId();
             if (fieldTypeId != null) {
                 fieldTypeId = em.getReference(fieldTypeId.getClass(), fieldTypeId.getId());
-                tmfield.setFieldTypeId(fieldTypeId);
+                TMField.setFieldTypeId(fieldTypeId);
             }
-            Range rangeId = tmfield.getRangeId();
+            Range rangeId = TMField.getRangeId();
             if (rangeId != null) {
                 rangeId = em.getReference(rangeId.getClass(), rangeId.getId());
-                tmfield.setRangeId(rangeId);
+                TMField.setRangeId(rangeId);
             }
-            List<Service> attachedServiceList = new ArrayList<Service>();
-            for (Service serviceListServiceToAttach : tmfield.getServiceList()) {
-                serviceListServiceToAttach = em.getReference(serviceListServiceToAttach.getClass(), serviceListServiceToAttach.getId());
-                attachedServiceList.add(serviceListServiceToAttach);
+            List<InstanceField> attachedInstanceFieldList = new ArrayList<InstanceField>();
+            for (InstanceField instanceFieldListInstanceFieldToAttach : TMField.getInstanceFieldList()) {
+                instanceFieldListInstanceFieldToAttach = em.getReference(instanceFieldListInstanceFieldToAttach.getClass(), instanceFieldListInstanceFieldToAttach.getInstanceFieldPK());
+                attachedInstanceFieldList.add(instanceFieldListInstanceFieldToAttach);
             }
-            tmfield.setServiceList(attachedServiceList);
-            em.persist(tmfield);
+            TMField.setInstanceFieldList(attachedInstanceFieldList);
+            List<ServiceHasField> attachedServiceHasFieldList = new ArrayList<ServiceHasField>();
+            for (ServiceHasField serviceHasFieldListServiceHasFieldToAttach : TMField.getServiceHasFieldList()) {
+                serviceHasFieldListServiceHasFieldToAttach = em.getReference(serviceHasFieldListServiceHasFieldToAttach.getClass(), serviceHasFieldListServiceHasFieldToAttach.getServiceHasFieldPK());
+                attachedServiceHasFieldList.add(serviceHasFieldListServiceHasFieldToAttach);
+            }
+            TMField.setServiceHasFieldList(attachedServiceHasFieldList);
+            em.persist(TMField);
             if (fieldTypeId != null) {
-                fieldTypeId.getTmfieldList().add(tmfield);
+                fieldTypeId.getTmfieldList().add(TMField);
                 fieldTypeId = em.merge(fieldTypeId);
             }
             if (rangeId != null) {
-                rangeId.getTmfieldList().add(tmfield);
+                rangeId.getTmfieldList().add(TMField);
                 rangeId = em.merge(rangeId);
             }
-            for (Service serviceListService : tmfield.getServiceList()) {
-                serviceListService.getTmfieldList().add(tmfield);
-                serviceListService = em.merge(serviceListService);
+            for (InstanceField instanceFieldListInstanceField : TMField.getInstanceFieldList()) {
+                TMField oldTmfieldIdOfInstanceFieldListInstanceField = instanceFieldListInstanceField.getTmfieldId();
+                instanceFieldListInstanceField.setTmfieldId(TMField);
+                instanceFieldListInstanceField = em.merge(instanceFieldListInstanceField);
+                if (oldTmfieldIdOfInstanceFieldListInstanceField != null) {
+                    oldTmfieldIdOfInstanceFieldListInstanceField.getInstanceFieldList().remove(instanceFieldListInstanceField);
+                    oldTmfieldIdOfInstanceFieldListInstanceField = em.merge(oldTmfieldIdOfInstanceFieldListInstanceField);
+                }
+            }
+            for (ServiceHasField serviceHasFieldListServiceHasField : TMField.getServiceHasFieldList()) {
+                TMField oldTmfieldOfServiceHasFieldListServiceHasField = serviceHasFieldListServiceHasField.getTmfield();
+                serviceHasFieldListServiceHasField.setTmfield(TMField);
+                serviceHasFieldListServiceHasField = em.merge(serviceHasFieldListServiceHasField);
+                if (oldTmfieldOfServiceHasFieldListServiceHasField != null) {
+                    oldTmfieldOfServiceHasFieldListServiceHasField.getServiceHasFieldList().remove(serviceHasFieldListServiceHasField);
+                    oldTmfieldOfServiceHasFieldListServiceHasField = em.merge(oldTmfieldOfServiceHasFieldListServiceHasField);
+                }
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            if (findTmfield(tmfield.getId()) != null) {
-                throw new PreexistingEntityException("Tmfield " + tmfield + " already exists.", ex);
+            if (findTMField(TMField.getId()) != null) {
+                throw new PreexistingEntityException("TMField " + TMField + " already exists.", ex);
             }
             throw ex;
         } finally {
@@ -86,69 +111,108 @@ public class TmfieldJpaController implements Serializable {
         }
     }
 
-    public void edit(TMField tmfield) throws NonexistentEntityException, Exception {
+    public void edit(TMField TMField) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            TMField persistentTmfield = em.find(TMField.class, tmfield.getId());
-            FieldType fieldTypeIdOld = persistentTmfield.getFieldTypeId();
-            FieldType fieldTypeIdNew = tmfield.getFieldTypeId();
-            Range rangeIdOld = persistentTmfield.getRangeId();
-            Range rangeIdNew = tmfield.getRangeId();
-            List<Service> serviceListOld = persistentTmfield.getServiceList();
-            List<Service> serviceListNew = tmfield.getServiceList();
+            TMField persistentTMField = em.find(TMField.class, TMField.getId());
+            FieldType fieldTypeIdOld = persistentTMField.getFieldTypeId();
+            FieldType fieldTypeIdNew = TMField.getFieldTypeId();
+            Range rangeIdOld = persistentTMField.getRangeId();
+            Range rangeIdNew = TMField.getRangeId();
+            List<InstanceField> instanceFieldListOld = persistentTMField.getInstanceFieldList();
+            List<InstanceField> instanceFieldListNew = TMField.getInstanceFieldList();
+            List<ServiceHasField> serviceHasFieldListOld = persistentTMField.getServiceHasFieldList();
+            List<ServiceHasField> serviceHasFieldListNew = TMField.getServiceHasFieldList();
+            List<String> illegalOrphanMessages = null;
+            for (InstanceField instanceFieldListOldInstanceField : instanceFieldListOld) {
+                if (!instanceFieldListNew.contains(instanceFieldListOldInstanceField)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain InstanceField " + instanceFieldListOldInstanceField + " since its tmfieldId field is not nullable.");
+                }
+            }
+            for (ServiceHasField serviceHasFieldListOldServiceHasField : serviceHasFieldListOld) {
+                if (!serviceHasFieldListNew.contains(serviceHasFieldListOldServiceHasField)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain ServiceHasField " + serviceHasFieldListOldServiceHasField + " since its tmfield field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
             if (fieldTypeIdNew != null) {
                 fieldTypeIdNew = em.getReference(fieldTypeIdNew.getClass(), fieldTypeIdNew.getId());
-                tmfield.setFieldTypeId(fieldTypeIdNew);
+                TMField.setFieldTypeId(fieldTypeIdNew);
             }
             if (rangeIdNew != null) {
                 rangeIdNew = em.getReference(rangeIdNew.getClass(), rangeIdNew.getId());
-                tmfield.setRangeId(rangeIdNew);
+                TMField.setRangeId(rangeIdNew);
             }
-            List<Service> attachedServiceListNew = new ArrayList<Service>();
-            for (Service serviceListNewServiceToAttach : serviceListNew) {
-                serviceListNewServiceToAttach = em.getReference(serviceListNewServiceToAttach.getClass(), serviceListNewServiceToAttach.getId());
-                attachedServiceListNew.add(serviceListNewServiceToAttach);
+            List<InstanceField> attachedInstanceFieldListNew = new ArrayList<InstanceField>();
+            for (InstanceField instanceFieldListNewInstanceFieldToAttach : instanceFieldListNew) {
+                instanceFieldListNewInstanceFieldToAttach = em.getReference(instanceFieldListNewInstanceFieldToAttach.getClass(), instanceFieldListNewInstanceFieldToAttach.getInstanceFieldPK());
+                attachedInstanceFieldListNew.add(instanceFieldListNewInstanceFieldToAttach);
             }
-            serviceListNew = attachedServiceListNew;
-            tmfield.setServiceList(serviceListNew);
-            tmfield = em.merge(tmfield);
+            instanceFieldListNew = attachedInstanceFieldListNew;
+            TMField.setInstanceFieldList(instanceFieldListNew);
+            List<ServiceHasField> attachedServiceHasFieldListNew = new ArrayList<ServiceHasField>();
+            for (ServiceHasField serviceHasFieldListNewServiceHasFieldToAttach : serviceHasFieldListNew) {
+                serviceHasFieldListNewServiceHasFieldToAttach = em.getReference(serviceHasFieldListNewServiceHasFieldToAttach.getClass(), serviceHasFieldListNewServiceHasFieldToAttach.getServiceHasFieldPK());
+                attachedServiceHasFieldListNew.add(serviceHasFieldListNewServiceHasFieldToAttach);
+            }
+            serviceHasFieldListNew = attachedServiceHasFieldListNew;
+            TMField.setServiceHasFieldList(serviceHasFieldListNew);
+            TMField = em.merge(TMField);
             if (fieldTypeIdOld != null && !fieldTypeIdOld.equals(fieldTypeIdNew)) {
-                fieldTypeIdOld.getTmfieldList().remove(tmfield);
+                fieldTypeIdOld.getTmfieldList().remove(TMField);
                 fieldTypeIdOld = em.merge(fieldTypeIdOld);
             }
             if (fieldTypeIdNew != null && !fieldTypeIdNew.equals(fieldTypeIdOld)) {
-                fieldTypeIdNew.getTmfieldList().add(tmfield);
+                fieldTypeIdNew.getTmfieldList().add(TMField);
                 fieldTypeIdNew = em.merge(fieldTypeIdNew);
             }
             if (rangeIdOld != null && !rangeIdOld.equals(rangeIdNew)) {
-                rangeIdOld.getTmfieldList().remove(tmfield);
+                rangeIdOld.getTmfieldList().remove(TMField);
                 rangeIdOld = em.merge(rangeIdOld);
             }
             if (rangeIdNew != null && !rangeIdNew.equals(rangeIdOld)) {
-                rangeIdNew.getTmfieldList().add(tmfield);
+                rangeIdNew.getTmfieldList().add(TMField);
                 rangeIdNew = em.merge(rangeIdNew);
             }
-            for (Service serviceListOldService : serviceListOld) {
-                if (!serviceListNew.contains(serviceListOldService)) {
-                    serviceListOldService.getTmfieldList().remove(tmfield);
-                    serviceListOldService = em.merge(serviceListOldService);
+            for (InstanceField instanceFieldListNewInstanceField : instanceFieldListNew) {
+                if (!instanceFieldListOld.contains(instanceFieldListNewInstanceField)) {
+                    TMField oldTmfieldIdOfInstanceFieldListNewInstanceField = instanceFieldListNewInstanceField.getTmfieldId();
+                    instanceFieldListNewInstanceField.setTmfieldId(TMField);
+                    instanceFieldListNewInstanceField = em.merge(instanceFieldListNewInstanceField);
+                    if (oldTmfieldIdOfInstanceFieldListNewInstanceField != null && !oldTmfieldIdOfInstanceFieldListNewInstanceField.equals(TMField)) {
+                        oldTmfieldIdOfInstanceFieldListNewInstanceField.getInstanceFieldList().remove(instanceFieldListNewInstanceField);
+                        oldTmfieldIdOfInstanceFieldListNewInstanceField = em.merge(oldTmfieldIdOfInstanceFieldListNewInstanceField);
+                    }
                 }
             }
-            for (Service serviceListNewService : serviceListNew) {
-                if (!serviceListOld.contains(serviceListNewService)) {
-                    serviceListNewService.getTmfieldList().add(tmfield);
-                    serviceListNewService = em.merge(serviceListNewService);
+            for (ServiceHasField serviceHasFieldListNewServiceHasField : serviceHasFieldListNew) {
+                if (!serviceHasFieldListOld.contains(serviceHasFieldListNewServiceHasField)) {
+                    TMField oldTmfieldOfServiceHasFieldListNewServiceHasField = serviceHasFieldListNewServiceHasField.getTmfield();
+                    serviceHasFieldListNewServiceHasField.setTmfield(TMField);
+                    serviceHasFieldListNewServiceHasField = em.merge(serviceHasFieldListNewServiceHasField);
+                    if (oldTmfieldOfServiceHasFieldListNewServiceHasField != null && !oldTmfieldOfServiceHasFieldListNewServiceHasField.equals(TMField)) {
+                        oldTmfieldOfServiceHasFieldListNewServiceHasField.getServiceHasFieldList().remove(serviceHasFieldListNewServiceHasField);
+                        oldTmfieldOfServiceHasFieldListNewServiceHasField = em.merge(oldTmfieldOfServiceHasFieldListNewServiceHasField);
+                    }
                 }
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = tmfield.getId();
-                if (findTmfield(id) == null) {
-                    throw new NonexistentEntityException("The tmfield with id " + id + " no longer exists.");
+                Integer id = TMField.getId();
+                if (findTMField(id) == null) {
+                    throw new NonexistentEntityException("The tMField with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -159,34 +223,47 @@ public class TmfieldJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            TMField tmfield;
+            TMField TMField;
             try {
-                tmfield = em.getReference(TMField.class, id);
-                tmfield.getId();
+                TMField = em.getReference(TMField.class, id);
+                TMField.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The tmfield with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The TMField with id " + id + " no longer exists.", enfe);
             }
-            FieldType fieldTypeId = tmfield.getFieldTypeId();
+            List<String> illegalOrphanMessages = null;
+            List<InstanceField> instanceFieldListOrphanCheck = TMField.getInstanceFieldList();
+            for (InstanceField instanceFieldListOrphanCheckInstanceField : instanceFieldListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<>();
+                }
+                illegalOrphanMessages.add("This TMField (" + TMField + ") cannot be destroyed since the InstanceField " + instanceFieldListOrphanCheckInstanceField + " in its instanceFieldList field has a non-nullable tmfieldId field.");
+            }
+            List<ServiceHasField> serviceHasFieldListOrphanCheck = TMField.getServiceHasFieldList();
+            for (ServiceHasField serviceHasFieldListOrphanCheckServiceHasField : serviceHasFieldListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This TMField (" + TMField + ") cannot be destroyed since the ServiceHasField " + serviceHasFieldListOrphanCheckServiceHasField + " in its serviceHasFieldList field has a non-nullable tmfield field.");
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            FieldType fieldTypeId = TMField.getFieldTypeId();
             if (fieldTypeId != null) {
-                fieldTypeId.getTmfieldList().remove(tmfield);
+                fieldTypeId.getTmfieldList().remove(TMField);
                 fieldTypeId = em.merge(fieldTypeId);
             }
-            Range rangeId = tmfield.getRangeId();
+            Range rangeId = TMField.getRangeId();
             if (rangeId != null) {
-                rangeId.getTmfieldList().remove(tmfield);
+                rangeId.getTmfieldList().remove(TMField);
                 rangeId = em.merge(rangeId);
             }
-            List<Service> serviceList = tmfield.getServiceList();
-            for (Service serviceListService : serviceList) {
-                serviceListService.getTmfieldList().remove(tmfield);
-                serviceListService = em.merge(serviceListService);
-            }
-            em.remove(tmfield);
+            em.remove(TMField);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -195,15 +272,15 @@ public class TmfieldJpaController implements Serializable {
         }
     }
 
-    public List<TMField> findTmfieldEntities() {
-        return findTmfieldEntities(true, -1, -1);
+    public List<TMField> findTMFieldEntities() {
+        return findTMFieldEntities(true, -1, -1);
     }
 
-    public List<TMField> findTmfieldEntities(int maxResults, int firstResult) {
-        return findTmfieldEntities(false, maxResults, firstResult);
+    public List<TMField> findTMFieldEntities(int maxResults, int firstResult) {
+        return findTMFieldEntities(false, maxResults, firstResult);
     }
 
-    private List<TMField> findTmfieldEntities(boolean all, int maxResults, int firstResult) {
+    private List<TMField> findTMFieldEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
@@ -219,7 +296,7 @@ public class TmfieldJpaController implements Serializable {
         }
     }
 
-    public TMField findTmfield(Integer id) {
+    public TMField findTMField(Integer id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(TMField.class, id);
@@ -228,7 +305,7 @@ public class TmfieldJpaController implements Serializable {
         }
     }
 
-    public int getTmfieldCount() {
+    public int getTMFieldCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
