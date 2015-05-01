@@ -113,7 +113,7 @@ public class FieldType implements Serializable {
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.FieldType[ id=" + id + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.FieldType[ id=" + id + " ]";
     }
 
 }

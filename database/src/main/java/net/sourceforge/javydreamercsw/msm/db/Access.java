@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Access.findById", query = "SELECT a FROM Access a WHERE a.id = :id"),
     @NamedQuery(name = "Access.findByName", query = "SELECT a FROM Access a WHERE a.name = :name")})
 public class Access implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @TableGenerator(name = "ACCESS_GEN",
@@ -113,7 +112,7 @@ public class Access implements Serializable {
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.Access[ id=" + id + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.Access[ id=" + id + " ]";
     }
-
+    
 }

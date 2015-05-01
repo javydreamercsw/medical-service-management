@@ -7,9 +7,7 @@ import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.TMField;
-import net.sourceforge.javydreamercsw.msm.controller.TmfieldJpaController;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.server.AccessServer;
 import net.sourceforge.javydreamercsw.msm.server.FieldServer;
 import net.sourceforge.javydreamercsw.msm.server.PersonServer;
@@ -83,7 +81,7 @@ public class SystemTest extends AbstractServerTest {
             assertEquals("Desc", new String(name.getDesc(), "UTF-8"));
             assertTrue(name.getFieldTypeId().getId() == 1);
             assertNull(name.getRangeId());
-            assertTrue(name.getServiceList().isEmpty());
+            assertTrue(name.getServiceHasFieldList().isEmpty());
             TMField days = FieldServer.createIntField("Days", "Desc", 0, 365);
             assertNotNull(days);
             assertEquals("Days", days.getName());
@@ -92,7 +90,7 @@ public class SystemTest extends AbstractServerTest {
             assertTrue(365 == days.getRangeId().getMax());
             assertTrue(days.getFieldTypeId().getId() == 2);
             assertNotNull(days.getRangeId());
-            assertTrue(days.getServiceList().isEmpty());
+            assertTrue(days.getServiceHasFieldList().isEmpty());
             TMField bp = FieldServer.createFloatField("Blood Pressure", "Desc", 60, 100);
             assertNotNull(bp);
             assertEquals("Blood Pressure", bp.getName());
@@ -101,46 +99,43 @@ public class SystemTest extends AbstractServerTest {
             assertTrue(100 == bp.getRangeId().getMax());
             assertTrue(bp.getFieldTypeId().getId() == 3);
             assertNotNull(bp.getRangeId());
-            assertTrue(bp.getServiceList().isEmpty());
+            assertTrue(bp.getServiceHasFieldList().isEmpty());
             TMField b = FieldServer.createBoolField("Bool", "Desc");
             assertNotNull(b);
             assertEquals("Bool", b.getName());
             assertEquals("Desc", new String(b.getDesc(), "UTF-8"));
             assertNull(name.getRangeId());
             assertTrue(b.getFieldTypeId().getId() == 4);
-            assertTrue(b.getServiceList().isEmpty());
+            assertTrue(b.getServiceHasFieldList().isEmpty());
             //Add fields to service
-            ss.getTmfieldList().add(name);
-            ss.getTmfieldList().add(days);
-            ss.getTmfieldList().add(bp);
-            ss.getTmfieldList().add(b);
+            int i = 1;
+            ss.addField(name, i);
+            ss.addField(days, ++i);
+            ss.addField(bp, ++i);
+            ss.addField(b, ++i);
             ss.write2DB();
-            assertTrue(ss.getTmfieldList().size() > 0);
+            assertTrue(ss.getServiceHasFieldList().size() == 4);
             //Create a service instance
             ServiceInstanceServer sis = new ServiceInstanceServer();
-            sis.createServiceInstance(ss.getId());
+            ServiceInstance si = sis.createServiceInstance(ss.getId());
+            assertEquals(4, si.getInstanceFieldList().size());
+            assertTrue(si.getPersonHasServiceList().isEmpty());
+            assertEquals(ss.getId(), si.getServiceId().getId());
+            assertTrue(si.getId() >= 1);
+            //Create a person
+            PersonServer ps = new PersonServer("Test");
+            ps.setLastname("Tester");
+            ps.setSsn("111-11-1111");
+            ps.write2DB();
+            //Assign service instance to person
+            ps.addServiceInstance(si);
+            assertEquals(1, ps.getPersonHasServiceList().size());
         } catch (UnsupportedEncodingException ex) {
             LOG.log(Level.SEVERE, null, ex);
             fail();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);
             fail();
-        }
-        clean();
-    }
-
-    private void clean() {
-        TmfieldJpaController controller = new TmfieldJpaController(DataBaseManager.getEntityManagerFactory());
-        for (TMField a : controller.findTmfieldEntities()) {
-            try {
-                if (a.getId() >= 1000) {
-                    new TmfieldJpaController(DataBaseManager.getEntityManagerFactory()).destroy(a.getId());
-                } else {
-                    LOG.log(Level.INFO, "Ignoring id: {0}", a.getId());
-                }
-            } catch (NonexistentEntityException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
         }
     }
 }

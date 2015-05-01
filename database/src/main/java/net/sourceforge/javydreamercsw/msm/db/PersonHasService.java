@@ -24,16 +24,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "person_has_service")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PersonHasService.findAll",
-            query = "SELECT p FROM PersonHasService p"),
-    @NamedQuery(name = "PersonHasService.findByPersonId",
-            query = "SELECT p FROM PersonHasService p WHERE "
-            + "p.personHasServicePK.personId = :personId"),
-    @NamedQuery(name = "PersonHasService.findByServiceid",
-            query = "SELECT p FROM PersonHasService p WHERE "
-            + "p.personHasServicePK.serviceid = :serviceid"),
-    @NamedQuery(name = "PersonHasService.findByDate",
-            query = "SELECT p FROM PersonHasService p WHERE p.date = :date")})
+    @NamedQuery(name = "PersonHasService.findAll", query = "SELECT p FROM PersonHasService p"),
+    @NamedQuery(name = "PersonHasService.findByPersonId", query = "SELECT p FROM PersonHasService p WHERE p.personHasServicePK.personId = :personId"),
+    @NamedQuery(name = "PersonHasService.findByServiceInstanceId", query = "SELECT p FROM PersonHasService p WHERE p.personHasServicePK.serviceInstanceId = :serviceInstanceId"),
+    @NamedQuery(name = "PersonHasService.findByDate", query = "SELECT p FROM PersonHasService p WHERE p.date = :date")})
 public class PersonHasService implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,18 +38,12 @@ public class PersonHasService implements Serializable {
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-    @JoinColumn(name = "person_id", referencedColumnName = "id",
-            insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Person person;
-    @JoinColumn(name = "Service_id", referencedColumnName = "id",
-            insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Service service;
-    @JoinColumn(name = "service_instance_id", referencedColumnName = "id",
-            insertable = false, updatable = false)
+    @JoinColumn(name = "service_instance_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private ServiceInstance serviceInstance;
+    @JoinColumn(name = "person_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private Person person;
 
     public PersonHasService() {
     }
@@ -69,8 +57,8 @@ public class PersonHasService implements Serializable {
         this.date = date;
     }
 
-    public PersonHasService(int personId, int serviceid) {
-        this.personHasServicePK = new PersonHasServicePK(personId, serviceid);
+    public PersonHasService(int personId, int serviceInstanceId) {
+        this.personHasServicePK = new PersonHasServicePK(personId, serviceInstanceId);
     }
 
     public PersonHasServicePK getPersonHasServicePK() {
@@ -89,20 +77,20 @@ public class PersonHasService implements Serializable {
         this.date = date;
     }
 
+    public ServiceInstance getServiceInstance() {
+        return serviceInstance;
+    }
+
+    public void setServiceInstance(ServiceInstance serviceInstance) {
+        this.serviceInstance = serviceInstance;
+    }
+
     public Person getPerson() {
         return person;
     }
 
     public void setPerson(Person person) {
         this.person = person;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
     }
 
     @Override
@@ -119,23 +107,12 @@ public class PersonHasService implements Serializable {
             return false;
         }
         PersonHasService other = (PersonHasService) object;
-        return !((this.personHasServicePK == null
-                && other.personHasServicePK != null)
-                || (this.personHasServicePK != null
-                && !this.personHasServicePK.equals(other.personHasServicePK)));
+        return !((this.personHasServicePK == null && other.personHasServicePK != null) || (this.personHasServicePK != null && !this.personHasServicePK.equals(other.personHasServicePK)));
     }
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.PersonHasService[ personHasServicePK="
-                + personHasServicePK + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.PersonHasService[ personHasServicePK=" + personHasServicePK + " ]";
     }
 
-    public ServiceInstance getServiceInstance() {
-        return serviceInstance;
-    }
-
-    public void setServiceInstance(ServiceInstance serviceInstance) {
-        this.serviceInstance = serviceInstance;
-    }
 }

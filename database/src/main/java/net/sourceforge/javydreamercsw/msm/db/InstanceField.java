@@ -20,20 +20,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "instance_field")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "InstanceField.findAll",
-            query = "SELECT i FROM InstanceField i"),
-    @NamedQuery(name = "InstanceField.findById",
-            query = "SELECT i FROM InstanceField i WHERE i.instanceFieldPK.id = :id"),
-    @NamedQuery(name = "InstanceField.findByServiceInstanceId",
-            query = "SELECT i FROM InstanceField i WHERE i.instanceFieldPK.serviceInstanceId = :serviceInstanceId"),
-    @NamedQuery(name = "InstanceField.findByIntVal",
-            query = "SELECT i FROM InstanceField i WHERE i.intVal = :intVal"),
-    @NamedQuery(name = "InstanceField.findByFloatVal",
-            query = "SELECT i FROM InstanceField i WHERE i.floatVal = :floatVal"),
-    @NamedQuery(name = "InstanceField.findByBoolVal",
-            query = "SELECT i FROM InstanceField i WHERE i.boolVal = :boolVal")})
+    @NamedQuery(name = "InstanceField.findAll", query = "SELECT i FROM InstanceField i"),
+    @NamedQuery(name = "InstanceField.findById", query = "SELECT i FROM InstanceField i WHERE i.instanceFieldPK.id = :id"),
+    @NamedQuery(name = "InstanceField.findByServiceInstanceId", query = "SELECT i FROM InstanceField i WHERE i.instanceFieldPK.serviceInstanceId = :serviceInstanceId"),
+    @NamedQuery(name = "InstanceField.findByIntVal", query = "SELECT i FROM InstanceField i WHERE i.intVal = :intVal"),
+    @NamedQuery(name = "InstanceField.findByFloatVal", query = "SELECT i FROM InstanceField i WHERE i.floatVal = :floatVal"),
+    @NamedQuery(name = "InstanceField.findByBoolVal", query = "SELECT i FROM InstanceField i WHERE i.boolVal = :boolVal"),
+    @NamedQuery(name = "InstanceField.findByIndex", query = "SELECT i FROM InstanceField i WHERE i.index = :index")})
 public class InstanceField implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected InstanceFieldPK instanceFieldPK;
@@ -47,8 +41,12 @@ public class InstanceField implements Serializable {
     private byte[] stringVal;
     @Column(name = "bool_val")
     private Boolean boolVal;
-    @JoinColumn(name = "service_instance_id", referencedColumnName = "id",
-            insertable = false, updatable = false)
+    @Column(name = "index")
+    private Integer index;
+    @JoinColumn(name = "tmfield_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private TMField tmfieldId;
+    @JoinColumn(name = "service_instance_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private ServiceInstance serviceInstance;
 
@@ -103,6 +101,22 @@ public class InstanceField implements Serializable {
         this.boolVal = boolVal;
     }
 
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public TMField getTmfieldId() {
+        return tmfieldId;
+    }
+
+    public void setTmfieldId(TMField tmfieldId) {
+        this.tmfieldId = tmfieldId;
+    }
+
     public ServiceInstance getServiceInstance() {
         return serviceInstance;
     }
@@ -135,5 +149,5 @@ public class InstanceField implements Serializable {
     public String toString() {
         return "net.sourceforge.javydreamercsw.msm.db.InstanceField[ instanceFieldPK=" + instanceFieldPK + " ]";
     }
-
+    
 }

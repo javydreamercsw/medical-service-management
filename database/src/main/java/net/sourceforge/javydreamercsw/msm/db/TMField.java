@@ -3,18 +3,18 @@ package net.sourceforge.javydreamercsw.msm.db;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.validation.constraints.NotNull;
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "TMField.findById", query = "SELECT t FROM TMField t WHERE t.id = :id"),
     @NamedQuery(name = "TMField.findByName", query = "SELECT t FROM TMField t WHERE t.name = :name")})
 public class TMField implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @TableGenerator(name = "TMFIELD_GEN",
@@ -56,17 +57,16 @@ public class TMField implements Serializable {
     @Lob
     @Column(name = "desc")
     private byte[] desc;
-    @JoinTable(name = "service_has_field", joinColumns = {
-        @JoinColumn(name = "field_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "service_id", referencedColumnName = "id")})
-    @ManyToMany
-    private List<Service> serviceList;
     @JoinColumn(name = "field_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private FieldType fieldTypeId;
     @JoinColumn(name = "range_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Range rangeId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tmfieldId")
+    private List<InstanceField> instanceFieldList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tmfield")
+    private List<ServiceHasField> serviceHasFieldList;
 
     public TMField() {
     }
@@ -104,15 +104,6 @@ public class TMField implements Serializable {
         this.desc = desc;
     }
 
-    @XmlTransient
-    public List<Service> getServiceList() {
-        return serviceList;
-    }
-
-    public void setServiceList(List<Service> serviceList) {
-        this.serviceList = serviceList;
-    }
-
     public FieldType getFieldTypeId() {
         return fieldTypeId;
     }
@@ -129,6 +120,24 @@ public class TMField implements Serializable {
         this.rangeId = rangeId;
     }
 
+    @XmlTransient
+    public List<InstanceField> getInstanceFieldList() {
+        return instanceFieldList;
+    }
+
+    public void setInstanceFieldList(List<InstanceField> instanceFieldList) {
+        this.instanceFieldList = instanceFieldList;
+    }
+
+    @XmlTransient
+    public List<ServiceHasField> getServiceHasFieldList() {
+        return serviceHasFieldList;
+    }
+
+    public void setServiceHasFieldList(List<ServiceHasField> serviceHasFieldList) {
+        this.serviceHasFieldList = serviceHasFieldList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -143,15 +152,11 @@ public class TMField implements Serializable {
             return false;
         }
         TMField other = (TMField) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.Tmfield[ id=" + id + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.TMField[ id=" + id + " ]";
     }
-    
 }

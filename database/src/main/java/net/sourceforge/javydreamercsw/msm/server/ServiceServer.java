@@ -1,10 +1,12 @@
 package net.sourceforge.javydreamercsw.msm.server;
 
 import java.util.ArrayList;
-import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
+import net.sourceforge.javydreamercsw.msm.controller.ServiceHasFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.db.TMField;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceJpaController;
+import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
+import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 
 /**
@@ -25,8 +27,8 @@ public class ServiceServer extends Service implements EntityServer<Service> {
     public ServiceServer(String name) {
         super();
         setName(name);
-        setPersonHasServiceList(new ArrayList<PersonHasService>());
-        setTmfieldList(new ArrayList<TMField>());
+        setServiceHasFieldList(new ArrayList<ServiceHasField>());
+        setServiceInstanceList(new ArrayList<ServiceInstance>());
     }
 
     @Override
@@ -56,22 +58,48 @@ public class ServiceServer extends Service implements EntityServer<Service> {
     public void update(Service target, Service source) {
         target.setId(source.getId());
         target.setName(source.getName());
-        if (target.getPersonHasServiceList() == null) {
-            target.setPersonHasServiceList(new ArrayList<PersonHasService>());
+        if (target.getServiceHasFieldList() == null) {
+            target.setServiceHasFieldList(new ArrayList<ServiceHasField>());
         } else {
-            target.getPersonHasServiceList().clear();
+            target.getServiceHasFieldList().clear();
         }
-        target.getPersonHasServiceList().addAll(source.getPersonHasServiceList());
-        if (target.getTmfieldList() == null) {
-            target.setTmfieldList(new ArrayList<TMField>());
+        target.getServiceHasFieldList().addAll(source.getServiceHasFieldList());
+        if (target.getServiceInstanceList() == null) {
+            target.setServiceInstanceList(new ArrayList<ServiceInstance>());
         } else {
-            target.getTmfieldList().clear();
+            target.getServiceInstanceList().clear();
         }
-        target.getTmfieldList().addAll(source.getTmfieldList());
+        target.getServiceInstanceList().addAll(source.getServiceInstanceList());
     }
 
     @Override
     public void update() {
         update(this, getEntity());
+    }
+
+    public void addField(TMField field, int index) throws Exception {
+        ServiceHasField shf = new ServiceHasField(getId(), field.getId());
+        shf.setIndex(index);
+        shf.setTmfield(field);
+        shf.setService(getEntity());
+        //Check if there's a field on that spot
+        boolean exists = false;
+        for (ServiceHasField s : getServiceHasFieldList()) {
+            if (s.getIndex() == index) {
+                exists = true;
+                break;
+            }
+        }
+        if (exists) {
+            //Insert into specified index and push the others
+            for (ServiceHasField s : getServiceHasFieldList()) {
+                if (s.getIndex() >= index) {
+                    s.setIndex(s.getIndex() + 1);
+                    new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(s);
+                }
+            }
+        }
+        new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).create(shf);
+        update();
     }
 }

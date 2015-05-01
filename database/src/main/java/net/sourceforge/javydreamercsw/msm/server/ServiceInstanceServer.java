@@ -1,12 +1,14 @@
 package net.sourceforge.javydreamercsw.msm.server;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceInstanceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.Service;
+import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 
 /**
@@ -89,9 +91,23 @@ public class ServiceInstanceServer extends ServiceInstance
         ServiceServer ss = new ServiceServer(id);
         Service service = ss.getEntity();
         if (service != null) {
-            //Valid template, retrieve fields
-            for (TMField f : service.getTmfieldList()) {
-                
+            try {
+                ServiceInstanceServer sis = new ServiceInstanceServer();
+                sis.setServiceId(service);
+                sis.write2DB();
+                //Valid template, retrieve fields
+               for(ServiceHasField shf:service.getServiceHasFieldList()){
+                    InstanceFieldServer i = new InstanceFieldServer(sis.getId());
+                    i.setServiceInstance(sis.getEntity());
+                    i.setIndex(shf.getIndex());
+                    i.setTmfieldId(shf.getTmfield());
+                    i.write2DB();
+                    sis.getInstanceFieldList().add(i.getEntity());
+                }
+                sis.write2DB();
+                result = sis.getEntity();
+            } catch (Exception ex) {
+                Logger.getLogger(ServiceInstanceServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return result;

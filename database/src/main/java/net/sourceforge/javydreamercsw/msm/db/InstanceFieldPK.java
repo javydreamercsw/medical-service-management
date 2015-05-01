@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @Embeddable
 public class InstanceFieldPK implements Serializable {
+
     @Basic(optional = false)
     @NotNull
     @TableGenerator(name = "INSTANCE_FIELD_GEN",
@@ -73,15 +74,12 @@ public class InstanceFieldPK implements Serializable {
         if (this.id != other.id) {
             return false;
         }
-        if (this.serviceInstanceId != other.serviceInstanceId) {
-            return false;
-        }
-        return true;
+        return this.serviceInstanceId == other.serviceInstanceId;
     }
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.msm.db.InstanceFieldPK[ id=" + id + ", serviceInstanceId=" + serviceInstanceId + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.InstanceFieldPK[ id=" 
+                + id + ", serviceInstanceId=" + serviceInstanceId + " ]";
     }
-    
 }

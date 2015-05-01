@@ -2,9 +2,10 @@ package net.sourceforge.javydreamercsw.msm.server;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import net.sourceforge.javydreamercsw.msm.db.Service;
+import net.sourceforge.javydreamercsw.msm.controller.TMFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.db.TMField;
-import net.sourceforge.javydreamercsw.msm.controller.TmfieldJpaController;
+import net.sourceforge.javydreamercsw.msm.db.InstanceField;
+import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.db.manager.TMException;
 
@@ -26,19 +27,20 @@ public class FieldServer extends TMField implements EntityServer<TMField> {
     public FieldServer(String name) {
         super();
         setName(name);
-        setServiceList(new ArrayList<Service>());
+        setInstanceFieldList(new ArrayList<InstanceField>());
+        setServiceHasFieldList(new ArrayList<ServiceHasField>());
     }
 
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
             update(getEntity(), this);
-            new TmfieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            new TMFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
             setId(getEntity().getId());
         } else {
             TMField a = new TMField();
             update(a, this);
-            new TmfieldJpaController(DataBaseManager.getEntityManagerFactory()).create(a);
+            new TMFieldJpaController(DataBaseManager.getEntityManagerFactory()).create(a);
             setId(a.getId());
             update();
         }
@@ -47,9 +49,9 @@ public class FieldServer extends TMField implements EntityServer<TMField> {
 
     @Override
     public TMField getEntity() throws IllegalArgumentException {
-        TmfieldJpaController c
-                = new TmfieldJpaController(DataBaseManager.getEntityManagerFactory());
-        return c.findTmfield(getId());
+        TMFieldJpaController c
+                = new TMFieldJpaController(DataBaseManager.getEntityManagerFactory());
+        return c.findTMField(getId());
     }
 
     @Override
@@ -59,12 +61,18 @@ public class FieldServer extends TMField implements EntityServer<TMField> {
         target.setDesc(source.getDesc());
         target.setRangeId(source.getRangeId());
         target.setFieldTypeId(source.getFieldTypeId());
-        if (target.getServiceList() == null) {
-            target.setServiceList(new ArrayList<Service>());
+        if (target.getInstanceFieldList() == null) {
+            target.setInstanceFieldList(new ArrayList<InstanceField>());
         } else {
-            target.getServiceList().clear();
+            target.getInstanceFieldList().clear();
         }
-        target.getServiceList().addAll(source.getServiceList());
+        target.getInstanceFieldList().addAll(source.getInstanceFieldList());
+        if (target.getServiceHasFieldList() == null) {
+            target.setServiceHasFieldList(new ArrayList<ServiceHasField>());
+        } else {
+            target.getServiceHasFieldList().clear();
+        }
+        target.getServiceHasFieldList().addAll(source.getServiceHasFieldList());
     }
 
     @Override

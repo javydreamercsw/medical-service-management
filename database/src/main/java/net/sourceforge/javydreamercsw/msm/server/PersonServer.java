@@ -1,10 +1,17 @@
 package net.sourceforge.javydreamercsw.msm.server;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sourceforge.javydreamercsw.msm.controller.PersonHasServiceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.controller.PersonJpaController;
+import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.db.manager.TMException;
 
 /**
  *
@@ -63,5 +70,25 @@ public class PersonServer extends Person implements EntityServer<Person> {
     @Override
     public void update() {
         update(this, getEntity());
+    }
+
+    public void addServiceInstance(ServiceInstance si) throws TMException {
+        for (PersonHasService phs : getPersonHasServiceList()) {
+            if (Objects.equals(phs.getServiceInstance().getId(), si.getId())) {
+                throw new TMException("Person already has this service instance!");
+            }
+        }
+        PersonHasService phs = new PersonHasService(getId(), si.getId());
+        phs.setPerson(getEntity());
+        phs.setDate(new Date());
+        phs.setServiceInstance(si);
+        PersonHasServiceJpaController phsc
+                = new PersonHasServiceJpaController(DataBaseManager.getEntityManagerFactory());
+        try {
+            phsc.create(phs);
+        } catch (Exception ex) {
+            throw new TMException(ex);
+        }
+        update();
     }
 }
