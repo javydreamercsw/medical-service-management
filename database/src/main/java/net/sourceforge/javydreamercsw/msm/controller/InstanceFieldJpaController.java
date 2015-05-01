@@ -17,6 +17,7 @@ import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntit
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
 import net.sourceforge.javydreamercsw.msm.db.InstanceFieldPK;
+import net.sourceforge.javydreamercsw.msm.db.TMField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 
 /**
@@ -43,12 +44,21 @@ public class InstanceFieldJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            TMField tmfieldId = instanceField.getTmfieldId();
+            if (tmfieldId != null) {
+                tmfieldId = em.getReference(tmfieldId.getClass(), tmfieldId.getId());
+                instanceField.setTmfieldId(tmfieldId);
+            }
             ServiceInstance serviceInstance = instanceField.getServiceInstance();
             if (serviceInstance != null) {
                 serviceInstance = em.getReference(serviceInstance.getClass(), serviceInstance.getId());
                 instanceField.setServiceInstance(serviceInstance);
             }
             em.persist(instanceField);
+            if (tmfieldId != null) {
+                tmfieldId.getInstanceFieldList().add(instanceField);
+                tmfieldId = em.merge(tmfieldId);
+            }
             if (serviceInstance != null) {
                 serviceInstance.getInstanceFieldList().add(instanceField);
                 serviceInstance = em.merge(serviceInstance);
@@ -73,13 +83,27 @@ public class InstanceFieldJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             InstanceField persistentInstanceField = em.find(InstanceField.class, instanceField.getInstanceFieldPK());
+            TMField tmfieldIdOld = persistentInstanceField.getTmfieldId();
+            TMField tmfieldIdNew = instanceField.getTmfieldId();
             ServiceInstance serviceInstanceOld = persistentInstanceField.getServiceInstance();
             ServiceInstance serviceInstanceNew = instanceField.getServiceInstance();
+            if (tmfieldIdNew != null) {
+                tmfieldIdNew = em.getReference(tmfieldIdNew.getClass(), tmfieldIdNew.getId());
+                instanceField.setTmfieldId(tmfieldIdNew);
+            }
             if (serviceInstanceNew != null) {
                 serviceInstanceNew = em.getReference(serviceInstanceNew.getClass(), serviceInstanceNew.getId());
                 instanceField.setServiceInstance(serviceInstanceNew);
             }
             instanceField = em.merge(instanceField);
+            if (tmfieldIdOld != null && !tmfieldIdOld.equals(tmfieldIdNew)) {
+                tmfieldIdOld.getInstanceFieldList().remove(instanceField);
+                tmfieldIdOld = em.merge(tmfieldIdOld);
+            }
+            if (tmfieldIdNew != null && !tmfieldIdNew.equals(tmfieldIdOld)) {
+                tmfieldIdNew.getInstanceFieldList().add(instanceField);
+                tmfieldIdNew = em.merge(tmfieldIdNew);
+            }
             if (serviceInstanceOld != null && !serviceInstanceOld.equals(serviceInstanceNew)) {
                 serviceInstanceOld.getInstanceFieldList().remove(instanceField);
                 serviceInstanceOld = em.merge(serviceInstanceOld);
@@ -116,6 +140,11 @@ public class InstanceFieldJpaController implements Serializable {
                 instanceField.getInstanceFieldPK();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The instanceField with id " + id + " no longer exists.", enfe);
+            }
+            TMField tmfieldId = instanceField.getTmfieldId();
+            if (tmfieldId != null) {
+                tmfieldId.getInstanceFieldList().remove(instanceField);
+                tmfieldId = em.merge(tmfieldId);
             }
             ServiceInstance serviceInstance = instanceField.getServiceInstance();
             if (serviceInstance != null) {

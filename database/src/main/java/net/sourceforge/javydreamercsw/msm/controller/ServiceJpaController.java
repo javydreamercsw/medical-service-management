@@ -10,15 +10,15 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.Service;
+import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 
 /**
  *
@@ -36,40 +36,45 @@ public class ServiceJpaController implements Serializable {
     }
 
     public void create(Service service) {
-        if (service.getTmfieldList() == null) {
-            service.setTmfieldList(new ArrayList<TMField>());
+        if (service.getServiceHasFieldList() == null) {
+            service.setServiceHasFieldList(new ArrayList<ServiceHasField>());
         }
-        if (service.getPersonHasServiceList() == null) {
-            service.setPersonHasServiceList(new ArrayList<PersonHasService>());
+        if (service.getServiceInstanceList() == null) {
+            service.setServiceInstanceList(new ArrayList<ServiceInstance>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            List<TMField> attachedTmfieldList = new ArrayList<TMField>();
-            for (TMField tmfieldListTMFieldToAttach : service.getTmfieldList()) {
-                tmfieldListTMFieldToAttach = em.getReference(tmfieldListTMFieldToAttach.getClass(), tmfieldListTMFieldToAttach.getId());
-                attachedTmfieldList.add(tmfieldListTMFieldToAttach);
+            List<ServiceHasField> attachedServiceHasFieldList = new ArrayList<ServiceHasField>();
+            for (ServiceHasField serviceHasFieldListServiceHasFieldToAttach : service.getServiceHasFieldList()) {
+                serviceHasFieldListServiceHasFieldToAttach = em.getReference(serviceHasFieldListServiceHasFieldToAttach.getClass(), serviceHasFieldListServiceHasFieldToAttach.getServiceHasFieldPK());
+                attachedServiceHasFieldList.add(serviceHasFieldListServiceHasFieldToAttach);
             }
-            service.setTmfieldList(attachedTmfieldList);
-            List<PersonHasService> attachedPersonHasServiceList = new ArrayList<PersonHasService>();
-            for (PersonHasService personHasServiceListPersonHasServiceToAttach : service.getPersonHasServiceList()) {
-                personHasServiceListPersonHasServiceToAttach = em.getReference(personHasServiceListPersonHasServiceToAttach.getClass(), personHasServiceListPersonHasServiceToAttach.getPersonHasServicePK());
-                attachedPersonHasServiceList.add(personHasServiceListPersonHasServiceToAttach);
+            service.setServiceHasFieldList(attachedServiceHasFieldList);
+            List<ServiceInstance> attachedServiceInstanceList = new ArrayList<ServiceInstance>();
+            for (ServiceInstance serviceInstanceListServiceInstanceToAttach : service.getServiceInstanceList()) {
+                serviceInstanceListServiceInstanceToAttach = em.getReference(serviceInstanceListServiceInstanceToAttach.getClass(), serviceInstanceListServiceInstanceToAttach.getId());
+                attachedServiceInstanceList.add(serviceInstanceListServiceInstanceToAttach);
             }
-            service.setPersonHasServiceList(attachedPersonHasServiceList);
+            service.setServiceInstanceList(attachedServiceInstanceList);
             em.persist(service);
-            for (TMField tmfieldListTMField : service.getTmfieldList()) {
-                tmfieldListTMField.getServiceList().add(service);
-                tmfieldListTMField = em.merge(tmfieldListTMField);
+            for (ServiceHasField serviceHasFieldListServiceHasField : service.getServiceHasFieldList()) {
+                Service oldServiceOfServiceHasFieldListServiceHasField = serviceHasFieldListServiceHasField.getService();
+                serviceHasFieldListServiceHasField.setService(service);
+                serviceHasFieldListServiceHasField = em.merge(serviceHasFieldListServiceHasField);
+                if (oldServiceOfServiceHasFieldListServiceHasField != null) {
+                    oldServiceOfServiceHasFieldListServiceHasField.getServiceHasFieldList().remove(serviceHasFieldListServiceHasField);
+                    oldServiceOfServiceHasFieldListServiceHasField = em.merge(oldServiceOfServiceHasFieldListServiceHasField);
+                }
             }
-            for (PersonHasService personHasServiceListPersonHasService : service.getPersonHasServiceList()) {
-                Service oldServiceOfPersonHasServiceListPersonHasService = personHasServiceListPersonHasService.getService();
-                personHasServiceListPersonHasService.setService(service);
-                personHasServiceListPersonHasService = em.merge(personHasServiceListPersonHasService);
-                if (oldServiceOfPersonHasServiceListPersonHasService != null) {
-                    oldServiceOfPersonHasServiceListPersonHasService.getPersonHasServiceList().remove(personHasServiceListPersonHasService);
-                    oldServiceOfPersonHasServiceListPersonHasService = em.merge(oldServiceOfPersonHasServiceListPersonHasService);
+            for (ServiceInstance serviceInstanceListServiceInstance : service.getServiceInstanceList()) {
+                Service oldServiceIdOfServiceInstanceListServiceInstance = serviceInstanceListServiceInstance.getServiceId();
+                serviceInstanceListServiceInstance.setServiceId(service);
+                serviceInstanceListServiceInstance = em.merge(serviceInstanceListServiceInstance);
+                if (oldServiceIdOfServiceInstanceListServiceInstance != null) {
+                    oldServiceIdOfServiceInstanceListServiceInstance.getServiceInstanceList().remove(serviceInstanceListServiceInstance);
+                    oldServiceIdOfServiceInstanceListServiceInstance = em.merge(oldServiceIdOfServiceInstanceListServiceInstance);
                 }
             }
             em.getTransaction().commit();
@@ -86,57 +91,64 @@ public class ServiceJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Service persistentService = em.find(Service.class, service.getId());
-            List<TMField> tmfieldListOld = persistentService.getTmfieldList();
-            List<TMField> tmfieldListNew = service.getTmfieldList();
-            List<PersonHasService> personHasServiceListOld = persistentService.getPersonHasServiceList();
-            List<PersonHasService> personHasServiceListNew = service.getPersonHasServiceList();
+            List<ServiceHasField> serviceHasFieldListOld = persistentService.getServiceHasFieldList();
+            List<ServiceHasField> serviceHasFieldListNew = service.getServiceHasFieldList();
+            List<ServiceInstance> serviceInstanceListOld = persistentService.getServiceInstanceList();
+            List<ServiceInstance> serviceInstanceListNew = service.getServiceInstanceList();
             List<String> illegalOrphanMessages = null;
-            for (PersonHasService personHasServiceListOldPersonHasService : personHasServiceListOld) {
-                if (!personHasServiceListNew.contains(personHasServiceListOldPersonHasService)) {
+            for (ServiceHasField serviceHasFieldListOldServiceHasField : serviceHasFieldListOld) {
+                if (!serviceHasFieldListNew.contains(serviceHasFieldListOldServiceHasField)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain PersonHasService " + personHasServiceListOldPersonHasService + " since its service field is not nullable.");
+                    illegalOrphanMessages.add("You must retain ServiceHasField " + serviceHasFieldListOldServiceHasField + " since its service field is not nullable.");
+                }
+            }
+            for (ServiceInstance serviceInstanceListOldServiceInstance : serviceInstanceListOld) {
+                if (!serviceInstanceListNew.contains(serviceInstanceListOldServiceInstance)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain ServiceInstance " + serviceInstanceListOldServiceInstance + " since its serviceId field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            List<TMField> attachedTmfieldListNew = new ArrayList<TMField>();
-            for (TMField tmfieldListNewTMFieldToAttach : tmfieldListNew) {
-                tmfieldListNewTMFieldToAttach = em.getReference(tmfieldListNewTMFieldToAttach.getClass(), tmfieldListNewTMFieldToAttach.getId());
-                attachedTmfieldListNew.add(tmfieldListNewTMFieldToAttach);
+            List<ServiceHasField> attachedServiceHasFieldListNew = new ArrayList<ServiceHasField>();
+            for (ServiceHasField serviceHasFieldListNewServiceHasFieldToAttach : serviceHasFieldListNew) {
+                serviceHasFieldListNewServiceHasFieldToAttach = em.getReference(serviceHasFieldListNewServiceHasFieldToAttach.getClass(), serviceHasFieldListNewServiceHasFieldToAttach.getServiceHasFieldPK());
+                attachedServiceHasFieldListNew.add(serviceHasFieldListNewServiceHasFieldToAttach);
             }
-            tmfieldListNew = attachedTmfieldListNew;
-            service.setTmfieldList(tmfieldListNew);
-            List<PersonHasService> attachedPersonHasServiceListNew = new ArrayList<PersonHasService>();
-            for (PersonHasService personHasServiceListNewPersonHasServiceToAttach : personHasServiceListNew) {
-                personHasServiceListNewPersonHasServiceToAttach = em.getReference(personHasServiceListNewPersonHasServiceToAttach.getClass(), personHasServiceListNewPersonHasServiceToAttach.getPersonHasServicePK());
-                attachedPersonHasServiceListNew.add(personHasServiceListNewPersonHasServiceToAttach);
+            serviceHasFieldListNew = attachedServiceHasFieldListNew;
+            service.setServiceHasFieldList(serviceHasFieldListNew);
+            List<ServiceInstance> attachedServiceInstanceListNew = new ArrayList<ServiceInstance>();
+            for (ServiceInstance serviceInstanceListNewServiceInstanceToAttach : serviceInstanceListNew) {
+                serviceInstanceListNewServiceInstanceToAttach = em.getReference(serviceInstanceListNewServiceInstanceToAttach.getClass(), serviceInstanceListNewServiceInstanceToAttach.getId());
+                attachedServiceInstanceListNew.add(serviceInstanceListNewServiceInstanceToAttach);
             }
-            personHasServiceListNew = attachedPersonHasServiceListNew;
-            service.setPersonHasServiceList(personHasServiceListNew);
+            serviceInstanceListNew = attachedServiceInstanceListNew;
+            service.setServiceInstanceList(serviceInstanceListNew);
             service = em.merge(service);
-            for (TMField tmfieldListOldTMField : tmfieldListOld) {
-                if (!tmfieldListNew.contains(tmfieldListOldTMField)) {
-                    tmfieldListOldTMField.getServiceList().remove(service);
-                    tmfieldListOldTMField = em.merge(tmfieldListOldTMField);
+            for (ServiceHasField serviceHasFieldListNewServiceHasField : serviceHasFieldListNew) {
+                if (!serviceHasFieldListOld.contains(serviceHasFieldListNewServiceHasField)) {
+                    Service oldServiceOfServiceHasFieldListNewServiceHasField = serviceHasFieldListNewServiceHasField.getService();
+                    serviceHasFieldListNewServiceHasField.setService(service);
+                    serviceHasFieldListNewServiceHasField = em.merge(serviceHasFieldListNewServiceHasField);
+                    if (oldServiceOfServiceHasFieldListNewServiceHasField != null && !oldServiceOfServiceHasFieldListNewServiceHasField.equals(service)) {
+                        oldServiceOfServiceHasFieldListNewServiceHasField.getServiceHasFieldList().remove(serviceHasFieldListNewServiceHasField);
+                        oldServiceOfServiceHasFieldListNewServiceHasField = em.merge(oldServiceOfServiceHasFieldListNewServiceHasField);
+                    }
                 }
             }
-            for (TMField tmfieldListNewTMField : tmfieldListNew) {
-                if (!tmfieldListOld.contains(tmfieldListNewTMField)) {
-                    tmfieldListNewTMField.getServiceList().add(service);
-                    tmfieldListNewTMField = em.merge(tmfieldListNewTMField);
-                }
-            }
-            for (PersonHasService personHasServiceListNewPersonHasService : personHasServiceListNew) {
-                if (!personHasServiceListOld.contains(personHasServiceListNewPersonHasService)) {
-                    Service oldServiceOfPersonHasServiceListNewPersonHasService = personHasServiceListNewPersonHasService.getService();
-                    personHasServiceListNewPersonHasService.setService(service);
-                    personHasServiceListNewPersonHasService = em.merge(personHasServiceListNewPersonHasService);
-                    if (oldServiceOfPersonHasServiceListNewPersonHasService != null && !oldServiceOfPersonHasServiceListNewPersonHasService.equals(service)) {
-                        oldServiceOfPersonHasServiceListNewPersonHasService.getPersonHasServiceList().remove(personHasServiceListNewPersonHasService);
-                        oldServiceOfPersonHasServiceListNewPersonHasService = em.merge(oldServiceOfPersonHasServiceListNewPersonHasService);
+            for (ServiceInstance serviceInstanceListNewServiceInstance : serviceInstanceListNew) {
+                if (!serviceInstanceListOld.contains(serviceInstanceListNewServiceInstance)) {
+                    Service oldServiceIdOfServiceInstanceListNewServiceInstance = serviceInstanceListNewServiceInstance.getServiceId();
+                    serviceInstanceListNewServiceInstance.setServiceId(service);
+                    serviceInstanceListNewServiceInstance = em.merge(serviceInstanceListNewServiceInstance);
+                    if (oldServiceIdOfServiceInstanceListNewServiceInstance != null && !oldServiceIdOfServiceInstanceListNewServiceInstance.equals(service)) {
+                        oldServiceIdOfServiceInstanceListNewServiceInstance.getServiceInstanceList().remove(serviceInstanceListNewServiceInstance);
+                        oldServiceIdOfServiceInstanceListNewServiceInstance = em.merge(oldServiceIdOfServiceInstanceListNewServiceInstance);
                     }
                 }
             }
@@ -170,20 +182,22 @@ public class ServiceJpaController implements Serializable {
                 throw new NonexistentEntityException("The service with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<PersonHasService> personHasServiceListOrphanCheck = service.getPersonHasServiceList();
-            for (PersonHasService personHasServiceListOrphanCheckPersonHasService : personHasServiceListOrphanCheck) {
+            List<ServiceHasField> serviceHasFieldListOrphanCheck = service.getServiceHasFieldList();
+            for (ServiceHasField serviceHasFieldListOrphanCheckServiceHasField : serviceHasFieldListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Service (" + service + ") cannot be destroyed since the PersonHasService " + personHasServiceListOrphanCheckPersonHasService + " in its personHasServiceList field has a non-nullable service field.");
+                illegalOrphanMessages.add("This Service (" + service + ") cannot be destroyed since the ServiceHasField " + serviceHasFieldListOrphanCheckServiceHasField + " in its serviceHasFieldList field has a non-nullable service field.");
+            }
+            List<ServiceInstance> serviceInstanceListOrphanCheck = service.getServiceInstanceList();
+            for (ServiceInstance serviceInstanceListOrphanCheckServiceInstance : serviceInstanceListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Service (" + service + ") cannot be destroyed since the ServiceInstance " + serviceInstanceListOrphanCheckServiceInstance + " in its serviceInstanceList field has a non-nullable serviceId field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            List<TMField> tmfieldList = service.getTmfieldList();
-            for (TMField tmfieldListTMField : tmfieldList) {
-                tmfieldListTMField.getServiceList().remove(service);
-                tmfieldListTMField = em.merge(tmfieldListTMField);
             }
             em.remove(service);
             em.getTransaction().commit();
@@ -239,4 +253,5 @@ public class ServiceJpaController implements Serializable {
             em.close();
         }
     }
+    
 }

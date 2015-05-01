@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import net.sourceforge.javydreamercsw.msm.db.Access;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
+import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
+import net.sourceforge.javydreamercsw.msm.db.Access;
 
 /**
  *
@@ -34,7 +35,7 @@ public class AccessJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Access access) {
+    public void create(Access access) throws PreexistingEntityException, Exception {
         if (access.getPersonList() == null) {
             access.setPersonList(new ArrayList<Person>());
         }
@@ -59,6 +60,11 @@ public class AccessJpaController implements Serializable {
                 }
             }
             em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (findAccess(access.getId()) != null) {
+                throw new PreexistingEntityException("Access " + access + " already exists.", ex);
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();

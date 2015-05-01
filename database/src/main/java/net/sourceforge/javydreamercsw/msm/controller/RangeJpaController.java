@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import net.sourceforge.javydreamercsw.msm.db.Range;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
+import net.sourceforge.javydreamercsw.msm.db.Range;
 
 /**
  *
@@ -50,9 +50,9 @@ public class RangeJpaController implements Serializable {
                 range.setRangeTypeId(rangeTypeId);
             }
             List<TMField> attachedTmfieldList = new ArrayList<TMField>();
-            for (TMField tmfieldListTmfieldToAttach : range.getTmfieldList()) {
-                tmfieldListTmfieldToAttach = em.getReference(tmfieldListTmfieldToAttach.getClass(), tmfieldListTmfieldToAttach.getId());
-                attachedTmfieldList.add(tmfieldListTmfieldToAttach);
+            for (TMField tmfieldListTMFieldToAttach : range.getTmfieldList()) {
+                tmfieldListTMFieldToAttach = em.getReference(tmfieldListTMFieldToAttach.getClass(), tmfieldListTMFieldToAttach.getId());
+                attachedTmfieldList.add(tmfieldListTMFieldToAttach);
             }
             range.setTmfieldList(attachedTmfieldList);
             em.persist(range);
@@ -60,13 +60,13 @@ public class RangeJpaController implements Serializable {
                 rangeTypeId.getRangeList().add(range);
                 rangeTypeId = em.merge(rangeTypeId);
             }
-            for (TMField tmfieldListTmfield : range.getTmfieldList()) {
-                Range oldRangeIdOfTmfieldListTmfield = tmfieldListTmfield.getRangeId();
-                tmfieldListTmfield.setRangeId(range);
-                tmfieldListTmfield = em.merge(tmfieldListTmfield);
-                if (oldRangeIdOfTmfieldListTmfield != null) {
-                    oldRangeIdOfTmfieldListTmfield.getTmfieldList().remove(tmfieldListTmfield);
-                    oldRangeIdOfTmfieldListTmfield = em.merge(oldRangeIdOfTmfieldListTmfield);
+            for (TMField tmfieldListTMField : range.getTmfieldList()) {
+                Range oldRangeIdOfTmfieldListTMField = tmfieldListTMField.getRangeId();
+                tmfieldListTMField.setRangeId(range);
+                tmfieldListTMField = em.merge(tmfieldListTMField);
+                if (oldRangeIdOfTmfieldListTMField != null) {
+                    oldRangeIdOfTmfieldListTMField.getTmfieldList().remove(tmfieldListTMField);
+                    oldRangeIdOfTmfieldListTMField = em.merge(oldRangeIdOfTmfieldListTMField);
                 }
             }
             em.getTransaction().commit();
@@ -93,12 +93,12 @@ public class RangeJpaController implements Serializable {
             List<TMField> tmfieldListOld = persistentRange.getTmfieldList();
             List<TMField> tmfieldListNew = range.getTmfieldList();
             List<String> illegalOrphanMessages = null;
-            for (TMField tmfieldListOldTmfield : tmfieldListOld) {
-                if (!tmfieldListNew.contains(tmfieldListOldTmfield)) {
+            for (TMField tmfieldListOldTMField : tmfieldListOld) {
+                if (!tmfieldListNew.contains(tmfieldListOldTMField)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain Tmfield " + tmfieldListOldTmfield + " since its rangeId field is not nullable.");
+                    illegalOrphanMessages.add("You must retain TMField " + tmfieldListOldTMField + " since its rangeId field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -109,9 +109,9 @@ public class RangeJpaController implements Serializable {
                 range.setRangeTypeId(rangeTypeIdNew);
             }
             List<TMField> attachedTmfieldListNew = new ArrayList<TMField>();
-            for (TMField tmfieldListNewTmfieldToAttach : tmfieldListNew) {
-                tmfieldListNewTmfieldToAttach = em.getReference(tmfieldListNewTmfieldToAttach.getClass(), tmfieldListNewTmfieldToAttach.getId());
-                attachedTmfieldListNew.add(tmfieldListNewTmfieldToAttach);
+            for (TMField tmfieldListNewTMFieldToAttach : tmfieldListNew) {
+                tmfieldListNewTMFieldToAttach = em.getReference(tmfieldListNewTMFieldToAttach.getClass(), tmfieldListNewTMFieldToAttach.getId());
+                attachedTmfieldListNew.add(tmfieldListNewTMFieldToAttach);
             }
             tmfieldListNew = attachedTmfieldListNew;
             range.setTmfieldList(tmfieldListNew);
@@ -124,14 +124,14 @@ public class RangeJpaController implements Serializable {
                 rangeTypeIdNew.getRangeList().add(range);
                 rangeTypeIdNew = em.merge(rangeTypeIdNew);
             }
-            for (TMField tmfieldListNewTmfield : tmfieldListNew) {
-                if (!tmfieldListOld.contains(tmfieldListNewTmfield)) {
-                    Range oldRangeIdOfTmfieldListNewTmfield = tmfieldListNewTmfield.getRangeId();
-                    tmfieldListNewTmfield.setRangeId(range);
-                    tmfieldListNewTmfield = em.merge(tmfieldListNewTmfield);
-                    if (oldRangeIdOfTmfieldListNewTmfield != null && !oldRangeIdOfTmfieldListNewTmfield.equals(range)) {
-                        oldRangeIdOfTmfieldListNewTmfield.getTmfieldList().remove(tmfieldListNewTmfield);
-                        oldRangeIdOfTmfieldListNewTmfield = em.merge(oldRangeIdOfTmfieldListNewTmfield);
+            for (TMField tmfieldListNewTMField : tmfieldListNew) {
+                if (!tmfieldListOld.contains(tmfieldListNewTMField)) {
+                    Range oldRangeIdOfTmfieldListNewTMField = tmfieldListNewTMField.getRangeId();
+                    tmfieldListNewTMField.setRangeId(range);
+                    tmfieldListNewTMField = em.merge(tmfieldListNewTMField);
+                    if (oldRangeIdOfTmfieldListNewTMField != null && !oldRangeIdOfTmfieldListNewTMField.equals(range)) {
+                        oldRangeIdOfTmfieldListNewTMField.getTmfieldList().remove(tmfieldListNewTMField);
+                        oldRangeIdOfTmfieldListNewTMField = em.merge(oldRangeIdOfTmfieldListNewTMField);
                     }
                 }
             }
@@ -166,11 +166,11 @@ public class RangeJpaController implements Serializable {
             }
             List<String> illegalOrphanMessages = null;
             List<TMField> tmfieldListOrphanCheck = range.getTmfieldList();
-            for (TMField tmfieldListOrphanCheckTmfield : tmfieldListOrphanCheck) {
+            for (TMField tmfieldListOrphanCheckTMField : tmfieldListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Range (" + range + ") cannot be destroyed since the Tmfield " + tmfieldListOrphanCheckTmfield + " in its tmfieldList field has a non-nullable rangeId field.");
+                illegalOrphanMessages.add("This Range (" + range + ") cannot be destroyed since the TMField " + tmfieldListOrphanCheckTMField + " in its tmfieldList field has a non-nullable rangeId field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
