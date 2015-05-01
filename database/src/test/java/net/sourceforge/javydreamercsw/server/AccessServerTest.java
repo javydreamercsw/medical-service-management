@@ -2,12 +2,9 @@ package net.sourceforge.javydreamercsw.server;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sourceforge.javydreamercsw.tm.Access;
-import net.sourceforge.javydreamercsw.tm.controller.AccessJpaController;
-import net.sourceforge.javydreamercsw.tm.controller.exceptions.IllegalOrphanException;
-import net.sourceforge.javydreamercsw.tm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.tm.db.manager.DataBaseManager;
-import net.sourceforge.javydreamercsw.tm.server.AccessServer;
+import net.sourceforge.javydreamercsw.msm.controller.AccessJpaController;
+import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.server.AccessServer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,21 +16,6 @@ public class AccessServerTest extends AbstractServerTest {
 
     private static final Logger LOG
             = Logger.getLogger(AccessServerTest.class.getName());
-
-    private void clean() {
-        AccessJpaController controller = new AccessJpaController(DataBaseManager.getEntityManagerFactory());
-        for (Access a : controller.findAccessEntities()) {
-            try {
-                if (a.getId() >= 1000) {
-                    new AccessJpaController(DataBaseManager.getEntityManagerFactory()).destroy(a.getId());
-                } else {
-                    LOG.log(Level.INFO, "Ignoring id: {0}", a.getId());
-                }
-            } catch (IllegalOrphanException | NonexistentEntityException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
-        }
-    }
 
     /**
      * Test of getEntity method, of class AccessServer.
@@ -55,7 +37,6 @@ public class AccessServerTest extends AbstractServerTest {
             LOG.log(Level.SEVERE, null, ex);
             fail();
         }
-        clean();
     }
 
     @Test

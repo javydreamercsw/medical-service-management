@@ -2,7 +2,7 @@ package net.sourceforge.javydreamercsw.server;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sourceforge.javydreamercsw.tm.server.PersonServer;
+import net.sourceforge.javydreamercsw.msm.server.PersonServer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
