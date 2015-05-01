@@ -105,15 +105,12 @@ public class RangeType implements Serializable {
             return false;
         }
         RangeType other = (RangeType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.RangeType[ id=" + id + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.RangeType[ id=" + id + " ]";
     }
 
 }

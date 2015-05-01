@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Range.findByMin", query = "SELECT r FROM Range r WHERE r.min = :min"),
     @NamedQuery(name = "Range.findByMax", query = "SELECT r FROM Range r WHERE r.max = :max")})
 public class Range implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @TableGenerator(name = "RANGE_GEN",
@@ -129,15 +130,12 @@ public class Range implements Serializable {
             return false;
         }
         Range other = (Range) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.Range[ id=" + id + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.Range[ id=" + id + " ]";
     }
-    
+
 }

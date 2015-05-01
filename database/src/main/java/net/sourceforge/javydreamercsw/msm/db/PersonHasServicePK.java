@@ -18,15 +18,15 @@ public class PersonHasServicePK implements Serializable {
     private int personId;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "Service_id")
-    private int serviceid;
+    @Column(name = "service_instance_id")
+    private int serviceInstanceId;
 
     public PersonHasServicePK() {
     }
 
-    public PersonHasServicePK(int personId, int serviceid) {
+    public PersonHasServicePK(int personId, int serviceInstanceId) {
         this.personId = personId;
-        this.serviceid = serviceid;
+        this.serviceInstanceId = serviceInstanceId;
     }
 
     public int getPersonId() {
@@ -37,19 +37,19 @@ public class PersonHasServicePK implements Serializable {
         this.personId = personId;
     }
 
-    public int getServiceid() {
-        return serviceid;
+    public int getServiceInstanceId() {
+        return serviceInstanceId;
     }
 
-    public void setServiceid(int serviceid) {
-        this.serviceid = serviceid;
+    public void setServiceInstanceId(int serviceInstanceId) {
+        this.serviceInstanceId = serviceInstanceId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (int) personId;
-        hash += (int) serviceid;
+        hash += (int) serviceInstanceId;
         return hash;
     }
 
@@ -63,12 +63,15 @@ public class PersonHasServicePK implements Serializable {
         if (this.personId != other.personId) {
             return false;
         }
-        return this.serviceid == other.serviceid;
+        if (this.serviceInstanceId != other.serviceInstanceId) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.PersonHasServicePK[ personId=" + personId + ", serviceid=" + serviceid + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.PersonHasServicePK[ personId=" + personId + ", serviceInstanceId=" + serviceInstanceId + " ]";
     }
     
 }

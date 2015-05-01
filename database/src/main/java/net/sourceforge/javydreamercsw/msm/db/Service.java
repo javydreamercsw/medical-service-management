@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -28,9 +27,12 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "service")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Service.findAll", query = "SELECT s FROM Service s"),
-    @NamedQuery(name = "Service.findById", query = "SELECT s FROM Service s WHERE s.id = :id"),
-    @NamedQuery(name = "Service.findByName", query = "SELECT s FROM Service s WHERE s.name = :name")})
+    @NamedQuery(name = "Service.findAll", 
+            query = "SELECT s FROM Service s"),
+    @NamedQuery(name = "Service.findById", 
+            query = "SELECT s FROM Service s WHERE s.id = :id"),
+    @NamedQuery(name = "Service.findByName", 
+            query = "SELECT s FROM Service s WHERE s.name = :name")})
 public class Service implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,10 +53,10 @@ public class Service implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "name")
     private String name;
-    @ManyToMany(mappedBy = "serviceList")
-    private List<TMField> tmfieldList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "service")
-    private List<PersonHasService> personHasServiceList;
+    private List<ServiceHasField> serviceHasFieldList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "serviceId")
+    private List<ServiceInstance> serviceInstanceList;
 
     public Service() {
     }
@@ -84,22 +86,21 @@ public class Service implements Serializable {
         this.name = name;
     }
 
+    public List<ServiceHasField> getServiceHasFieldList() {
+        return serviceHasFieldList;
+    }
+
+    public void setServiceHasFieldList(List<ServiceHasField> serviceHasField) {
+        this.serviceHasFieldList = serviceHasField;
+    }
+
     @XmlTransient
-    public List<TMField> getTmfieldList() {
-        return tmfieldList;
+    public List<ServiceInstance> getServiceInstanceList() {
+        return serviceInstanceList;
     }
 
-    public void setTmfieldList(List<TMField> tmfieldList) {
-        this.tmfieldList = tmfieldList;
-    }
-
-    @XmlTransient
-    public List<PersonHasService> getPersonHasServiceList() {
-        return personHasServiceList;
-    }
-
-    public void setPersonHasServiceList(List<PersonHasService> personHasServiceList) {
-        this.personHasServiceList = personHasServiceList;
+    public void setServiceInstanceList(List<ServiceInstance> serviceInstanceList) {
+        this.serviceInstanceList = serviceInstanceList;
     }
 
     @Override
@@ -124,7 +125,7 @@ public class Service implements Serializable {
 
     @Override
     public String toString() {
-        return "net.sourceforge.javydreamercsw.Service[ id=" + id + " ]";
+        return "net.sourceforge.javydreamercsw.msm.db.Service[ id=" + id + " ]";
     }
     
 }
