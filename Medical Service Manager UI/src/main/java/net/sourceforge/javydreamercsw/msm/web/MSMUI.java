@@ -11,7 +11,6 @@ import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Form;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -82,7 +81,8 @@ public class MSMUI extends UI {
                 = new com.vaadin.ui.TextField(getResource().getString("general.username") + ":");
         PasswordField password
                 = new PasswordField(getResource().getString("general.password") + ":");
-        form.addComponent(binder.buildAndBind(getResource().getString("general.username") + ":", "username"));
+        form.addComponent(username);
+        form.addComponent(password);
 //        form.addField("username", username);
 //        form.addField("password", password);
 //        form.getField("username").setRequired(true);
@@ -113,18 +113,19 @@ public class MSMUI extends UI {
                 loginWindow.close();
             }
         });
-//        form.getFooter().setSizeUndefined();
-//        form.getFooter().addComponent(commit);
-//        form.getFooter().addComponent(cancel);
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(commit);
+        hl.addComponent(cancel);
+        form.addComponent(hl);
         form.setSizeFull();
         form.setVisible(true);
         loginWindow.center();
         loginWindow.setModal(true);
         loginWindow.setWidth(300, Unit.PIXELS);
+        loginWindow.setHeight(150, Unit.PIXELS);
         loginWindow.setReadOnly(true);
         loginWindow.setVisible(true);
         addWindow(loginWindow);
-        System.out.println("Showing login screen!");
     }
 
     /**
@@ -135,7 +136,7 @@ public class MSMUI extends UI {
     }
 
     private void updateMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //Do nothing
     }
 
     @WebServlet(urlPatterns = "/*", name = "MSMUIServlet", asyncSupported = true)
