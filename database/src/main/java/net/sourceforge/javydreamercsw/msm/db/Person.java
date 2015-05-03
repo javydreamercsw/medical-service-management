@@ -1,6 +1,7 @@
 package net.sourceforge.javydreamercsw.msm.db;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Person.findById", query = "SELECT p FROM Person p WHERE p.id = :id"),
     @NamedQuery(name = "Person.findByName", query = "SELECT p FROM Person p WHERE p.name = :name"),
     @NamedQuery(name = "Person.findByLastname", query = "SELECT p FROM Person p WHERE p.lastname = :lastname"),
-    @NamedQuery(name = "Person.findBySsn", query = "SELECT p FROM Person p WHERE p.ssn = :ssn")})
+    @NamedQuery(name = "Person.findBySsn", query = "SELECT p FROM Person p WHERE p.ssn = :ssn"),
+    @NamedQuery(name = "Person.findByUserName", query = "SELECT p FROM Person p WHERE p.username = :un")})
 public class Person implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,6 +56,10 @@ public class Person implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "attempts")
+    private Integer attempts;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "name")
     private String name;
@@ -62,6 +70,16 @@ public class Person implements Serializable {
     private String lastname;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 6, max = 45)
+    @Column(name = "username")
+    private String username;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 6, max = 45)
+    @Column(name = "password")
+    private String password;
+    @Basic(optional = false)
+    @NotNull
     @Size(min = 1, max = 11)
     @Column(name = "ssn")
     private String ssn;
@@ -70,6 +88,11 @@ public class Person implements Serializable {
     private Access accessId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private List<PersonHasService> personHasServiceList;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date last_login;
 
     public Person() {
     }
@@ -93,6 +116,14 @@ public class Person implements Serializable {
         this.id = id;
     }
 
+    public Integer getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(Integer na) {
+        this.attempts = na;
+    }
+
     public String getName() {
         return name;
     }
@@ -109,6 +140,22 @@ public class Person implements Serializable {
         this.lastname = lastname;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String un) {
+        this.username = un;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String pw) {
+        this.password = pw;
+    }
+
     public String getSsn() {
         return ssn;
     }
@@ -123,6 +170,14 @@ public class Person implements Serializable {
 
     public void setAccessId(Access accessId) {
         this.accessId = accessId;
+    }
+
+    public Date getLastLogin() {
+        return last_login;
+    }
+
+    public void setLastLogin(Date ll) {
+        this.last_login = ll;
     }
 
     @XmlTransient
@@ -155,5 +210,4 @@ public class Person implements Serializable {
     public String toString() {
         return "net.sourceforge.javydreamercsw.msm.db.Person[ id=" + id + " ]";
     }
-
 }
