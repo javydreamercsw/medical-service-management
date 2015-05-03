@@ -1,9 +1,9 @@
 -- -----------------------------------------------------
 -- Data for table `access`
 -- -----------------------------------------------------
-INSERT INTO `access` (`id`, `name`) VALUES (1, 'Admin');
-INSERT INTO `access` (`id`, `name`) VALUES (2, 'Staff');
-INSERT INTO `access` (`id`, `name`) VALUES (3, 'Patient');
+INSERT INTO `access` (`id`, `name`) VALUES (1, 'access.admin');
+INSERT INTO `access` (`id`, `name`) VALUES (2, 'access.staff');
+INSERT INTO `access` (`id`, `name`) VALUES (3, 'access.patient');
 
 -- -----------------------------------------------------
 -- Data for table `field_type`
