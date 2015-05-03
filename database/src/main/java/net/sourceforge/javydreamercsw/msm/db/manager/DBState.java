@@ -43,7 +43,7 @@ public enum DBState {
     UPDATING("message.update.db");
     private final String mess;
     private static final ResourceBundle lrb = ResourceBundle.getBundle(
-            "net.sourceforge.javydreamercsw.tm.TMMessages");
+            "net.sourceforge.javydreamercsw.tm.MSMMessages");
 
     DBState(String mess) {
         this.mess = mess;
