@@ -14,7 +14,7 @@ public class MSMException extends Exception {
     private String vm_message = "";
     private static ResourceBundle rb
             = getBundle(
-                    "net.sourceforge.javydreamercsw.tm.MSMMessages", getDefault());
+                    "net.sourceforge.javydreamercsw.msm.MSMMessages", getDefault());
 
     public MSMException() {
         super();

@@ -40,10 +40,10 @@ public enum DBState {
     /*
      * Updating
      */
-    UPDATING("message.update.db");
+    UPDATING("message.updating.db");
     private final String mess;
     private static final ResourceBundle lrb = ResourceBundle.getBundle(
-            "net.sourceforge.javydreamercsw.tm.MSMMessages");
+            "net.sourceforge.javydreamercsw.msm.MSMMessages");
 
     DBState(String mess) {
         this.mess = mess;

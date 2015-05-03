@@ -51,14 +51,14 @@ public class DataBaseManager {
     private static EntityManagerFactory emf;
     private static Map<String, Object> properties;
     //Default. Can be overwritten using setPersistenceUnitName(String aPU)
-    private static String PU = "VMPU";
+    private static String PU = "MSMPUJNDI";
     private static EntityManager em;
     private static boolean dbError = false;
     private static final Logger LOG
             = getLogger(DataBaseManager.class.getSimpleName());
     private static DBState state = DBState.START_UP;
     private static final ResourceBundle settings
-            = getBundle("net.sourceforge.javydreamercsw.tm.settings");
+            = getBundle("net.sourceforge.javydreamercsw.msm.settings");
     private static boolean locked = false;
     private static boolean usingContext;
     private static boolean demo;
@@ -183,16 +183,16 @@ public class DataBaseManager {
                 InitialContext ctx = new InitialContext();
                 ctx.lookup("java:/comp/env/jdbc/VMDB");
                 //Use the context defined Database connection
-                PU = (String) ctx.lookup("java:comp/env/validation_manager/JNDIDB");
+                PU = (String) ctx.lookup("java:comp/env/msm/JNDIDB");
                 try {
-                    demo = (Boolean) ctx.lookup("java:comp/env/validation_manager/demo");
+                    demo = (Boolean) ctx.lookup("java:comp/env/msm/demo");
                 } catch (NamingException e) {
                     LOG.log(Level.SEVERE, null, e);
                     demo = false;
                 }
                 if (isDemo()) {
                     try {
-                        demoResetPeriod = (Long) ctx.lookup("java:comp/env/validation_manager/demo-period");
+                        demoResetPeriod = (Long) ctx.lookup("java:comp/env/msm/demo-period");
                     } catch (NamingException e) {
                         LOG.log(Level.SEVERE, null, e);
                         demoResetPeriod = valueOf(0);
@@ -203,7 +203,7 @@ public class DataBaseManager {
                                 + " each {0} milliseconds", getDemoResetPeriod());
                     }
                 }
-                final String JNDIDB = (String) ctx.lookup("java:comp/env/validation_manager/JNDIDB");
+                final String JNDIDB = (String) ctx.lookup("java:comp/env/msm/JNDIDB");
                 emf = createEntityManagerFactory(JNDIDB);
                 LOG.log(Level.INFO, "Using context defined database connection: {0}", JNDIDB);
                 usingContext = true;
@@ -414,7 +414,7 @@ public class DataBaseManager {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
-            ds = (javax.sql.DataSource) new InitialContext().lookup("java:comp/env/jdbc/TMDB");
+            ds = (javax.sql.DataSource) new InitialContext().lookup("java:comp/env/jdbc/MSMDB");
             conn = ds.getConnection();
         } catch (NamingException ne) {
             LOG.log(Level.FINE, null, ne);
@@ -425,7 +425,7 @@ public class DataBaseManager {
                     ((JdbcDataSource) ds).setPassword("");
                     ((JdbcDataSource) ds).setUser("tm_user");
                     ((JdbcDataSource) ds).setURL(
-                            "jdbc:h2:file:./target/data/test/tuberculosis-manager-test;AUTO_SERVER=TRUE");
+                            "jdbc:h2:file:./target/data/test/medical-service-manager-test;AUTO_SERVER=TRUE");
                     //Load the H2 driver
                     forName("org.h2.Driver");
                     conn = ds.getConnection();
@@ -442,40 +442,40 @@ public class DataBaseManager {
             LOG.log(Level.SEVERE, null, ex);
         }
         if (conn != null) {
-            try {
-                stmt = conn.prepareStatement("select * from vm_setting");
-                rs = stmt.executeQuery();
-                if (!rs.next()) {
-                    //Tables there but empty? Not safe to proceed
-                    setState(DBState.NEED_MANUAL_UPDATE);
-                }
-            } catch (SQLException ex) {
-                LOG.log(Level.FINE, null, ex);
-                //Need INIT, probably nothing there
-                setState(DBState.NEED_INIT);
-                //Create the database
-                getEntityManager();
-            } finally {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
-                }
-                try {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                } catch (SQLException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
-                }
-                try {
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (SQLException ex) {
-                    LOG.log(Level.SEVERE, null, ex);
-                }
-            }
+//            try {
+//                stmt = conn.prepareStatement("select * from vm_setting");
+//                rs = stmt.executeQuery();
+//                if (!rs.next()) {
+//                    //Tables there but empty? Not safe to proceed
+//                    setState(DBState.NEED_MANUAL_UPDATE);
+//                }
+//            } catch (SQLException ex) {
+//                LOG.log(Level.FINE, null, ex);
+//                //Need INIT, probably nothing there
+//                setState(DBState.NEED_INIT);
+//                //Create the database
+//                getEntityManager();
+//            } finally {
+//                try {
+//                    conn.close();
+//                } catch (SQLException ex) {
+//                    LOG.log(Level.SEVERE, null, ex);
+//                }
+//                try {
+//                    if (stmt != null) {
+//                        stmt.close();
+//                    }
+//                } catch (SQLException ex) {
+//                    LOG.log(Level.SEVERE, null, ex);
+//                }
+//                try {
+//                    if (rs != null) {
+//                        rs.close();
+//                    }
+//                } catch (SQLException ex) {
+//                    LOG.log(Level.SEVERE, null, ex);
+//                }
+//            }
         }
         if (ds != null) {
             //Initialize flyway
@@ -506,7 +506,8 @@ public class DataBaseManager {
             LOG.info("Validating migration...");
             flyway.validate();
             LOG.info("Done!");
-            setState(flyway.info().current().getState() == MigrationState.SUCCESS ? DBState.VALID : DBState.ERROR);
+            setState(flyway.info().current().getState() == 
+                    MigrationState.SUCCESS ? DBState.VALID : DBState.ERROR);
         } catch (FlywayException fe) {
             LOG.log(Level.SEVERE, "Unable to validate", fe);
             setState(DBState.ERROR);
