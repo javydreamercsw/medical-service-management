@@ -7,7 +7,7 @@ import net.sourceforge.javydreamercsw.msm.db.TMField;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
-import net.sourceforge.javydreamercsw.msm.db.manager.TMException;
+import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
 
 /**
  *
@@ -86,12 +86,12 @@ public class FieldServer extends TMField implements EntityServer<TMField> {
         return !DataBaseManager.namedQuery("TMField.findByName", parameters).isEmpty();
     }
 
-    public static TMField createStringField(String name, String desc) throws TMException {
+    public static TMField createStringField(String name, String desc) throws MSMException {
         return createField(name, desc, 0, 0, 1);
     }
 
     private static TMField createField(String name, String desc, int min,
-            int max, int type) throws TMException {
+            int max, int type) throws MSMException {
         TMField result = null;
         if (!fieldExist(name)) {
             //Create it
@@ -111,34 +111,34 @@ public class FieldServer extends TMField implements EntityServer<TMField> {
                     newField.setRangeId(rs.getEntity());
                 }
             } catch (UnsupportedEncodingException ex) {
-                throw new TMException(ex);
+                throw new MSMException(ex);
             } catch (Exception ex) {
-                throw new TMException(ex);
+                throw new MSMException(ex);
             }
             try {
                 newField.write2DB();
             } catch (Exception ex) {
-                throw new TMException(ex);
+                throw new MSMException(ex);
             }
             result = newField.getEntity();
         } else {
-            throw new TMException("Field '" + name + "' already exists!");
+            throw new MSMException("Field '" + name + "' already exists!");
         }
         return result;
     }
 
     public static TMField createFloatField(String name, String desc, int min,
-            int max) throws TMException {
+            int max) throws MSMException {
         return createField(name, desc, min, max, 3);
     }
 
     public static TMField createIntField(String name, String desc, int min,
-            int max) throws TMException {
+            int max) throws MSMException {
         return createField(name, desc, min, max, 2);
     }
 
     public static TMField createBoolField(String name, String desc)
-            throws TMException {
+            throws MSMException {
         return createField(name, desc, 0, 0, 4);
     }
 }

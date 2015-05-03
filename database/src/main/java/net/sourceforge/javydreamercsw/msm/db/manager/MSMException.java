@@ -9,28 +9,28 @@ import static java.util.ResourceBundle.getBundle;
  *
  * @author Javier A. Ortiz Bultron <javier.ortiz.78@gmail.com>
  */
-public class TMException extends Exception {
+public class MSMException extends Exception {
 
     private String vm_message = "";
     private static ResourceBundle rb
             = getBundle(
-                    "net.sourceforge.javydreamercsw.tm.TMMessages", getDefault());
+                    "net.sourceforge.javydreamercsw.tm.MSMMessages", getDefault());
 
-    public TMException() {
+    public MSMException() {
         super();
     }
 
-    public TMException(String message) {
+    public MSMException(String message) {
         super(rb.containsKey(message) ? rb.getString(message) : message);
     }
 
-    public TMException(List<String> messages) {
+    public MSMException(List<String> messages) {
         for (String s : messages) {
             vm_message += s + "\n";
         }
     }
 
-    public TMException(Throwable cause) {
+    public MSMException(Throwable cause) {
         super(cause);
     }
 

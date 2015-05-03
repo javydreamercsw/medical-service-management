@@ -115,7 +115,7 @@ public class DataBaseManager {
 //                        temp.write2DB();
 //                        LOG.log(Level.FINE, "Added: {0}: {1}",
 //                                new Object[]{tableName, annotation.initialValue() - 1});
-//                    } catch (TMException ex) {
+//                    } catch (MSMException ex) {
 //                        LOG.log(Level.SEVERE, null, ex);
 //                    }
 //                }
@@ -165,7 +165,7 @@ public class DataBaseManager {
         em = null;
         try {
             reload();
-        } catch (TMException ex) {
+        } catch (MSMException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
@@ -395,11 +395,11 @@ public class DataBaseManager {
         }
     }
 
-    public static void reload() throws TMException {
+    public static void reload() throws MSMException {
         reload(false);
     }
 
-    public static void reload(boolean close) throws TMException {
+    public static void reload(boolean close) throws MSMException {
         if (close) {
             close();
         }

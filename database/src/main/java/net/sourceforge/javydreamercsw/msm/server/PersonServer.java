@@ -3,15 +3,13 @@ package net.sourceforge.javydreamercsw.msm.server;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.controller.PersonHasServiceJpaController;
+import net.sourceforge.javydreamercsw.msm.controller.PersonJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
-import net.sourceforge.javydreamercsw.msm.controller.PersonJpaController;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
-import net.sourceforge.javydreamercsw.msm.db.manager.TMException;
+import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
 
 /**
  *
@@ -19,8 +17,11 @@ import net.sourceforge.javydreamercsw.msm.db.manager.TMException;
  */
 public class PersonServer extends Person implements EntityServer<Person> {
 
+    private boolean encrypted = false;
+
     public PersonServer(Person a) {
         update(PersonServer.this, a);
+        encrypted = true;
     }
 
     public PersonServer(String name) {
@@ -31,6 +32,10 @@ public class PersonServer extends Person implements EntityServer<Person> {
 
     @Override
     public int write2DB() throws Exception {
+        if (!encrypted) {
+            setPassword(MD5.encrypt(getPassword()));
+            encrypted = true;
+        }
         if (getId() != null && getId() > 0) {
             update(getEntity(), this);
             new PersonJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
@@ -59,6 +64,9 @@ public class PersonServer extends Person implements EntityServer<Person> {
         target.setLastname(source.getLastname());
         target.setAccessId(source.getAccessId());
         target.setSsn(source.getSsn());
+        target.setLastLogin(source.getLastLogin());
+        target.setUsername(source.getUsername());
+        target.setPassword(source.getPassword());
         if (target.getPersonHasServiceList() == null) {
             target.setPersonHasServiceList(new ArrayList<PersonHasService>());
         } else {
@@ -72,10 +80,10 @@ public class PersonServer extends Person implements EntityServer<Person> {
         update(this, getEntity());
     }
 
-    public void addServiceInstance(ServiceInstance si) throws TMException {
+    public void addServiceInstance(ServiceInstance si) throws MSMException {
         for (PersonHasService phs : getPersonHasServiceList()) {
             if (Objects.equals(phs.getServiceInstance().getId(), si.getId())) {
-                throw new TMException("Person already has this service instance!");
+                throw new MSMException("Person already has this service instance!");
             }
         }
         PersonHasService phs = new PersonHasService(getId(), si.getId());
@@ -87,7 +95,7 @@ public class PersonServer extends Person implements EntityServer<Person> {
         try {
             phsc.create(phs);
         } catch (Exception ex) {
-            throw new TMException(ex);
+            throw new MSMException(ex);
         }
         update();
     }
