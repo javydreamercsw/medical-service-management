@@ -10,7 +10,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class AccessServer extends Access implements EntityServer<Access> {
+public final class AccessServer extends Access implements EntityServer<Access> {
 
     public AccessServer(int id){
         setId(id);
@@ -30,8 +30,9 @@ public class AccessServer extends Access implements EntityServer<Access> {
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new AccessJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            Access entity = getEntity();
+            update(entity, this);
+            new AccessJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             Access a = new Access();

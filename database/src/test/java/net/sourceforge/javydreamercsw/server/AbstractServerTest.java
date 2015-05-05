@@ -7,6 +7,7 @@ import net.sourceforge.javydreamercsw.msm.controller.AccessJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.FieldTypeJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.InstanceFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.PersonHasServiceJpaController;
+import net.sourceforge.javydreamercsw.msm.controller.PersonJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceHasFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceInstanceJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.TMFieldJpaController;
@@ -15,6 +16,7 @@ import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntit
 import net.sourceforge.javydreamercsw.msm.db.Access;
 import net.sourceforge.javydreamercsw.msm.db.FieldType;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
+import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
@@ -51,6 +53,7 @@ public abstract class AbstractServerTest {
 
     @After
     public void tearDown() {
+        clean();
     }
 
     protected void clean() {
@@ -61,7 +64,7 @@ public abstract class AbstractServerTest {
                 if (a.getId() >= 1000) {
                     deleteInstanceField(a.getInstanceFieldList());
                     deleteServiceHasField(a.getServiceHasFieldList());
-                    new TMFieldJpaController(DataBaseManager.getEntityManagerFactory()).destroy(a.getId());
+                    tfc.destroy(a.getId());
                 } else {
                     LOG.log(Level.FINE, "Ignoring id: {0}", a.getId());
                 }
@@ -86,7 +89,7 @@ public abstract class AbstractServerTest {
         for (Access a : controller.findAccessEntities()) {
             try {
                 if (a.getId() >= 1000) {
-                    new AccessJpaController(DataBaseManager.getEntityManagerFactory()).destroy(a.getId());
+                    controller.destroy(a.getId());
                 } else {
                     LOG.log(Level.FINE, "Ignoring id: {0}", a.getId());
                 }
@@ -95,12 +98,26 @@ public abstract class AbstractServerTest {
                 fail();
             }
         }
-        
+
         FieldTypeJpaController ftc = new FieldTypeJpaController(DataBaseManager.getEntityManagerFactory());
         for (FieldType a : ftc.findFieldTypeEntities()) {
             try {
                 if (a.getId() >= 1000) {
-                    new FieldTypeJpaController(DataBaseManager.getEntityManagerFactory()).destroy(a.getId());
+                    ftc.destroy(a.getId());
+                } else {
+                    LOG.log(Level.FINE, "Ignoring id: {0}", a.getId());
+                }
+            } catch (IllegalOrphanException | NonexistentEntityException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+                fail();
+            }
+        }
+
+        PersonJpaController pc = new PersonJpaController(DataBaseManager.getEntityManagerFactory());
+        for (Person a : pc.findPersonEntities()) {
+            try {
+                if (a.getId() >= 1000) {
+                    pc.destroy(a.getId());
                 } else {
                     LOG.log(Level.FINE, "Ignoring id: {0}", a.getId());
                 }

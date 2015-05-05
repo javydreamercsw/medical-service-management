@@ -13,7 +13,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class ServiceServer extends Service implements EntityServer<Service> {
+public final class ServiceServer extends Service implements EntityServer<Service> {
 
     public ServiceServer(int id) {
         setId(id);
@@ -34,8 +34,9 @@ public class ServiceServer extends Service implements EntityServer<Service> {
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            Service entity = getEntity();
+            update(entity, this);
+            new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             Service a = new Service();

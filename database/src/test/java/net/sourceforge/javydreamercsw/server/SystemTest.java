@@ -51,6 +51,8 @@ public class SystemTest extends AbstractServerTest {
         }
         p.setPersonHasServiceList(new ArrayList<PersonHasService>());
         p.setAccessId(new AccessServer(1).getEntity());
+        p.setPassword("test12");
+        p.setUsername("test1");
         try {
             ps = new PersonServer(p);
             ps.write2DB();
@@ -123,8 +125,7 @@ public class SystemTest extends AbstractServerTest {
             assertEquals(ss.getId(), si.getServiceId().getId());
             assertTrue(si.getId() >= 1);
             //Create a person
-            PersonServer ps = new PersonServer("Test");
-            ps.setLastname("Tester");
+            PersonServer ps = new PersonServer("Test", "Tester","test1","test");
             ps.setSsn("111-11-1111");
             ps.write2DB();
             //Assign service instance to person

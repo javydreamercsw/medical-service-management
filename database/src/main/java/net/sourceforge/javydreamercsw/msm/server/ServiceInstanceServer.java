@@ -15,7 +15,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class ServiceInstanceServer extends ServiceInstance
+public final class ServiceInstanceServer extends ServiceInstance
         implements EntityServer<ServiceInstance> {
 
     public ServiceInstanceServer(int id) {
@@ -36,8 +36,9 @@ public class ServiceInstanceServer extends ServiceInstance
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new ServiceInstanceJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            ServiceInstance entity = getEntity();
+            update(entity, this);
+            new ServiceInstanceJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             ServiceInstance a = new ServiceInstance();

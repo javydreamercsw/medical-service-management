@@ -10,7 +10,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class FieldTypeServer extends FieldType implements EntityServer<FieldType> {
+public final class FieldTypeServer extends FieldType implements EntityServer<FieldType> {
     
     public FieldTypeServer(int id){
         super();
@@ -31,8 +31,9 @@ public class FieldTypeServer extends FieldType implements EntityServer<FieldType
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new FieldTypeJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            FieldType entity = getEntity();
+            update(entity, this);
+            new FieldTypeJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             FieldType a = new FieldType();

@@ -118,7 +118,7 @@
                             <compileReport>false</compileReport>
                             <style>OBF</style>
                             <strict>true</strict>
-                            <theme>mytheme</theme>
+                            <theme>msmtheme</theme>
                         </configuration>
                         <executions>
                             <execution>

@@ -8,7 +8,9 @@ import java.util.HashMap;
  * @param <T> Entity
  */
 public interface EntityServer<T> {
+
     static HashMap parameters = new HashMap();
+
     /**
      * Write Entity to database
      *
@@ -32,7 +34,7 @@ public interface EntityServer<T> {
      * @param source object to update from.
      */
     public void update(T target, T source);
-    
+
     /**
      * Update the enclosed entity.
      *
