@@ -11,7 +11,7 @@ import static java.util.ResourceBundle.getBundle;
  */
 public class MSMException extends Exception {
 
-    private String vm_message = "";
+    private String msm_message = "";
     private static ResourceBundle rb
             = getBundle(
                     "net.sourceforge.javydreamercsw.msm.MSMMessages", getDefault());
@@ -26,7 +26,7 @@ public class MSMException extends Exception {
 
     public MSMException(List<String> messages) {
         for (String s : messages) {
-            vm_message += s + "\n";
+            msm_message += s + "\n";
         }
     }
 
@@ -36,6 +36,6 @@ public class MSMException extends Exception {
 
     @Override
     public String toString() {
-        return vm_message.isEmpty() ? super.getLocalizedMessage() : vm_message;
+        return msm_message.isEmpty() ? super.getLocalizedMessage() : msm_message;
     }
 }

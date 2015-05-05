@@ -1,5 +1,6 @@
 package net.sourceforge.javydreamercsw.server;
 
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.db.Person;
@@ -24,7 +25,7 @@ public class PersonServerTest extends AbstractServerTest {
     @Test
     public void testGetEntity() {
         System.out.println("getEntity");
-        PersonServer instance = new PersonServer("test");
+        PersonServer instance = new PersonServer("test", "lastName", "test1", "test");
         try {
             assertNull(instance.getEntity());
             fail("Should throw an IllegalArgumentException");
@@ -32,8 +33,12 @@ public class PersonServerTest extends AbstractServerTest {
             //Expected
         }
         try {
-            assertTrue(instance.write2DB() >= 1000);
+            int id = instance.write2DB();
+            assertTrue(id >= 1000);
             assertNotNull(instance.getEntity());
+            instance.setLogin(new Date());
+            assertEquals(id, instance.write2DB());
+            assertNotNull(instance.getEntity().getLogin());
         } catch (Exception ex) {
             Logger.getLogger(PersonServerTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
@@ -43,10 +48,11 @@ public class PersonServerTest extends AbstractServerTest {
     @Test
     public void testMD5() {
         System.out.println("Test MD5");
-        PersonServer instance = new PersonServer("test");
+        PersonServer instance = new PersonServer("test", "ln");
         try {
             String pass = "test";
             instance.setPassword(pass);
+            instance.setUsername("test1");
             assertTrue(instance.write2DB() >= 1000);
             assertEquals(MD5.encrypt(pass), instance.getPassword());
             Person person = instance.getEntity();

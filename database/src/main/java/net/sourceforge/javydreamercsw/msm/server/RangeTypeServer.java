@@ -10,7 +10,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class RangeTypeServer extends RangeType implements EntityServer<RangeType> {
+public final class RangeTypeServer extends RangeType implements EntityServer<RangeType> {
 
     public RangeTypeServer(RangeType a) {
         update(RangeTypeServer.this, a);
@@ -25,8 +25,9 @@ public class RangeTypeServer extends RangeType implements EntityServer<RangeType
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new RangeTypeJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            RangeType entity = getEntity();
+            update(entity, this);
+            new RangeTypeJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             RangeType a = new RangeType();

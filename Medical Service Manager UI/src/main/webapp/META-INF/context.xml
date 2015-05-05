@@ -7,9 +7,9 @@
     Note: For H2, make sure this values match the contents of
     web.xml for proper shutdown of H2 database!-->
     <Resource auth="Container" driverClassName="org.h2.Driver" maxActive="100" 
-            maxIdle="30" maxWait="10000" name="jdbc/MSMDB" password="" 
+            maxIdle="30" maxWait="10000" name="jdbc/MSMDB" password="" username="root"
             type="javax.sql.DataSource" 
-            url="jdbc:h2:file:~/MSM/data/msm;CREATE=TRUE;LOCK_TIMEOUT=10000;AUTO_SERVER=TRUE;MV_STORE=FALSE;MVCC=FALSE" username="root"/>
+            url="jdbc:h2:file:~/MSM/data/msm;CREATE=TRUE;LOCK_TIMEOUT=10000;AUTO_SERVER=TRUE;MV_STORE=FALSE;MVCC=FALSE"/>
     <!-- MySQL Database
 <Resource auth="Container" driverClassName="com.mysql.jdbc.Driver"
     maxActive="100" maxIdle="30" maxWait="10000" name="jdbc/MSMDB"

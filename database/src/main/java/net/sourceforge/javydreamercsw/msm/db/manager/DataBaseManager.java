@@ -14,7 +14,6 @@ import static java.lang.Class.forName;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.valueOf;
 import static java.lang.Thread.sleep;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,8 +36,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import static javax.persistence.Persistence.createEntityManagerFactory;
 import javax.persistence.Query;
-import javax.persistence.metamodel.EmbeddableType;
-import javax.persistence.metamodel.EntityType;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcDataSource;
 
@@ -97,47 +94,6 @@ public class DataBaseManager {
         return instance;
     }
 
-    @SuppressWarnings("unchecked")
-    private static void processFields(Field[] fields) {
-//        for (Field field : fields) {
-//            if (field.isAnnotationPresent(TableGenerator.class)) {
-//                field.setAccessible(true);
-//                TableGenerator annotation = field.getAnnotation(TableGenerator.class);
-//                field.setAccessible(false);
-//                Map<String, Object> parameters = new HashMap<>();
-//                String tableName = annotation.pkColumnValue();
-//                parameters.put("tableName", tableName);
-//                if (namedQuery("TmId.findByTableName", parameters, false).isEmpty()) {
-//                    try {
-//                        LOG.log(Level.FINE, "Adding: {0}: {1}",
-//                                new Object[]{tableName, annotation.initialValue() - 1});
-//                        TMIdServer temp = new TMIdServer(tableName, annotation.initialValue() - 1);
-//                        temp.write2DB();
-//                        LOG.log(Level.FINE, "Added: {0}: {1}",
-//                                new Object[]{tableName, annotation.initialValue() - 1});
-//                    } catch (MSMException ex) {
-//                        LOG.log(Level.SEVERE, null, ex);
-//                    }
-//                }
-//            }
-//        }
-    }
-
-    private static void generateIDs() {
-        if (!dbError) {
-            LOG.log(Level.FINE,
-                    "Creating ids to work around eclipse issue "
-                    + "https://bugs.eclipse.org/bugs/show_bug.cgi?id=366852");
-            for (EmbeddableType et : getEntityManager().getMetamodel().getEmbeddables()) {
-                processFields(et.getJavaType().getDeclaredFields());
-            }
-            for (EntityType et : getEntityManager().getMetamodel().getEntities()) {
-                processFields(et.getBindableJavaType().getDeclaredFields());
-            }
-            LOG.log(Level.FINE, "Done!");
-        }
-    }
-
     /**
      * @return the properties
      */
@@ -181,7 +137,7 @@ public class DataBaseManager {
         if (emf == null && !dbError) {
             try {
                 InitialContext ctx = new InitialContext();
-                ctx.lookup("java:/comp/env/jdbc/VMDB");
+                ctx.lookup("java:/comp/env/jdbc/MSMDB");
                 //Use the context defined Database connection
                 PU = (String) ctx.lookup("java:comp/env/msm/JNDIDB");
                 try {
@@ -405,7 +361,6 @@ public class DataBaseManager {
         }
         updateDBState();
         getEntityManager();
-        generateIDs();
     }
 
     public static void updateDBState() {
@@ -423,9 +378,9 @@ public class DataBaseManager {
                     //It might be the tests, use an H2 Database
                     ds = new JdbcDataSource();
                     ((JdbcDataSource) ds).setPassword("");
-                    ((JdbcDataSource) ds).setUser("tm_user");
+                    ((JdbcDataSource) ds).setUser("msm_user");
                     ((JdbcDataSource) ds).setURL(
-                            "jdbc:h2:file:./target/data/test/medical-service-manager-test;AUTO_SERVER=TRUE");
+                            "jdbc:h2:file:./target/data/test/medical-service-manager-test;AUTO_SERVER=TRUE;MV_STORE=FALSE;MVCC=FALSE");
                     //Load the H2 driver
                     forName("org.h2.Driver");
                     conn = ds.getConnection();
@@ -442,40 +397,40 @@ public class DataBaseManager {
             LOG.log(Level.SEVERE, null, ex);
         }
         if (conn != null) {
-//            try {
-//                stmt = conn.prepareStatement("select * from vm_setting");
-//                rs = stmt.executeQuery();
-//                if (!rs.next()) {
-//                    //Tables there but empty? Not safe to proceed
-//                    setState(DBState.NEED_MANUAL_UPDATE);
-//                }
-//            } catch (SQLException ex) {
-//                LOG.log(Level.FINE, null, ex);
-//                //Need INIT, probably nothing there
-//                setState(DBState.NEED_INIT);
-//                //Create the database
-//                getEntityManager();
-//            } finally {
-//                try {
-//                    conn.close();
-//                } catch (SQLException ex) {
-//                    LOG.log(Level.SEVERE, null, ex);
-//                }
-//                try {
-//                    if (stmt != null) {
-//                        stmt.close();
-//                    }
-//                } catch (SQLException ex) {
-//                    LOG.log(Level.SEVERE, null, ex);
-//                }
-//                try {
-//                    if (rs != null) {
-//                        rs.close();
-//                    }
-//                } catch (SQLException ex) {
-//                    LOG.log(Level.SEVERE, null, ex);
-//                }
-//            }
+            try {
+                stmt = conn.prepareStatement("select * from access");
+                rs = stmt.executeQuery();
+                if (!rs.next()) {
+                    //Tables there but empty? Not safe to proceed
+                    setState(DBState.NEED_MANUAL_UPDATE);
+                }
+            } catch (SQLException ex) {
+                LOG.log(Level.FINE, null, ex);
+                //Need INIT, probably nothing there
+                setState(DBState.NEED_INIT);
+                //Create the database
+                getEntityManager();
+            } finally {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    LOG.log(Level.SEVERE, null, ex);
+                }
+                try {
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (SQLException ex) {
+                    LOG.log(Level.SEVERE, null, ex);
+                }
+                try {
+                    if (rs != null) {
+                        rs.close();
+                    }
+                } catch (SQLException ex) {
+                    LOG.log(Level.SEVERE, null, ex);
+                }
+            }
         }
         if (ds != null) {
             //Initialize flyway

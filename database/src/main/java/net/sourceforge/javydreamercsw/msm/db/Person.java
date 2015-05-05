@@ -7,6 +7,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,17 +20,20 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import net.sourceforge.javydreamercsw.msm.server.EntityListener;
 
 /**
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
 @Entity
-@Table(name = "person")
+@EntityListeners(value = EntityListener.class)
+@Table(name = "person", uniqueConstraints = @UniqueConstraint(columnNames = {"username"}))
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p"),
@@ -57,7 +61,7 @@ public class Person implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "attempts")
-    private Integer attempts;
+    private Integer attempts = 0;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -70,7 +74,7 @@ public class Person implements Serializable {
     private String lastname;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 6, max = 45)
+    @Size(min = 5, max = 45)
     @Column(name = "username")
     private String username;
     @Basic(optional = false)
@@ -82,17 +86,16 @@ public class Person implements Serializable {
     @NotNull
     @Size(min = 1, max = 11)
     @Column(name = "ssn")
-    private String ssn;
+    private String ssn="XXX-XX-XXXX";
     @JoinColumn(name = "access_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Access accessId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private List<PersonHasService> personHasServiceList;
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "date")
+    @Column(name = "login")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date last_login;
+    private Date login;
 
     public Person() {
     }
@@ -172,12 +175,12 @@ public class Person implements Serializable {
         this.accessId = accessId;
     }
 
-    public Date getLastLogin() {
-        return last_login;
+    public Date getLogin() {
+        return login;
     }
 
-    public void setLastLogin(Date ll) {
-        this.last_login = ll;
+    public void setLogin(Date ll) {
+        this.login = ll;
     }
 
     @XmlTransient

@@ -9,7 +9,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class InstanceFieldServer extends InstanceField
+public final class InstanceFieldServer extends InstanceField
         implements EntityServer<InstanceField> {
 
     public InstanceFieldServer(int id) {
@@ -23,8 +23,9 @@ public class InstanceFieldServer extends InstanceField
     @Override
     public int write2DB() throws Exception {
         if (getInstanceFieldPK()!= null && getInstanceFieldPK().getId() > 0) {
-            update(getEntity(), this);
-            new InstanceFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            InstanceField entity = getEntity();
+            update(entity, this);
+            new InstanceFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setInstanceFieldPK(getInstanceFieldPK());
         } else {
             InstanceField a = new InstanceField();

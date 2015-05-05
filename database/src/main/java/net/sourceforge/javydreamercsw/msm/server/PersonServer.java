@@ -15,7 +15,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class PersonServer extends Person implements EntityServer<Person> {
+public final class PersonServer extends Person implements EntityServer<Person> {
 
     private boolean encrypted = false;
 
@@ -24,9 +24,19 @@ public class PersonServer extends Person implements EntityServer<Person> {
         encrypted = true;
     }
 
-    public PersonServer(String name) {
+    public PersonServer(String name, String lastName) {
         super();
         setName(name);
+        setLastname(lastName);
+        setPersonHasServiceList(new ArrayList<PersonHasService>());
+    }
+    
+    public PersonServer(String name, String lastName, String userName, String password) {
+        super();
+        setName(name);
+        setLastname(lastName);
+        setUsername(userName);
+        setPassword(password);
         setPersonHasServiceList(new ArrayList<PersonHasService>());
     }
 
@@ -37,8 +47,9 @@ public class PersonServer extends Person implements EntityServer<Person> {
             encrypted = true;
         }
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new PersonJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            Person entity = getEntity();
+            update(entity, this);
+            new PersonJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             Person a = new Person();
@@ -64,7 +75,7 @@ public class PersonServer extends Person implements EntityServer<Person> {
         target.setLastname(source.getLastname());
         target.setAccessId(source.getAccessId());
         target.setSsn(source.getSsn());
-        target.setLastLogin(source.getLastLogin());
+        target.setLogin(source.getLogin());
         target.setUsername(source.getUsername());
         target.setPassword(source.getPassword());
         if (target.getPersonHasServiceList() == null) {

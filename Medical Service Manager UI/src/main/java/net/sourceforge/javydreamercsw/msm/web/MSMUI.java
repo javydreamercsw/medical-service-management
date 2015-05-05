@@ -42,6 +42,8 @@ import net.sourceforge.javydreamercsw.msm.server.PersonServer;
 @Widgetset("net.sourceforge.javydreamercsw.msm.manager.MSMWidgetset")
 public class MSMUI extends UI {
 
+    private static final long serialVersionUID = 4397902634406847971L;
+
     private PersonServer p = null;
     private Component left;
     private Component right;
@@ -53,28 +55,29 @@ public class MSMUI extends UI {
             = new ThemeResource("icons/caduceus.png");
     private Timer timer;
     private Window loginWindow = null;
-    private HashMap<String, Object> parameters = new HashMap<>();
+    private final HashMap<String, Object> parameters = new HashMap<>();
     private static final Logger LOG
             = Logger.getLogger(MSMUI.class.getName());
+    private final Panel mainPanel = new Panel();
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         DataBaseManager.getEntityManagerFactory();
+        DataBaseManager.updateDBState();
         addClickListener(new ClickListener() {
+            private static final long serialVersionUID = -1812183928286849175L;
 
             @Override
             public void click(MouseEvents.ClickEvent event) {
                 //Reset timer
             }
         });
-        // Have a panel to put stuff in
-        Panel panel = new Panel("Split Panels Inside This Panel");
 
         // Have a horizontal split panel as its content
         HorizontalSplitPanel hsplit = new HorizontalSplitPanel();
         hsplit.setSizeFull();
 
-        panel.setContent(hsplit);
+        mainPanel.setContent(hsplit);
 
         updateScreen();
 
@@ -86,10 +89,10 @@ public class MSMUI extends UI {
         // Set the position of the splitter as percentage
         hsplit.setSplitPosition(25, Unit.PERCENTAGE);
 
-        panel.setWidth(100, Unit.PERCENTAGE);
-        panel.setHeight(100, Unit.PERCENTAGE);
+        mainPanel.setWidth(100, Unit.PERCENTAGE);
+        mainPanel.setHeight(100, Unit.PERCENTAGE);
 
-        setContent(panel);
+        setContent(mainPanel);
     }
 
     private void showLoginScreen() {
@@ -116,6 +119,8 @@ public class MSMUI extends UI {
         final com.vaadin.ui.Button cancel = new com.vaadin.ui.Button(
                 getResource().getString("general.cancel"),
                 new com.vaadin.ui.Button.ClickListener() {
+                    private static final long serialVersionUID = 5019806363620874205L;
+
                     @Override
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                         //Make sure to log out anyone previously logged in
@@ -124,12 +129,14 @@ public class MSMUI extends UI {
                         if (timer == null) {
                             timer = new Timer();
                         }
-                        timer.schedule(new LogoutTask(), 1 * 1000);
+                        timer.schedule(new LogoutTask(), 60 * 1000);
                         //Select root node
                         loginWindow.close();
                     }
                 });
         commit.addListener(new com.vaadin.ui.Button.ClickListener() {
+            private static final long serialVersionUID = 5019806363620874205L;
+
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 parameters.clear();
@@ -138,16 +145,30 @@ public class MSMUI extends UI {
                 List<Object> result
                         = DataBaseManager.namedQuery("Person.findByUserName",
                                 parameters);
-                if (!result.isEmpty()) {
+                if (result.isEmpty()) {
+                    Notification.show(getResource().getString("message.invalid.username"),
+                            getResource().getString("message.invalid.username.desc"),
+                            Notification.Type.WARNING_MESSAGE);
+                } else {
                     try {
                         Person user = (Person) result.get(0);
                         //Now check password
                         if (user.getPassword().equals(MD5.encrypt(password.getValue()))) {
                             p = new PersonServer(user);
-                            loginWindow.close();
-                            p.setLastLogin(new Date());
+                            mainPanel.setCaption(getResource().getString("message.welcome")
+                                    .replaceAll("%n", p.getName())
+                                    .replaceAll("%ln", p.getLastname())
+                                    .replaceAll("%d", p.getLogin() == null
+                                                    ? "N/A" : p.getLogin().toString()));
+                            p.setLogin(new Date());
                             p.setAttempts(0);
                             p.write2DB();
+                            p.getEntity();
+                            loginWindow.close();
+                            if (timer == null) {
+                                timer = new Timer();
+                            }
+                            timer.schedule(new LogoutTask(), 60 * 1000);
                         } else {
                             PersonServer person = new PersonServer(user);
                             person.setAttempts(person.getAttempts() + 1);
@@ -163,14 +184,10 @@ public class MSMUI extends UI {
                             }
                         }
                     } catch (MSMException ex) {
-                        LOG.log(Level.SEVERE, null, ex);
+                        LOG.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
                     } catch (Exception ex) {
-                        LOG.log(Level.SEVERE, null, ex);
+                        LOG.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
                     }
-                } else {
-                    Notification.show(getResource().getString("message.invalid.username"),
-                            getResource().getString("message.invalid.username.desc"),
-                            Notification.Type.WARNING_MESSAGE);
                 }
             }
         });
@@ -223,6 +240,8 @@ public class MSMUI extends UI {
     @WebServlet(urlPatterns = "/*", name = "MSMUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MSMUI.class, productionMode = false)
     public static class MSMUIServlet extends VaadinServlet {
+
+        private static final long serialVersionUID = 5212284236537166327L;
     }
 
     private class LogoutTask extends TimerTask {

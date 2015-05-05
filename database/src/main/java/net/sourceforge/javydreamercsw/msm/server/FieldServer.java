@@ -13,7 +13,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class FieldServer extends TMField implements EntityServer<TMField> {
+public final class FieldServer extends TMField implements EntityServer<TMField> {
 
     public FieldServer(int id) {
         setId(id);
@@ -34,8 +34,9 @@ public class FieldServer extends TMField implements EntityServer<TMField> {
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
-            update(getEntity(), this);
-            new TMFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(getEntity());
+            TMField entity = getEntity();
+            update(entity, this);
+            new TMFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
             TMField a = new TMField();

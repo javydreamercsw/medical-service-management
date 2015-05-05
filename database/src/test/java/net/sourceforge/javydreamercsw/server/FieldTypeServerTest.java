@@ -34,7 +34,6 @@ public class FieldTypeServerTest extends AbstractServerTest {
             Logger.getLogger(FieldTypeServerTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         }
-        clean();
     }
     
     @Test
