@@ -30,7 +30,7 @@ public final class PersonServer extends Person implements EntityServer<Person> {
         setLastname(lastName);
         setPersonHasServiceList(new ArrayList<PersonHasService>());
     }
-    
+
     public PersonServer(String name, String lastName, String userName, String password) {
         super();
         setName(name);
@@ -42,9 +42,9 @@ public final class PersonServer extends Person implements EntityServer<Person> {
 
     @Override
     public int write2DB() throws Exception {
-        if (!encrypted) {
+        if (!isEncrypted()) {
             setPassword(MD5.encrypt(getPassword()));
-            encrypted = true;
+            setEncrypted(true);
         }
         if (getId() != null && getId() > 0) {
             Person entity = getEntity();
@@ -83,7 +83,9 @@ public final class PersonServer extends Person implements EntityServer<Person> {
         } else {
             target.getPersonHasServiceList().clear();
         }
-        target.getPersonHasServiceList().addAll(source.getPersonHasServiceList());
+        if (source.getPersonHasServiceList() != null) {
+            target.getPersonHasServiceList().addAll(source.getPersonHasServiceList());
+        }
     }
 
     @Override
@@ -109,5 +111,19 @@ public final class PersonServer extends Person implements EntityServer<Person> {
             throw new MSMException(ex);
         }
         update();
+    }
+
+    /**
+     * @return the encrypted
+     */
+    public boolean isEncrypted() {
+        return encrypted;
+    }
+
+    /**
+     * @param encrypted the encrypted to set
+     */
+    public void setEncrypted(boolean encrypted) {
+        this.encrypted = encrypted;
     }
 }
