@@ -433,6 +433,12 @@ public class DataBaseManager {
             }
         }
         if (ds != null) {
+            try {
+                LOG.log(Level.INFO, "Connecting to: {0}", 
+                        ds.getConnection().getMetaData().getURL());
+            } catch (SQLException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
             //Initialize flyway
             initializeFlyway(ds);
             updateDatabase(ds);
@@ -445,10 +451,10 @@ public class DataBaseManager {
         }
     }
 
-    private static void updateDatabase(DataSource dataSource) {
+    private static void updateDatabase(DataSource ds) {
         Flyway flyway = new Flyway();
         try {
-            flyway.setDataSource(dataSource);
+            flyway.setDataSource(ds);
             flyway.setLocations("db.migration");
             LOG.info("Starting migration...");
             flyway.migrate();
@@ -461,8 +467,8 @@ public class DataBaseManager {
             LOG.info("Validating migration...");
             flyway.validate();
             LOG.info("Done!");
-            setState(flyway.info().current().getState() == 
-                    MigrationState.SUCCESS ? DBState.VALID : DBState.ERROR);
+            setState(flyway.info().current().getState()
+                    == MigrationState.SUCCESS ? DBState.VALID : DBState.ERROR);
         } catch (FlywayException fe) {
             LOG.log(Level.SEVERE, "Unable to validate", fe);
             setState(DBState.ERROR);

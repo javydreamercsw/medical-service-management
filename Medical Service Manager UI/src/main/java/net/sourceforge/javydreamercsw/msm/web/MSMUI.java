@@ -10,6 +10,7 @@ import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -17,7 +18,9 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +37,7 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
 import net.sourceforge.javydreamercsw.msm.server.MD5;
 import net.sourceforge.javydreamercsw.msm.server.PersonServer;
+import net.sourceforge.javydreamercsw.msm.web.window.AccountManagement;
 
 /**
  *
@@ -55,15 +59,21 @@ public class MSMUI extends UI {
             = new ThemeResource("icons/caduceus.png");
     private Timer timer;
     private Window loginWindow = null;
+    private Window manageAccount = null;
     private final HashMap<String, Object> parameters = new HashMap<>();
     private static final Logger LOG
             = Logger.getLogger(MSMUI.class.getName());
     private final Panel mainPanel = new Panel();
+    private static boolean initialized = false;
+    private final HorizontalSplitPanel hsplit = new HorizontalSplitPanel();
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        DataBaseManager.getEntityManagerFactory();
-        DataBaseManager.updateDBState();
+        if (!initialized) {
+            DataBaseManager.getEntityManagerFactory();
+            DataBaseManager.updateDBState();
+            initialized = true;
+        }
         addClickListener(new ClickListener() {
             private static final long serialVersionUID = -1812183928286849175L;
 
@@ -74,7 +84,6 @@ public class MSMUI extends UI {
         });
 
         // Have a horizontal split panel as its content
-        HorizontalSplitPanel hsplit = new HorizontalSplitPanel();
         hsplit.setSizeFull();
 
         mainPanel.setContent(hsplit);
@@ -87,7 +96,7 @@ public class MSMUI extends UI {
         hsplit.setSecondComponent(right);
 
         // Set the position of the splitter as percentage
-        hsplit.setSplitPosition(25, Unit.PERCENTAGE);
+        hsplit.setSplitPosition(20, Unit.PERCENTAGE);
 
         mainPanel.setWidth(100, Unit.PERCENTAGE);
         mainPanel.setHeight(100, Unit.PERCENTAGE);
@@ -126,10 +135,6 @@ public class MSMUI extends UI {
                         //Make sure to log out anyone previously logged in
                         p = null;
                         updateMenu();
-                        if (timer == null) {
-                            timer = new Timer();
-                        }
-                        timer.schedule(new LogoutTask(), 60 * 1000);
                         //Select root node
                         loginWindow.close();
                     }
@@ -165,21 +170,19 @@ public class MSMUI extends UI {
                             p.write2DB();
                             p.getEntity();
                             loginWindow.close();
-                            if (timer == null) {
-                                timer = new Timer();
-                            }
-                            timer.schedule(new LogoutTask(), 60 * 1000);
+                            startLoginTimer();
+                            updateScreen();
                         } else {
                             PersonServer person = new PersonServer(user);
                             person.setAttempts(person.getAttempts() + 1);
-                            p.write2DB();
+                            person.write2DB();
                             if (person.getAttempts() >= 3) {
                                 Notification.show(getResource().getString("message.account.locked"),
                                         getResource().getString("message.account.locked.desc"),
                                         Notification.Type.ERROR_MESSAGE);
                             } else {
-                                Notification.show(getResource().getString("message.missing.password"),
-                                        getResource().getString("message.missing.password.desc"),
+                                Notification.show(getResource().getString("message.invalid.password"),
+                                        getResource().getString("message.invalid.password.desc"),
                                         Notification.Type.WARNING_MESSAGE);
                             }
                         }
@@ -206,6 +209,16 @@ public class MSMUI extends UI {
         addWindow(loginWindow);
     }
 
+    private void startLoginTimer() {
+        if (timer == null) {
+            timer = new Timer();
+        } else {
+            timer.cancel();
+            timer = new Timer();
+        }
+        //timer.schedule(new LogoutTask(), 60 * 1000);
+    }
+
     /**
      * @return the Resource Bundle
      */
@@ -222,12 +235,39 @@ public class MSMUI extends UI {
         if (p == null) {
             showLoginScreen();
         } else {
+            left = new TabSheet();
+            left.setHeight(100, Unit.PERCENTAGE);
+            VerticalLayout adminTab = new VerticalLayout();
+            VerticalLayout staffTab = new VerticalLayout();
+            VerticalLayout patientTab = new VerticalLayout();
             switch (p.getAccessId().getId()) {
                 case 1://Admin
-                //Fall thru
+                    //Load Admin content on tab
+                    Button manageUser
+                            = new Button(getResource().getString("manage.account"),
+                                    new com.vaadin.ui.Button.ClickListener() {
+
+                                        @Override
+                                        public void buttonClick(Button.ClickEvent event) {
+                                            showAccountManagementScreen();
+                                        }
+                                    });
+                    adminTab.addComponent(manageUser);
+                    ((TabSheet) left).addTab(adminTab,
+                            getResource().getString("access.admin"),
+                            new ThemeResource("icons/patient_record.png"));
                 case 2://Staff
+                    staffTab.addComponent(new Button("Staff 1"));
+                    ((TabSheet) left).addTab(staffTab,
+                            getResource().getString("access.staff"),
+                            new ThemeResource("icons/nurse.png"));
                 //Fall thru
                 case 3://Patient
+                    patientTab.addComponent(new Button("Patient 1"));
+                    ((TabSheet) left).addTab(patientTab,
+                            getResource().getString("access.person"),
+                            new ThemeResource("icons/unhealthy.png"));
+                    hsplit.setFirstComponent(left);
                     break;
                 default:
                     Notification.show(getResource().getString("message.access.invalid"),
@@ -250,10 +290,24 @@ public class MSMUI extends UI {
         public void run() {
             System.out.println("Time's up!");
             p = null;
+            updateScreen();
             Notification.show(getResource().getString("message.login.timeout"),
                     getResource().getString("message.login.timeout.desc"),
                     Notification.Type.WARNING_MESSAGE);
-            showLoginScreen();
         }
+    }
+
+    private void showAccountManagementScreen() {
+        if (manageAccount != null) {
+            manageAccount.close();
+            removeWindow(manageAccount);
+        }
+        manageAccount = new AccountManagement(rb);
+        manageAccount.center();
+        manageAccount.setModal(true);
+        manageAccount.setWidth(80, Unit.PERCENTAGE);
+        manageAccount.setHeight(80, Unit.PERCENTAGE);
+        manageAccount.setVisible(true);
+        addWindow(manageAccount);
     }
 }
