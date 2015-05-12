@@ -37,10 +37,11 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
 import net.sourceforge.javydreamercsw.msm.server.MD5;
 import net.sourceforge.javydreamercsw.msm.server.PersonServer;
-import net.sourceforge.javydreamercsw.msm.web.window.AccountManagement;
+import net.sourceforge.javydreamercsw.msm.web.window.account.AccountManagement;
+import net.sourceforge.javydreamercsw.msm.web.window.service.ServiceManagement;
 
 /**
- *
+ * @author Javier Ortiz Bultron <javier.ortiz.78@gmail.com>
  */
 @Theme("msmtheme")
 @Widgetset("net.sourceforge.javydreamercsw.msm.manager.MSMWidgetset")
@@ -59,7 +60,7 @@ public class MSMUI extends UI {
             = new ThemeResource("icons/caduceus.png");
     private Timer timer;
     private Window loginWindow = null;
-    private Window manageAccount = null;
+    private Window manageAccount = null, manageService=null;
     private final HashMap<String, Object> parameters = new HashMap<>();
     private static final Logger LOG
             = Logger.getLogger(MSMUI.class.getName());
@@ -96,7 +97,7 @@ public class MSMUI extends UI {
         hsplit.setSecondComponent(right);
 
         // Set the position of the splitter as percentage
-        hsplit.setSplitPosition(20, Unit.PERCENTAGE);
+        hsplit.setSplitPosition(25, Unit.PERCENTAGE);
 
         mainPanel.setWidth(100, Unit.PERCENTAGE);
         mainPanel.setHeight(100, Unit.PERCENTAGE);
@@ -253,6 +254,16 @@ public class MSMUI extends UI {
                                         }
                                     });
                     adminTab.addComponent(manageUser);
+                    Button manageServices
+                            = new Button(getResource().getString("manage.service"),
+                                    new com.vaadin.ui.Button.ClickListener() {
+
+                                        @Override
+                                        public void buttonClick(Button.ClickEvent event) {
+                                            showServiceManagementScreen();
+                                        }
+                                    });
+                    adminTab.addComponent(manageServices);
                     ((TabSheet) left).addTab(adminTab,
                             getResource().getString("access.admin"),
                             new ThemeResource("icons/patient_record.png"));
@@ -309,5 +320,19 @@ public class MSMUI extends UI {
         manageAccount.setHeight(80, Unit.PERCENTAGE);
         manageAccount.setVisible(true);
         addWindow(manageAccount);
+    }
+    
+    private void showServiceManagementScreen() {
+        if (manageService != null) {
+            manageService.close();
+            removeWindow(manageService);
+        }
+        manageService = new ServiceManagement(rb);
+        manageService.center();
+        manageService.setModal(true);
+        manageService.setWidth(80, Unit.PERCENTAGE);
+        manageService.setHeight(80, Unit.PERCENTAGE);
+        manageService.setVisible(true);
+        addWindow(manageService);
     }
 }

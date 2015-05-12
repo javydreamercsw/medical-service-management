@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jpa:entity-mappings jaxb-support="false" id="_14310349821211" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_1.xsd" xmlns:java="http://jcp.org/en/jsr/detail?id=270" xmlns:jpa="http://java.sun.com/xml/ns/persistence/orm" xmlns:ns4="http://nbmodeler.java.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <jpa:entity class="Tmfield" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_14310349821314">
+        <jpa:table name="tmfield">
+            <jpa:unique-constraint>
+                <jpa:column-name>name</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498215818">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="tmfield"/>
+            </jpa:id>
+            <jpa:basic name="name" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216019">
+                <jpa:column name="name" unique="false" nullable="false" insertable="true" updatable="true" table="tmfield" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="desc" optional="true" attribute-type="byte []" visibile="true" id="_143103498216020">
+                <jpa:column name="desc" unique="false" nullable="true" insertable="true" updatable="true" table="tmfield"/>
+                <jpa:lob/>
+            </jpa:basic>
+            <jpa:many-to-one name="fieldTypeId" target-entity="FieldType" optional="false" primaryKey="false" connected-entity-id="_143103498214317" connected-attribute-id="_143103498216394" visibile="true" id="_143103498216021">
+                <jpa:join-column name="field_type_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:many-to-one name="rangeId" target-entity="Range" optional="false" primaryKey="false" connected-entity-id="_143103498214211" connected-attribute-id="_143103498216359" visibile="true" id="_143103498216122">
+                <jpa:join-column name="range_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:one-to-many name="serviceHasFieldCollection" target-entity="ServiceHasField" mapped-by="tmfield" connected-entity-id="_14310349821429" connected-attribute-id="_143103498216250" visibile="true" id="_143103498216123"/>
+            <jpa:one-to-many name="instanceFieldCollection" target-entity="InstanceField" mapped-by="tmfieldId" connected-entity-id="_143103498214213" connected-attribute-id="_143103498216372" visibile="true" id="_143103498216124"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="Country" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_14310349821425">
+        <jpa:table name="country">
+            <jpa:unique-constraint>
+                <jpa:column-name>country</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216125">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="country"/>
+            </jpa:id>
+            <jpa:basic name="country" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216126">
+                <jpa:column name="country" unique="false" nullable="false" insertable="true" updatable="true" table="country" length="255"/>
+            </jpa:basic>
+            <jpa:basic name="lastUpdate" optional="true" attribute-type="java.lang.String" visibile="true" id="_143103498216127">
+                <jpa:column name="last_update" unique="false" nullable="true" insertable="true" updatable="true" table="country" length="45"/>
+            </jpa:basic>
+            <jpa:one-to-many name="cityCollection" target-entity="City" mapped-by="countryId" connected-entity-id="_14310349821428" connected-attribute-id="_143103498216245" visibile="true" id="_143103498216128"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="Access" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_14310349821426">
+        <jpa:table name="access"/>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216129">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="access"/>
+            </jpa:id>
+            <jpa:basic name="name" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216130">
+                <jpa:column name="name" unique="false" nullable="false" insertable="true" updatable="true" table="access" length="45"/>
+            </jpa:basic>
+            <jpa:one-to-many name="personCollection" target-entity="Person" mapped-by="accessId" connected-entity-id="_143103498214314" connected-attribute-id="_143103498216383" visibile="true" id="_143103498216131"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="Address" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_14310349821427">
+        <jpa:table name="address"/>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216132">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="address"/>
+            </jpa:id>
+            <jpa:basic name="address" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216133">
+                <jpa:column name="address" unique="false" nullable="false" insertable="true" updatable="true" table="address" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="address2" optional="true" attribute-type="java.lang.String" visibile="true" id="_143103498216234">
+                <jpa:column name="address2" unique="false" nullable="true" insertable="true" updatable="true" table="address" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="district" optional="true" attribute-type="java.lang.String" visibile="true" id="_143103498216235">
+                <jpa:column name="district" unique="false" nullable="true" insertable="true" updatable="true" table="address" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="postalCode" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216236">
+                <jpa:column name="postal_code" unique="false" nullable="false" insertable="true" updatable="true" table="address" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="phone" optional="true" attribute-type="java.lang.String" visibile="true" id="_143103498216237">
+                <jpa:column name="phone" unique="false" nullable="true" insertable="true" updatable="true" table="address" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="lastUpdate" optional="true" attribute-type="java.lang.String" visibile="true" id="_143103498216238">
+                <jpa:column name="last_update" unique="false" nullable="true" insertable="true" updatable="true" table="address" length="45"/>
+            </jpa:basic>
+            <jpa:many-to-one name="cityId" target-entity="City" optional="false" primaryKey="false" connected-entity-id="_14310349821428" connected-attribute-id="_143103498216244" visibile="true" id="_143103498216239">
+                <jpa:join-column name="city_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:one-to-many name="personCollection" target-entity="Person" mapped-by="addressId" connected-entity-id="_143103498214314" connected-attribute-id="_143103498216382" visibile="true" id="_143103498216240"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="City" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_14310349821428">
+        <jpa:table name="city">
+            <jpa:unique-constraint>
+                <jpa:column-name>city</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216241">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="city"/>
+            </jpa:id>
+            <jpa:basic name="city" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216242">
+                <jpa:column name="city" unique="false" nullable="false" insertable="true" updatable="true" table="city" length="255"/>
+            </jpa:basic>
+            <jpa:basic name="lastUpdate" optional="true" attribute-type="java.lang.String" visibile="true" id="_143103498216243">
+                <jpa:column name="last_update" unique="false" nullable="true" insertable="true" updatable="true" table="city" length="45"/>
+            </jpa:basic>
+            <jpa:many-to-one name="countryId" target-entity="Country" optional="false" primaryKey="false" connected-entity-id="_14310349821425" connected-attribute-id="_143103498216128" visibile="true" id="_143103498216245">
+                <jpa:join-column name="country_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:one-to-many name="addressCollection" target-entity="Address" mapped-by="cityId" connected-entity-id="_14310349821427" connected-attribute-id="_143103498216239" visibile="true" id="_143103498216244"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="ServiceHasField" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_14310349821429">
+        <jpa:table name="service_has_field">
+            <jpa:unique-constraint>
+                <jpa:column-name>service_id</jpa:column-name>
+            </jpa:unique-constraint>
+            <jpa:unique-constraint>
+                <jpa:column-name>index</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="serviceId" attribute-type="int" visibile="true" id="_143103498216246">
+                <jpa:column name="service_id" unique="false" nullable="false" insertable="true" updatable="true" table="service_has_field"/>
+            </jpa:id>
+            <jpa:id name="fieldId" attribute-type="int" visibile="true" id="_143103498216247">
+                <jpa:column name="field_id" unique="false" nullable="false" insertable="true" updatable="true" table="service_has_field"/>
+            </jpa:id>
+            <jpa:basic name="index" optional="false" attribute-type="int" visibile="true" id="_143103498216248">
+                <jpa:column name="index" unique="false" nullable="false" insertable="true" updatable="true" table="service_has_field"/>
+            </jpa:basic>
+            <jpa:many-to-one name="tmfield" target-entity="Tmfield" optional="false" primaryKey="false" connected-entity-id="_14310349821314" connected-attribute-id="_143103498216123" visibile="true" id="_143103498216250">
+                <jpa:join-column name="field_id" referenced-column-name="id" unique="false" nullable="true" insertable="false" updatable="false"/>
+            </jpa:many-to-one>
+            <jpa:one-to-one name="service" target-entity="Service" optional="false" primaryKey="false" connected-entity-id="_143103498214315" connected-attribute-id="_143103498216386" visibile="true" id="_143103498216249">
+                <jpa:join-column name="service_id" referenced-column-name="id" unique="false" nullable="true" insertable="false" updatable="false"/>
+            </jpa:one-to-one>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="PersonHasService" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214210">
+        <jpa:table name="person_has_service"/>
+        <jpa:attributes>
+            <jpa:id name="personId" attribute-type="int" visibile="true" id="_143103498216251">
+                <jpa:column name="person_id" unique="false" nullable="false" insertable="true" updatable="true" table="person_has_service"/>
+            </jpa:id>
+            <jpa:id name="serviceInstanceId" attribute-type="int" visibile="true" id="_143103498216252">
+                <jpa:column name="service_instance_id" unique="false" nullable="false" insertable="true" updatable="true" table="person_has_service"/>
+            </jpa:id>
+            <jpa:basic name="date" optional="false" attribute-type="java.util.Date" visibile="true" id="_143103498216253">
+                <jpa:column name="date" unique="false" nullable="false" insertable="true" updatable="true" table="person_has_service"/>
+                <jpa:temporal>TIMESTAMP</jpa:temporal>
+            </jpa:basic>
+            <jpa:many-to-one name="person" target-entity="Person" optional="false" primaryKey="false" connected-entity-id="_143103498214314" connected-attribute-id="_143103498216381" visibile="true" id="_143103498216354">
+                <jpa:join-column name="person_id" referenced-column-name="id" unique="false" nullable="true" insertable="false" updatable="false"/>
+            </jpa:many-to-one>
+            <jpa:many-to-one name="serviceInstance" target-entity="ServiceInstance" optional="false" primaryKey="false" connected-entity-id="_143103498214316" connected-attribute-id="_143103498216389" visibile="true" id="_143103498216355">
+                <jpa:join-column name="service_instance_id" referenced-column-name="id" unique="false" nullable="true" insertable="false" updatable="false"/>
+            </jpa:many-to-one>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="Range" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214211">
+        <jpa:table name="range"/>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216356">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="range"/>
+            </jpa:id>
+            <jpa:basic name="min" optional="false" attribute-type="float" visibile="true" id="_143103498216357">
+                <jpa:column name="min" unique="false" nullable="false" insertable="true" updatable="true" table="range"/>
+            </jpa:basic>
+            <jpa:basic name="max" optional="false" attribute-type="float" visibile="true" id="_143103498216358">
+                <jpa:column name="max" unique="false" nullable="false" insertable="true" updatable="true" table="range"/>
+            </jpa:basic>
+            <jpa:many-to-one name="rangeTypeId" target-entity="RangeType" optional="false" primaryKey="false" connected-entity-id="_143103498214212" connected-attribute-id="_143103498216363" visibile="true" id="_143103498216360">
+                <jpa:join-column name="range_type_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:one-to-many name="tmfieldCollection" target-entity="Tmfield" mapped-by="rangeId" connected-entity-id="_14310349821314" connected-attribute-id="_143103498216122" visibile="true" id="_143103498216359"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="RangeType" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214212">
+        <jpa:table name="range_type">
+            <jpa:unique-constraint>
+                <jpa:column-name>name</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216361">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="range_type"/>
+            </jpa:id>
+            <jpa:basic name="name" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216362">
+                <jpa:column name="name" unique="false" nullable="false" insertable="true" updatable="true" table="range_type" length="45"/>
+            </jpa:basic>
+            <jpa:one-to-many name="rangeCollection" target-entity="Range" mapped-by="rangeTypeId" connected-entity-id="_143103498214211" connected-attribute-id="_143103498216360" visibile="true" id="_143103498216363"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="InstanceField" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214213">
+        <jpa:table name="instance_field"/>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="int" visibile="true" id="_143103498216364">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="instance_field"/>
+            </jpa:id>
+            <jpa:id name="serviceInstanceId" attribute-type="int" visibile="true" id="_143103498216365">
+                <jpa:column name="service_instance_id" unique="false" nullable="false" insertable="true" updatable="true" table="instance_field"/>
+            </jpa:id>
+            <jpa:basic name="intVal" optional="true" attribute-type="java.lang.Integer" visibile="true" id="_143103498216366">
+                <jpa:column name="int_val" unique="false" nullable="true" insertable="true" updatable="true" table="instance_field"/>
+            </jpa:basic>
+            <jpa:basic name="floatVal" optional="true" attribute-type="java.lang.Float" visibile="true" id="_143103498216367">
+                <jpa:column name="float_val" unique="false" nullable="true" insertable="true" updatable="true" table="instance_field" precision="12"/>
+            </jpa:basic>
+            <jpa:basic name="stringVal" optional="true" attribute-type="byte []" visibile="true" id="_143103498216368">
+                <jpa:column name="string_val" unique="false" nullable="true" insertable="true" updatable="true" table="instance_field"/>
+                <jpa:lob/>
+            </jpa:basic>
+            <jpa:basic name="boolVal" optional="true" attribute-type="java.lang.Boolean" visibile="true" id="_143103498216369">
+                <jpa:column name="bool_val" unique="false" nullable="true" insertable="true" updatable="true" table="instance_field"/>
+            </jpa:basic>
+            <jpa:basic name="index" optional="true" attribute-type="java.lang.Integer" visibile="true" id="_143103498216370">
+                <jpa:column name="index" unique="false" nullable="true" insertable="true" updatable="true" table="instance_field"/>
+            </jpa:basic>
+            <jpa:many-to-one name="serviceInstance" target-entity="ServiceInstance" optional="false" primaryKey="false" connected-entity-id="_143103498214316" connected-attribute-id="_143103498216390" visibile="true" id="_143103498216371">
+                <jpa:join-column name="service_instance_id" referenced-column-name="id" unique="false" nullable="true" insertable="false" updatable="false"/>
+            </jpa:many-to-one>
+            <jpa:many-to-one name="tmfieldId" target-entity="Tmfield" optional="false" primaryKey="false" connected-entity-id="_14310349821314" connected-attribute-id="_143103498216124" visibile="true" id="_143103498216372">
+                <jpa:join-column name="tmfield_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="Person" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214314">
+        <jpa:table name="person">
+            <jpa:unique-constraint>
+                <jpa:column-name>username</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216373">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="person"/>
+            </jpa:id>
+            <jpa:basic name="name" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216374">
+                <jpa:column name="name" unique="false" nullable="false" insertable="true" updatable="true" table="person" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="lastname" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216375">
+                <jpa:column name="lastname" unique="false" nullable="false" insertable="true" updatable="true" table="person" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="ssn" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216376">
+                <jpa:column name="ssn" unique="false" nullable="false" insertable="true" updatable="true" table="person" length="11"/>
+            </jpa:basic>
+            <jpa:basic name="username" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216377">
+                <jpa:column name="username" unique="false" nullable="false" insertable="true" updatable="true" table="person" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="password" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216378">
+                <jpa:column name="password" unique="false" nullable="false" insertable="true" updatable="true" table="person" length="45"/>
+            </jpa:basic>
+            <jpa:basic name="attempts" optional="false" attribute-type="int" visibile="true" id="_143103498216379">
+                <jpa:column name="attempts" unique="false" nullable="false" insertable="true" updatable="true" table="person"/>
+            </jpa:basic>
+            <jpa:basic name="login" optional="true" attribute-type="java.util.Date" visibile="true" id="_143103498216380">
+                <jpa:column name="login" unique="false" nullable="true" insertable="true" updatable="true" table="person"/>
+                <jpa:temporal>TIMESTAMP</jpa:temporal>
+            </jpa:basic>
+            <jpa:many-to-one name="addressId" target-entity="Address" optional="false" primaryKey="false" connected-entity-id="_14310349821427" connected-attribute-id="_143103498216240" visibile="true" id="_143103498216382">
+                <jpa:join-column name="address_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:many-to-one name="accessId" target-entity="Access" optional="false" primaryKey="false" connected-entity-id="_14310349821426" connected-attribute-id="_143103498216131" visibile="true" id="_143103498216383">
+                <jpa:join-column name="access_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:one-to-many name="personHasServiceCollection" target-entity="PersonHasService" mapped-by="person" connected-entity-id="_143103498214210" connected-attribute-id="_143103498216354" visibile="true" id="_143103498216381"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="Service" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214315">
+        <jpa:table name="service">
+            <jpa:unique-constraint>
+                <jpa:column-name>name</jpa:column-name>
+            </jpa:unique-constraint>
+        </jpa:table>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216384">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="service"/>
+            </jpa:id>
+            <jpa:basic name="name" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216385">
+                <jpa:column name="name" unique="false" nullable="false" insertable="true" updatable="true" table="service" length="45"/>
+            </jpa:basic>
+            <jpa:one-to-many name="serviceInstanceCollection" target-entity="ServiceInstance" mapped-by="serviceId" connected-entity-id="_143103498214316" connected-attribute-id="_143103498216391" visibile="true" id="_143103498216387"/>
+            <jpa:one-to-one name="serviceHasField" target-entity="ServiceHasField" mapped-by="service" primaryKey="false" connected-entity-id="_14310349821429" connected-attribute-id="_143103498216249" visibile="true" id="_143103498216386"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="ServiceInstance" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214316">
+        <jpa:table name="service_instance"/>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216388">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="service_instance"/>
+            </jpa:id>
+            <jpa:many-to-one name="serviceId" target-entity="Service" optional="false" primaryKey="false" connected-entity-id="_143103498214315" connected-attribute-id="_143103498216387" visibile="true" id="_143103498216391">
+                <jpa:join-column name="service_id" referenced-column-name="id" unique="false" nullable="true" insertable="true" updatable="true"/>
+            </jpa:many-to-one>
+            <jpa:one-to-many name="personHasServiceCollection" target-entity="PersonHasService" mapped-by="serviceInstance" connected-entity-id="_143103498214210" connected-attribute-id="_143103498216355" visibile="true" id="_143103498216389"/>
+            <jpa:one-to-many name="instanceFieldCollection" target-entity="InstanceField" mapped-by="serviceInstance" connected-entity-id="_143103498214213" connected-attribute-id="_143103498216371" visibile="true" id="_143103498216390"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:entity class="FieldType" jaxb-root-element="false" static-metamodel="false" visibile="true" minimized="false" id="_143103498214317">
+        <jpa:table name="field_type"/>
+        <jpa:attributes>
+            <jpa:id name="id" attribute-type="java.lang.Integer" visibile="true" id="_143103498216392">
+                <jpa:column name="id" unique="false" nullable="false" insertable="true" updatable="true" table="field_type"/>
+            </jpa:id>
+            <jpa:basic name="name" optional="false" attribute-type="java.lang.String" visibile="true" id="_143103498216393">
+                <jpa:column name="name" unique="false" nullable="false" insertable="true" updatable="true" table="field_type" length="45"/>
+            </jpa:basic>
+            <jpa:one-to-many name="tmfieldCollection" target-entity="Tmfield" mapped-by="fieldTypeId" connected-entity-id="_14310349821314" connected-attribute-id="_143103498216021" visibile="true" id="_143103498216394"/>
+        </jpa:attributes>
+    </jpa:entity>
+    <jpa:diagram id="_14310349821262">
+        <plane elementRef="_14310349821211" id="_14310349821293_p">
+            <shape elementRef="_14310349821314" id="_14310349821314_gui">
+                <Bounds x="827.0" y="348.0" width="201.0" height="210.0"/>
+            </shape>
+            <shape elementRef="_14310349821425" id="_14310349821425_gui">
+                <Bounds x="576.0" y="1760.0" width="140.0" height="147.0"/>
+            </shape>
+            <shape elementRef="_14310349821426" id="_14310349821426_gui">
+                <Bounds x="576.0" y="1212.0" width="151.0" height="126.0"/>
+            </shape>
+            <shape elementRef="_14310349821427" id="_14310349821427_gui">
+                <Bounds x="32.0" y="1212.0" width="151.0" height="252.0"/>
+            </shape>
+            <shape elementRef="_14310349821428" id="_14310349821428_gui">
+                <Bounds x="298.0" y="1527.0" width="158.0" height="168.0"/>
+            </shape>
+            <shape elementRef="_14310349821429" id="_14310349821429_gui">
+                <Bounds x="576.0" y="622.0" width="187.0" height="168.0"/>
+            </shape>
+            <shape elementRef="_143103498214210" id="_143103498214210_gui">
+                <Bounds x="32.0" y="622.0" width="202.0" height="168.0"/>
+            </shape>
+            <shape elementRef="_143103498214211" id="_143103498214211_gui">
+                <Bounds x="1092.0" y="32.0" width="149.0" height="168.0"/>
+            </shape>
+            <shape elementRef="_143103498214212" id="_143103498214212_gui">
+                <Bounds x="1305.0" y="348.0" width="159.0" height="126.0"/>
+            </shape>
+            <shape elementRef="_143103498214213" id="_143103498214213_gui">
+                <Bounds x="576.0" y="32.0" width="171.0" height="252.0"/>
+            </shape>
+            <shape elementRef="_143103498214314" id="_143103498214314_gui">
+                <Bounds x="298.0" y="854.0" width="214.0" height="294.0"/>
+            </shape>
+            <shape elementRef="_143103498214315" id="_143103498214315_gui">
+                <Bounds x="827.0" y="854.0" width="198.0" height="147.0"/>
+            </shape>
+            <shape elementRef="_143103498214316" id="_143103498214316_gui">
+                <Bounds x="298.0" y="348.0" width="214.0" height="134.0"/>
+            </shape>
+            <shape elementRef="_143103498214317" id="_143103498214317_gui">
+                <Bounds x="1092.0" y="622.0" width="149.0" height="126.0"/>
+            </shape>
+        </plane>
+    </jpa:diagram>
+</jpa:entity-mappings>

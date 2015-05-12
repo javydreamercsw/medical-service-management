@@ -1,4 +1,4 @@
-package net.sourceforge.javydreamercsw.msm.web.window;
+package net.sourceforge.javydreamercsw.msm.web.window.account;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -8,6 +8,7 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -38,7 +39,7 @@ import net.sourceforge.javydreamercsw.msm.server.PersonServer;
 
 /**
  *
- * @author root
+ * @author Javier Ortiz Bultron <javier.ortiz.78@gmail.com>
  */
 public class AccountManagement extends Window {
 
@@ -68,6 +69,7 @@ public class AccountManagement extends Window {
         setCaption(rb.getString("manage.account"));
         setClosable(true);
         setContent(mainLayout);
+        setIcon(new ThemeResource("icons/patient_record.png"));
     }
 
     private Component buildTableControls() {
@@ -134,10 +136,12 @@ public class AccountManagement extends Window {
                             fieldGroup.commit();
                             Person p = ((BeanItem<Person>) fieldGroup
                             .getItemDataSource()).getBean();
-                            //Default password
-                            p.setPassword("123456");
                             PersonServer ps = new PersonServer(p);
-                            ps.setEncrypted(false);
+                            if (p.getId() == null || p.getId() == 0) {
+                                //New person, set default password
+                                p.setPassword("123456");
+                                ps.setEncrypted(false);
+                            }
                             ps.write2DB();
                             updateTableData();
                             editPerson(null);
@@ -218,7 +222,7 @@ public class AccountManagement extends Window {
     }
 
     private Component buildForm() {
-        form = new GridLayout(5, 3);
+        form = new GridLayout(5, 2);
 
         TextField firstName
                 = new TextField(rb.getString("general.first.name") + ":");
@@ -244,17 +248,21 @@ public class AccountManagement extends Window {
         access.setItemCaptionPropertyId("name");
         access.setImmediate(true);
 
+        AddressPopup address = new AddressPopup(rb);
+
         fieldGroup.bind(firstName, "name");
         fieldGroup.bind(lastName, "lastname");
         fieldGroup.bind(userName, "username");
         fieldGroup.bind(ssn, "ssn");
         fieldGroup.bind(access, "accessId");
+        fieldGroup.bind(address, "addressId");
 
         form.addComponent(firstName);
         form.addComponent(lastName);
         form.addComponent(userName);
         form.addComponent(ssn);
         form.addComponent(access);
+        form.addComponent(address);
         return form;
     }
 
@@ -267,7 +275,7 @@ public class AccountManagement extends Window {
         }
 
         @Override
-        public Object convertToModel(Object itemID, Class targetType, 
+        public Object convertToModel(Object itemID, Class targetType,
                 Locale locale) throws ConversionException {
             if (itemID == null) {
                 return null;
@@ -283,7 +291,7 @@ public class AccountManagement extends Window {
         }
 
         @Override
-        public Object convertToPresentation(Object value, Class targetType, 
+        public Object convertToPresentation(Object value, Class targetType,
                 Locale locale) throws ConversionException {
             for (Object itemId : container.getItemIds()) {
                 Item item = container.getItem(itemId);
