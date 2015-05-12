@@ -1,23 +1,29 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package net.sourceforge.javydreamercsw.msm.controller;
 
 import java.io.Serializable;
+import javax.persistence.Query;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import net.sourceforge.javydreamercsw.msm.db.Access;
+import net.sourceforge.javydreamercsw.msm.db.Address;
+import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.db.Access;
 import net.sourceforge.javydreamercsw.msm.db.Person;
-import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 
 /**
  *
- * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
+ * @author root
  */
 public class PersonJpaController implements Serializable {
 
@@ -43,6 +49,11 @@ public class PersonJpaController implements Serializable {
                 accessId = em.getReference(accessId.getClass(), accessId.getId());
                 person.setAccessId(accessId);
             }
+            Address addressId = person.getAddressId();
+            if (addressId != null) {
+                addressId = em.getReference(addressId.getClass(), addressId.getId());
+                person.setAddressId(addressId);
+            }
             List<PersonHasService> attachedPersonHasServiceList = new ArrayList<PersonHasService>();
             for (PersonHasService personHasServiceListPersonHasServiceToAttach : person.getPersonHasServiceList()) {
                 personHasServiceListPersonHasServiceToAttach = em.getReference(personHasServiceListPersonHasServiceToAttach.getClass(), personHasServiceListPersonHasServiceToAttach.getPersonHasServicePK());
@@ -53,6 +64,10 @@ public class PersonJpaController implements Serializable {
             if (accessId != null) {
                 accessId.getPersonList().add(person);
                 accessId = em.merge(accessId);
+            }
+            if (addressId != null) {
+                addressId.getPersonList().add(person);
+                addressId = em.merge(addressId);
             }
             for (PersonHasService personHasServiceListPersonHasService : person.getPersonHasServiceList()) {
                 Person oldPersonOfPersonHasServiceListPersonHasService = personHasServiceListPersonHasService.getPerson();
@@ -79,6 +94,8 @@ public class PersonJpaController implements Serializable {
             Person persistentPerson = em.find(Person.class, person.getId());
             Access accessIdOld = persistentPerson.getAccessId();
             Access accessIdNew = person.getAccessId();
+            Address addressIdOld = persistentPerson.getAddressId();
+            Address addressIdNew = person.getAddressId();
             List<PersonHasService> personHasServiceListOld = persistentPerson.getPersonHasServiceList();
             List<PersonHasService> personHasServiceListNew = person.getPersonHasServiceList();
             List<String> illegalOrphanMessages = null;
@@ -97,6 +114,10 @@ public class PersonJpaController implements Serializable {
                 accessIdNew = em.getReference(accessIdNew.getClass(), accessIdNew.getId());
                 person.setAccessId(accessIdNew);
             }
+            if (addressIdNew != null) {
+                addressIdNew = em.getReference(addressIdNew.getClass(), addressIdNew.getId());
+                person.setAddressId(addressIdNew);
+            }
             List<PersonHasService> attachedPersonHasServiceListNew = new ArrayList<PersonHasService>();
             for (PersonHasService personHasServiceListNewPersonHasServiceToAttach : personHasServiceListNew) {
                 personHasServiceListNewPersonHasServiceToAttach = em.getReference(personHasServiceListNewPersonHasServiceToAttach.getClass(), personHasServiceListNewPersonHasServiceToAttach.getPersonHasServicePK());
@@ -112,6 +133,14 @@ public class PersonJpaController implements Serializable {
             if (accessIdNew != null && !accessIdNew.equals(accessIdOld)) {
                 accessIdNew.getPersonList().add(person);
                 accessIdNew = em.merge(accessIdNew);
+            }
+            if (addressIdOld != null && !addressIdOld.equals(addressIdNew)) {
+                addressIdOld.getPersonList().remove(person);
+                addressIdOld = em.merge(addressIdOld);
+            }
+            if (addressIdNew != null && !addressIdNew.equals(addressIdOld)) {
+                addressIdNew.getPersonList().add(person);
+                addressIdNew = em.merge(addressIdNew);
             }
             for (PersonHasService personHasServiceListNewPersonHasService : personHasServiceListNew) {
                 if (!personHasServiceListOld.contains(personHasServiceListNewPersonHasService)) {
@@ -169,6 +198,11 @@ public class PersonJpaController implements Serializable {
                 accessId.getPersonList().remove(person);
                 accessId = em.merge(accessId);
             }
+            Address addressId = person.getAddressId();
+            if (addressId != null) {
+                addressId.getPersonList().remove(person);
+                addressId = em.merge(addressId);
+            }
             em.remove(person);
             em.getTransaction().commit();
         } finally {
@@ -223,5 +257,5 @@ public class PersonJpaController implements Serializable {
             em.close();
         }
     }
-
+    
 }

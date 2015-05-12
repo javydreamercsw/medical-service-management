@@ -60,10 +60,6 @@ public class Person implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "attempts")
-    private Integer attempts = 0;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "name")
     private String name;
@@ -86,7 +82,7 @@ public class Person implements Serializable {
     @NotNull
     @Size(min = 1, max = 11)
     @Column(name = "ssn")
-    private String ssn="XXX-XX-XXXX";
+    private String ssn = "XXX-XX-XXXX";
     @JoinColumn(name = "access_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Access accessId;
@@ -96,6 +92,13 @@ public class Person implements Serializable {
     @Column(name = "login")
     @Temporal(TemporalType.TIMESTAMP)
     private Date login;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "attempts")
+    private int attempts;
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Address addressId;
 
     public Person() {
     }
@@ -117,14 +120,6 @@ public class Person implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getAttempts() {
-        return attempts;
-    }
-
-    public void setAttempts(Integer na) {
-        this.attempts = na;
     }
 
     public String getName() {
@@ -212,5 +207,21 @@ public class Person implements Serializable {
     @Override
     public String toString() {
         return "net.sourceforge.javydreamercsw.msm.db.Person[ id=" + id + " ]";
+    }
+
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
+    }
+
+    public Address getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Address addressId) {
+        this.addressId = addressId;
     }
 }

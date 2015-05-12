@@ -13,6 +13,9 @@
     <class>net.sourceforge.javydreamercsw.msm.db.InstanceField</class>
     <class>net.sourceforge.javydreamercsw.msm.db.ServiceHasField</class>
     <class>net.sourceforge.javydreamercsw.msm.db.ServiceInstance</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Address</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.City</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Country</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./target/data/test/medical-service-manager-test;AUTO_SERVER=TRUE"/>
       <property name="javax.persistence.jdbc.password" value=""/>
@@ -40,6 +43,9 @@
     <class>net.sourceforge.javydreamercsw.msm.db.InstanceField</class>
     <class>net.sourceforge.javydreamercsw.msm.db.ServiceHasField</class>
     <class>net.sourceforge.javydreamercsw.msm.db.ServiceInstance</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Address</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.City</class>
+    <class>net.sourceforge.javydreamercsw.msm.db.Country</class>
     <shared-cache-mode>ALL</shared-cache-mode>
     <properties>
       <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>

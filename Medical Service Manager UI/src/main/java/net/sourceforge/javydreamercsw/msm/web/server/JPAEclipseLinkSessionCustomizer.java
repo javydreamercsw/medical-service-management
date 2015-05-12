@@ -44,6 +44,8 @@ public class JPAEclipseLinkSessionCustomizer implements SessionCustomizer {
     /**
      * Get a dataSource connection and set it on the session with
      * lookupType=STRING_LOOKUP
+     * @param session
+     * @throws java.lang.Exception
      */
     @Override
     public void customize(Session session) throws Exception {
