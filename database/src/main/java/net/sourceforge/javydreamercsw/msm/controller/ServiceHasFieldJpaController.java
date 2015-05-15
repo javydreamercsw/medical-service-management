@@ -39,8 +39,8 @@ public class ServiceHasFieldJpaController implements Serializable {
         if (serviceHasField.getServiceHasFieldPK() == null) {
             serviceHasField.setServiceHasFieldPK(new ServiceHasFieldPK());
         }
-        serviceHasField.getServiceHasFieldPK().setServiceId(serviceHasField.getService().getId());
         serviceHasField.getServiceHasFieldPK().setFieldId(serviceHasField.getTmfield().getId());
+        serviceHasField.getServiceHasFieldPK().setServiceId(serviceHasField.getService().getId());
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -78,8 +78,8 @@ public class ServiceHasFieldJpaController implements Serializable {
     }
 
     public void edit(ServiceHasField serviceHasField) throws NonexistentEntityException, Exception {
-        serviceHasField.getServiceHasFieldPK().setServiceId(serviceHasField.getService().getId());
         serviceHasField.getServiceHasFieldPK().setFieldId(serviceHasField.getTmfield().getId());
+        serviceHasField.getServiceHasFieldPK().setServiceId(serviceHasField.getService().getId());
         EntityManager em = null;
         try {
             em = getEntityManager();

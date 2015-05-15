@@ -34,21 +34,21 @@ import net.sourceforge.javydreamercsw.msm.server.EntityListener;
 @Table(name = "tmfield")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "TMField.findAll", query = "SELECT t FROM TMField t"),
-    @NamedQuery(name = "TMField.findById", query = "SELECT t FROM TMField t WHERE t.id = :id"),
-    @NamedQuery(name = "TMField.findByName", query = "SELECT t FROM TMField t WHERE t.name = :name")})
+    @NamedQuery(name = "Field.findAll", query = "SELECT t FROM Field t"),
+    @NamedQuery(name = "Field.findById", query = "SELECT t FROM Field t WHERE t.id = :id"),
+    @NamedQuery(name = "Field.findByName", query = "SELECT t FROM Field t WHERE t.name = :name")})
 public class Field implements Serializable {
     
     private static final long serialVersionUID = 1L;
     @Id
-    @TableGenerator(name = "TMFIELD_GEN",
+    @TableGenerator(name = "FIELD_GEN",
             table = "SEQUENCES",
             pkColumnName = "SEQ_NAME",
             valueColumnName = "SEQ_NUMBER",
-            pkColumnValue = "TMFIELD",
+            pkColumnValue = "FIELD",
             allocationSize = 1,
             initialValue = 1000)
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "TMFIELD_GEN")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "FIELD_GEN")
     @Basic(optional = false)
     @NotNull
     @Column(name = "id")

@@ -18,7 +18,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 
@@ -37,7 +36,7 @@ public class ServiceInstanceJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(ServiceInstance serviceInstance) throws PreexistingEntityException, Exception {
+    public void create(ServiceInstance serviceInstance) {
         if (serviceInstance.getInstanceFieldList() == null) {
             serviceInstance.setInstanceFieldList(new ArrayList<InstanceField>());
         }
@@ -89,11 +88,6 @@ public class ServiceInstanceJpaController implements Serializable {
                 }
             }
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findServiceInstance(serviceInstance.getId()) != null) {
-                throw new PreexistingEntityException("ServiceInstance " + serviceInstance + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();

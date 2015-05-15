@@ -22,7 +22,7 @@ import net.sourceforge.javydreamercsw.msm.db.Address;
 
 /**
  *
- * @author root
+ * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
 public class AddressJpaController implements Serializable {
 

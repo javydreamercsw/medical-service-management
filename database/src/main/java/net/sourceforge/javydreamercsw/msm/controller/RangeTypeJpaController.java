@@ -17,7 +17,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 import net.sourceforge.javydreamercsw.msm.db.RangeType;
 
 /**
@@ -35,7 +34,7 @@ public class RangeTypeJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(RangeType rangeType) throws PreexistingEntityException, Exception {
+    public void create(RangeType rangeType) {
         if (rangeType.getRangeList() == null) {
             rangeType.setRangeList(new ArrayList<Range>());
         }
@@ -60,11 +59,6 @@ public class RangeTypeJpaController implements Serializable {
                 }
             }
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findRangeType(rangeType.getId()) != null) {
-                throw new PreexistingEntityException("RangeType " + rangeType + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();

@@ -17,7 +17,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
-import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 import net.sourceforge.javydreamercsw.msm.db.FieldType;
 
 /**
@@ -35,7 +34,7 @@ public class FieldTypeJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(FieldType fieldType) throws PreexistingEntityException, Exception {
+    public void create(FieldType fieldType) {
         if (fieldType.getTmfieldList() == null) {
             fieldType.setTmfieldList(new ArrayList<Field>());
         }
@@ -44,27 +43,22 @@ public class FieldTypeJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             List<Field> attachedTmfieldList = new ArrayList<Field>();
-            for (Field tmfieldListTMFieldToAttach : fieldType.getTmfieldList()) {
-                tmfieldListTMFieldToAttach = em.getReference(tmfieldListTMFieldToAttach.getClass(), tmfieldListTMFieldToAttach.getId());
-                attachedTmfieldList.add(tmfieldListTMFieldToAttach);
+            for (Field tmfieldListFieldToAttach : fieldType.getTmfieldList()) {
+                tmfieldListFieldToAttach = em.getReference(tmfieldListFieldToAttach.getClass(), tmfieldListFieldToAttach.getId());
+                attachedTmfieldList.add(tmfieldListFieldToAttach);
             }
             fieldType.setTmfieldList(attachedTmfieldList);
             em.persist(fieldType);
-            for (Field tmfieldListTMField : fieldType.getTmfieldList()) {
-                FieldType oldFieldTypeIdOfTmfieldListTMField = tmfieldListTMField.getFieldTypeId();
-                tmfieldListTMField.setFieldTypeId(fieldType);
-                tmfieldListTMField = em.merge(tmfieldListTMField);
-                if (oldFieldTypeIdOfTmfieldListTMField != null) {
-                    oldFieldTypeIdOfTmfieldListTMField.getTmfieldList().remove(tmfieldListTMField);
-                    oldFieldTypeIdOfTmfieldListTMField = em.merge(oldFieldTypeIdOfTmfieldListTMField);
+            for (Field tmfieldListField : fieldType.getTmfieldList()) {
+                FieldType oldFieldTypeIdOfTmfieldListField = tmfieldListField.getFieldTypeId();
+                tmfieldListField.setFieldTypeId(fieldType);
+                tmfieldListField = em.merge(tmfieldListField);
+                if (oldFieldTypeIdOfTmfieldListField != null) {
+                    oldFieldTypeIdOfTmfieldListField.getTmfieldList().remove(tmfieldListField);
+                    oldFieldTypeIdOfTmfieldListField = em.merge(oldFieldTypeIdOfTmfieldListField);
                 }
             }
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findFieldType(fieldType.getId()) != null) {
-                throw new PreexistingEntityException("FieldType " + fieldType + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -81,33 +75,33 @@ public class FieldTypeJpaController implements Serializable {
             List<Field> tmfieldListOld = persistentFieldType.getTmfieldList();
             List<Field> tmfieldListNew = fieldType.getTmfieldList();
             List<String> illegalOrphanMessages = null;
-            for (Field tmfieldListOldTMField : tmfieldListOld) {
-                if (!tmfieldListNew.contains(tmfieldListOldTMField)) {
+            for (Field tmfieldListOldField : tmfieldListOld) {
+                if (!tmfieldListNew.contains(tmfieldListOldField)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain TMField " + tmfieldListOldTMField + " since its fieldTypeId field is not nullable.");
+                    illegalOrphanMessages.add("You must retain Field " + tmfieldListOldField + " since its fieldTypeId field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
             List<Field> attachedTmfieldListNew = new ArrayList<Field>();
-            for (Field tmfieldListNewTMFieldToAttach : tmfieldListNew) {
-                tmfieldListNewTMFieldToAttach = em.getReference(tmfieldListNewTMFieldToAttach.getClass(), tmfieldListNewTMFieldToAttach.getId());
-                attachedTmfieldListNew.add(tmfieldListNewTMFieldToAttach);
+            for (Field tmfieldListNewFieldToAttach : tmfieldListNew) {
+                tmfieldListNewFieldToAttach = em.getReference(tmfieldListNewFieldToAttach.getClass(), tmfieldListNewFieldToAttach.getId());
+                attachedTmfieldListNew.add(tmfieldListNewFieldToAttach);
             }
             tmfieldListNew = attachedTmfieldListNew;
             fieldType.setTmfieldList(tmfieldListNew);
             fieldType = em.merge(fieldType);
-            for (Field tmfieldListNewTMField : tmfieldListNew) {
-                if (!tmfieldListOld.contains(tmfieldListNewTMField)) {
-                    FieldType oldFieldTypeIdOfTmfieldListNewTMField = tmfieldListNewTMField.getFieldTypeId();
-                    tmfieldListNewTMField.setFieldTypeId(fieldType);
-                    tmfieldListNewTMField = em.merge(tmfieldListNewTMField);
-                    if (oldFieldTypeIdOfTmfieldListNewTMField != null && !oldFieldTypeIdOfTmfieldListNewTMField.equals(fieldType)) {
-                        oldFieldTypeIdOfTmfieldListNewTMField.getTmfieldList().remove(tmfieldListNewTMField);
-                        oldFieldTypeIdOfTmfieldListNewTMField = em.merge(oldFieldTypeIdOfTmfieldListNewTMField);
+            for (Field tmfieldListNewField : tmfieldListNew) {
+                if (!tmfieldListOld.contains(tmfieldListNewField)) {
+                    FieldType oldFieldTypeIdOfTmfieldListNewField = tmfieldListNewField.getFieldTypeId();
+                    tmfieldListNewField.setFieldTypeId(fieldType);
+                    tmfieldListNewField = em.merge(tmfieldListNewField);
+                    if (oldFieldTypeIdOfTmfieldListNewField != null && !oldFieldTypeIdOfTmfieldListNewField.equals(fieldType)) {
+                        oldFieldTypeIdOfTmfieldListNewField.getTmfieldList().remove(tmfieldListNewField);
+                        oldFieldTypeIdOfTmfieldListNewField = em.merge(oldFieldTypeIdOfTmfieldListNewField);
                     }
                 }
             }
@@ -142,11 +136,11 @@ public class FieldTypeJpaController implements Serializable {
             }
             List<String> illegalOrphanMessages = null;
             List<Field> tmfieldListOrphanCheck = fieldType.getTmfieldList();
-            for (Field tmfieldListOrphanCheckTMField : tmfieldListOrphanCheck) {
+            for (Field tmfieldListOrphanCheckField : tmfieldListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This FieldType (" + fieldType + ") cannot be destroyed since the TMField " + tmfieldListOrphanCheckTMField + " in its tmfieldList field has a non-nullable fieldTypeId field.");
+                illegalOrphanMessages.add("This FieldType (" + fieldType + ") cannot be destroyed since the Field " + tmfieldListOrphanCheckField + " in its tmfieldList field has a non-nullable fieldTypeId field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);

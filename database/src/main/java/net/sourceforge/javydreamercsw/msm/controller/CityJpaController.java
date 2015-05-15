@@ -22,7 +22,7 @@ import net.sourceforge.javydreamercsw.msm.db.City;
 
 /**
  *
- * @author root
+ * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
 public class CityJpaController implements Serializable {
 

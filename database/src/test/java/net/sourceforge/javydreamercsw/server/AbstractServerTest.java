@@ -59,7 +59,7 @@ public abstract class AbstractServerTest {
     protected void clean() {
         LOG.info("Cleaning after test...");
         FieldJpaController tfc = new FieldJpaController(DataBaseManager.getEntityManagerFactory());
-        for (Field a : tfc.findTMFieldEntities()) {
+        for (Field a : tfc.findFieldEntities()) {
             try {
                 if (a.getId() >= 1000) {
                     deleteInstanceField(a.getInstanceFieldList());
