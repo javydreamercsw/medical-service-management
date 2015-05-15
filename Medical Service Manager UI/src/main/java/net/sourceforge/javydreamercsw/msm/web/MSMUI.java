@@ -60,7 +60,7 @@ public class MSMUI extends UI {
             = new ThemeResource("icons/caduceus.png");
     private Timer timer;
     private Window loginWindow = null;
-    private Window manageAccount = null, manageService=null;
+    private Window manageAccount = null, manageService = null;
     private final HashMap<String, Object> parameters = new HashMap<>();
     private static final Logger LOG
             = Logger.getLogger(MSMUI.class.getName());
@@ -320,11 +320,12 @@ public class MSMUI extends UI {
     }
 
     private void showAccountManagementScreen() {
-        if (manageAccount != null) {
+        if (manageAccount == null) {
+            manageAccount = new AccountManagement(getResourceBundle());
+        } else {
             manageAccount.close();
             removeWindow(manageAccount);
         }
-        manageAccount = new AccountManagement(getResourceBundle());
         manageAccount.center();
         manageAccount.setModal(true);
         manageAccount.setWidth(80, Unit.PERCENTAGE);
@@ -332,16 +333,17 @@ public class MSMUI extends UI {
         manageAccount.setVisible(true);
         addWindow(manageAccount);
     }
-    
+
     private void showServiceManagementScreen() {
-        if (manageService != null) {
+        if (manageService == null) {
+            manageService = new ServiceManagement();
+        } else {
             manageService.close();
             removeWindow(manageService);
         }
-        manageService = new ServiceManagement();
         manageService.center();
         manageService.setModal(true);
-        manageService.setWidth(80, Unit.PERCENTAGE);
+        manageService.setWidth(95, Unit.PERCENTAGE);
         manageService.setHeight(80, Unit.PERCENTAGE);
         manageService.setVisible(true);
         addWindow(manageService);

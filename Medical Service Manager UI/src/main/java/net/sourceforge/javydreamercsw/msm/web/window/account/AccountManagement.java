@@ -169,6 +169,7 @@ public class AccountManagement extends Window {
         table.setSelectable(true);
         table.setWidth(100, Unit.PERCENTAGE);
         table.setHeight(75, Unit.PERCENTAGE);
+        table.setSizeFull();
         table.setImmediate(true);
         table.addValueChangeListener(new ValueChangeListener() {
 

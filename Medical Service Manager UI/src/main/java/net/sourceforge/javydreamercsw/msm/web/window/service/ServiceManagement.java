@@ -1,5 +1,7 @@
 package net.sourceforge.javydreamercsw.msm.web.window.service;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
@@ -22,9 +24,12 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sourceforge.javydreamercsw.msm.controller.ServiceHasFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
@@ -40,7 +45,8 @@ import net.sourceforge.javydreamercsw.msm.web.window.field.FieldManagement;
  *
  * @author Javier Ortiz Bultron <javier.ortiz.78@gmail.com>
  */
-public class ServiceManagement extends Window implements Handler, ItemClickListener {
+public class ServiceManagement extends Window implements Handler,
+        ItemClickListener, ValueChangeListener {
 
     private final HorizontalSplitPanel hsplit = new HorizontalSplitPanel();
     private final Tree tree = new Tree();
@@ -76,6 +82,11 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
         setClosable(true);
         setContent(mainLayout);
         setIcon(new ThemeResource("icons/stethoscope.png"));
+        center();
+        setModal(true);
+        setWidth(100, Unit.PERCENTAGE);
+        setHeight(100, Unit.PERCENTAGE);
+        setVisible(true);
     }
 
     private Component buildForm() {
@@ -92,6 +103,22 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
                             Service s = ((BeanItem<Service>) getFieldGroup()
                             .getItemDataSource()).getBean();
                             ServiceServer ss = new ServiceServer(s);
+                            for(ServiceHasField shf:ss.getServiceHasFieldList()){
+                                new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).destroy(shf.getServiceHasFieldPK());
+                            }
+                            ss.write2DB();
+                            for (TMField f : (Collection<TMField>) table.getContainerDataSource().getItemIds()) {
+                                boolean present = false;
+                                for (ServiceHasField shf : ss.getServiceHasFieldList()) {
+                                    if (shf.getTmfield().getId().equals(f.getId())) {
+                                        present = true;
+                                        break;
+                                    }
+                                }
+                                if (!present) {
+                                    ss.addField(f, ss.getServiceHasFieldList().size() + 1);
+                                }
+                            }
                             ss.write2DB();
                             update();
                         } catch (CommitException ex) {
@@ -116,12 +143,25 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
                         showFieldManagement();
                     }
                 });
+        Button remove = new Button(MSMUI.getResourceBundle().getString("general.remove") + " "
+                + MSMUI.getResourceBundle().getString("general.field"),
+                new ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        Set<TMField> selectedValues = (Set<TMField>) table.getValue();
+                        for (TMField field : selectedValues) {
+                            table.removeItem(field);
+                        }
+                    }
+                });
         buttons.add(save);
         buttons.add(add);
         buttons.add(discard);
+        buttons.add(remove);
         controls.addComponent(save);
         controls.addComponent(discard);
         controls.addComponent(add);
+        controls.addComponent(remove);
         //--------------
         form.setSpacing(true);
         TextField name
@@ -133,15 +173,19 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
         getFieldGroup().bind(name, "name");
 
         table.setSelectable(true);
+        table.setMultiSelect(true);
         table.setWidth(100, Unit.PERCENTAGE);
         table.setHeight(75, Unit.PERCENTAGE);
+        table.setSizeFull();
         table.setImmediate(true);
+        table.addValueChangeListener(this);
 
         table.addGeneratedColumn("rangeId", new RangeGenerator());
         table.addGeneratedColumn("desc", new ByteToStringGenerator());
         table.addGeneratedColumn("fieldTypeId", new FieldTypeGenerator());
         table.addGeneratedColumn("sequence", new SequenceGenerator());
-        form.addComponent(table);
+        table.sort(new Object[]{"sequence"}, new boolean[]{false});
+        form.addComponent(getTable());
 
         setEnabledButtons(false);
 
@@ -194,9 +238,9 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
         }
         BeanItemContainer<TMField> container = new BeanItemContainer<>(
                 TMField.class, fields);
-        table.setContainerDataSource(container);
-        table.setVisibleColumns("sequence", "name", "desc", "fieldTypeId", "rangeId");
-        table.setColumnHeaders(new String[]{
+        getTable().setContainerDataSource(container);
+        getTable().setVisibleColumns("sequence", "name", "desc", "fieldTypeId", "rangeId");
+        getTable().setColumnHeaders(new String[]{
             MSMUI.getResourceBundle().getString("general.sequence"),
             MSMUI.getResourceBundle().getString("general.name"),
             MSMUI.getResourceBundle().getString("general.desc"),
@@ -209,6 +253,22 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
      */
     public static FieldGroup getFieldGroup() {
         return fieldGroup;
+    }
+
+    /**
+     * @return the table
+     */
+    public Table getTable() {
+        return table;
+    }
+
+    @Override
+    public void valueChange(Property.ValueChangeEvent event) {
+        if (table.getValue() != null && buttons.size() >= 4) {
+            buttons.get(3).setEnabled(true);
+        } else if (buttons.size() >= 4) {
+            buttons.get(3).setEnabled(false);
+        }
     }
 
     private class CreateService extends Action {
@@ -230,7 +290,7 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
     private void update() {
         //Clean the tree
         tree.removeAllItems();
-        tree.addItem(MSMUI.getResourceBundle().getString("general.root"));
+        tree.addItem(MSMUI.getResourceBundle().getString("available.services"));
         //Rebuild
         List<Service> services
                 = new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).findServiceEntities();
@@ -256,11 +316,11 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
         for (Service s : services) {
             tree.addItem(s);
             tree.setItemCaption(s, s.getName());
-            tree.setParent(s, MSMUI.getResourceBundle().getString("general.root"));
+            tree.setParent(s, MSMUI.getResourceBundle().getString("available.services"));
             tree.setChildrenAllowed(s, false);
         }
         //Expand tree
-        tree.expandItemsRecursively(MSMUI.getResourceBundle().getString("general.root"));
+        tree.expandItemsRecursively(MSMUI.getResourceBundle().getString("available.services"));
     }
 
     @Override
@@ -283,6 +343,6 @@ public class ServiceManagement extends Window implements Handler, ItemClickListe
     }
 
     private void showFieldManagement() {
-        getUI().addWindow(new FieldManagement());
+        getUI().addWindow(new FieldManagement(this));
     }
 }

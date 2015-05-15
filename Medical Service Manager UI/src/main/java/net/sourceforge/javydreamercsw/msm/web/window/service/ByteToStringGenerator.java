@@ -10,9 +10,6 @@ import net.sourceforge.javydreamercsw.msm.db.TMField;
  */
 public class ByteToStringGenerator implements Table.ColumnGenerator {
 
-    public ByteToStringGenerator() {
-    }
-
     @Override
     public Object generateCell(Table source, Object itemId, Object columnId) {
         return new Label(new String(((TMField) itemId).getDesc()));
