@@ -32,11 +32,25 @@ public final class ServiceServer extends Service implements EntityServer<Service
         setServiceInstanceList(new ArrayList<ServiceInstance>());
     }
 
+    private void proccessFields() throws Exception {
+        ServiceHasFieldJpaController controller
+                = new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory());
+        for (ServiceHasField shf : getServiceHasFieldList()) {
+            if (controller.findServiceHasField(shf.getServiceHasFieldPK()) == null) {
+                controller.create(shf);
+            } else {
+                controller.edit(shf);
+            }
+        }
+    }
+
     @Override
     public int write2DB() throws Exception {
         if (getId() != null && getId() > 0) {
             Service entity = getEntity();
             update(entity, this);
+            proccessFields();
+            update();
             new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).edit(entity);
             setId(getEntity().getId());
         } else {
@@ -44,6 +58,7 @@ public final class ServiceServer extends Service implements EntityServer<Service
             update(a, this);
             new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).create(a);
             setId(a.getId());
+            proccessFields();
             update();
         }
         return getId();
@@ -90,7 +105,7 @@ public final class ServiceServer extends Service implements EntityServer<Service
     public void addField(TMField field, int index) throws Exception {
         if (getId() == null) {
             throw new MSMException("Service must exist in DB before adding fields to it!");
-        } else if (index - 1 <= getServiceHasFieldList().size()) {
+        } else {
             ServiceHasField shf = new ServiceHasField(getId(), field.getId());
             shf.setIndex(index);
             shf.setTmfield(field);
@@ -108,15 +123,10 @@ public final class ServiceServer extends Service implements EntityServer<Service
                 for (ServiceHasField s : getServiceHasFieldList()) {
                     if (s.getIndex() >= index) {
                         s.setIndex(s.getIndex() + 1);
-                        new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(s);
                     }
                 }
             }
-            new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).create(shf);
-            update();
-        } else {
-            throw new MSMException("Invalid index: " + index + ". Size: "
-                    + getServiceHasFieldList().size());
+            getServiceHasFieldList().add(shf);
         }
     }
 }
