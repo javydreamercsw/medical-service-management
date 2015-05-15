@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>TMedical-Service-Manager-production</artifactId>
+    <artifactId>Medical-Service-Manager-production</artifactId>
     <name>Medical Service Manager Production</name>
     <packaging>war</packaging>
     
@@ -21,7 +21,7 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>Tuberculosis-Manager-ui</artifactId>
+            <artifactId>Medical-Service-Manager-UI</artifactId>
             <version>${project.version}</version>
             <type>war</type>
             <scope>runtime</scope>
@@ -32,14 +32,14 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>Tuberculosis-Manager-ui</artifactId>
+            <artifactId>Medical-Service-Manager-UI</artifactId>
             <version>${project.version}</version>
             <classifier>classes</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>Tuberculosis-Manager-widgetset</artifactId>
+            <artifactId>Medical-Service-Manager-widgetset</artifactId>
             <version>${project.version}</version>
             <classifier>sources</classifier>
             <scope>provided</scope>
@@ -67,7 +67,7 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>${project.groupId}</groupId>
-                                            <artifactId>Tuberculosis-Manager-ui</artifactId>
+                                            <artifactId>Medical-Service-Manager-UI</artifactId>
                                             <version>${project.version}</version>
                                             <type>war</type>
                                             <includes>VAADIN/themes/**/*</includes>
@@ -77,7 +77,7 @@
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>${project.groupId}</groupId>
-                                            <artifactId>Tuberculosis-Manager-widgetset</artifactId>
+                                            <artifactId>Medical-Service-Manager-widgetset</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
                                             <includes>net/sourceforge/javydreamercsw/tuberculosis/manager/**</includes>
@@ -110,7 +110,7 @@
                         <groupId>com.vaadin</groupId>
                         <artifactId>vaadin-maven-plugin</artifactId>
                         <configuration>
-                            <module>net.sourceforge.javydreamercsw.tuberculosis.manager.MyAppWidgetset</module>
+                            <module>net.sourceforge.javydreamercsw.msm.manager.MSMWidgetset</module>
                             <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
                             <warSourceDirectory>${vaadin.resource.directory}</warSourceDirectory>
                             <webappDirectory>${vaadin.resource.directory}/VAADIN/widgetsets</webappDirectory>
@@ -146,7 +146,7 @@
                                     <excludes>
                                         <!-- Exclude larger development time widgetset. -->
                                         <!-- The relevant classes are copied to the WAR above. -->
-                                        <exclude>WEB-INF/lib/Tuberculosis-Manager-widgetset-*.jar</exclude>
+                                        <exclude>WEB-INF/lib/Medical-Service-Manager-widgetset-*.jar</exclude>
                                         <!-- Exclude the Sass compiler and its dependencies. -->
                                         <!-- The production WAR includes a precompiled theme. -->
                                         <exclude>WEB-INF/lib/vaadin-sass-compiler-*.jar</exclude>
