@@ -16,6 +16,8 @@ import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
  */
 public final class FieldServer extends Field implements EntityServer<Field> {
 
+    private static final long serialVersionUID = 4105045162463801458L;
+
     public FieldServer(int id) {
         setId(id);
         update();
@@ -54,7 +56,7 @@ public final class FieldServer extends Field implements EntityServer<Field> {
     public Field getEntity() throws IllegalArgumentException {
         FieldJpaController c
                 = new FieldJpaController(DataBaseManager.getEntityManagerFactory());
-        return c.findTMField(getId());
+        return c.findField(getId());
     }
 
     @Override
@@ -92,7 +94,7 @@ public final class FieldServer extends Field implements EntityServer<Field> {
     private static boolean fieldExist(String name) {
         parameters.clear();
         parameters.put("name", name);
-        return !DataBaseManager.namedQuery("TMField.findByName", parameters).isEmpty();
+        return !DataBaseManager.namedQuery("Field.findByName", parameters).isEmpty();
     }
 
     public static Field createStringField(String name, String desc) throws MSMException {

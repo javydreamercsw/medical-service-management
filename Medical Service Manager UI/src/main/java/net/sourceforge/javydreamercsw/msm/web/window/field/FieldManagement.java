@@ -36,6 +36,8 @@ import net.sourceforge.javydreamercsw.msm.web.window.service.ServiceManagement;
 public class FieldManagement extends Window implements ItemClickListener,
         ValueChangeListener {
 
+    private static final long serialVersionUID = -6862697900642952069L;
+
     private final FieldGroup fieldGroup = new FieldGroup();
     private final Table available = new Table(null);
     private final Table selected = new Table(null);
@@ -111,7 +113,7 @@ public class FieldManagement extends Window implements ItemClickListener,
 
     private Component buildAvailableTable() {
         List<Field> fields
-                = new FieldJpaController(DataBaseManager.getEntityManagerFactory()).findTMFieldEntities();
+                = new FieldJpaController(DataBaseManager.getEntityManagerFactory()).findFieldEntities();
         createTMFieldTable(available, new BeanItemContainer<>(
                 Field.class, fields));
         return available;
@@ -127,6 +129,7 @@ public class FieldManagement extends Window implements ItemClickListener,
         HorizontalLayout layout = new HorizontalLayout();
         Button save = new Button(MSMUI.getResourceBundle().getString("general.save"),
                 new com.vaadin.ui.Button.ClickListener() {
+                    private static final long serialVersionUID = 5019806363620874205L;
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -141,6 +144,7 @@ public class FieldManagement extends Window implements ItemClickListener,
                 });
         Button discard = new Button(MSMUI.getResourceBundle().getString("general.discard"),
                 new com.vaadin.ui.Button.ClickListener() {
+                    private static final long serialVersionUID = 5019806363620874205L;
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -178,6 +182,7 @@ public class FieldManagement extends Window implements ItemClickListener,
     private Component buildSelectionControls() {
         HorizontalLayout layout = new HorizontalLayout();
         down = new Button("v", new com.vaadin.ui.Button.ClickListener() {
+            private static final long serialVersionUID = 5019806363620874205L;
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -192,6 +197,7 @@ public class FieldManagement extends Window implements ItemClickListener,
         });
         down.setEnabled(false);
         up = new Button("^", new com.vaadin.ui.Button.ClickListener() {
+            private static final long serialVersionUID = 5019806363620874205L;
 
             @Override
             public void buttonClick(Button.ClickEvent event) {

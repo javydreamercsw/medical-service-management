@@ -21,7 +21,7 @@ import net.sourceforge.javydreamercsw.msm.db.Country;
 
 /**
  *
- * @author root
+ * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
 public class CountryJpaController implements Serializable {
 

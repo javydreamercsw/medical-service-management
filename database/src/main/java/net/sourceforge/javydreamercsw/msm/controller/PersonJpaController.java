@@ -23,7 +23,7 @@ import net.sourceforge.javydreamercsw.msm.db.Person;
 
 /**
  *
- * @author root
+ * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
 public class PersonJpaController implements Serializable {
 
