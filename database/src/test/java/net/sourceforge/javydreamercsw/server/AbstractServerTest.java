@@ -10,7 +10,7 @@ import net.sourceforge.javydreamercsw.msm.controller.PersonHasServiceJpaControll
 import net.sourceforge.javydreamercsw.msm.controller.PersonJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceHasFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceInstanceJpaController;
-import net.sourceforge.javydreamercsw.msm.controller.TMFieldJpaController;
+import net.sourceforge.javydreamercsw.msm.controller.FieldJpaController;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
 import net.sourceforge.javydreamercsw.msm.db.Access;
@@ -20,7 +20,7 @@ import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -58,8 +58,8 @@ public abstract class AbstractServerTest {
 
     protected void clean() {
         LOG.info("Cleaning after test...");
-        TMFieldJpaController tfc = new TMFieldJpaController(DataBaseManager.getEntityManagerFactory());
-        for (TMField a : tfc.findTMFieldEntities()) {
+        FieldJpaController tfc = new FieldJpaController(DataBaseManager.getEntityManagerFactory());
+        for (Field a : tfc.findTMFieldEntities()) {
             try {
                 if (a.getId() >= 1000) {
                     deleteInstanceField(a.getInstanceFieldList());

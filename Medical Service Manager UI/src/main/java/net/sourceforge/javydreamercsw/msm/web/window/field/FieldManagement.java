@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import net.sourceforge.javydreamercsw.msm.controller.TMFieldJpaController;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.controller.FieldJpaController;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.web.MSMUI;
 import net.sourceforge.javydreamercsw.msm.web.window.service.ByteToStringGenerator;
@@ -77,10 +77,10 @@ public class FieldManagement extends Window implements ItemClickListener,
     }
 
     private Table createTMFieldTable(Table table,
-            BeanItemContainer<TMField> container) {
+            BeanItemContainer<Field> container) {
         if (container == null) {
-            container = new BeanItemContainer<>(TMField.class,
-                    new ArrayList<TMField>());
+            container = new BeanItemContainer<>(Field.class,
+                    new ArrayList<Field>());
         }
         table.removeAllItems();
         table.setContainerDataSource(container);
@@ -110,16 +110,16 @@ public class FieldManagement extends Window implements ItemClickListener,
     }
 
     private Component buildAvailableTable() {
-        List<TMField> fields
-                = new TMFieldJpaController(DataBaseManager.getEntityManagerFactory()).findTMFieldEntities();
+        List<Field> fields
+                = new FieldJpaController(DataBaseManager.getEntityManagerFactory()).findTMFieldEntities();
         createTMFieldTable(available, new BeanItemContainer<>(
-                TMField.class, fields));
+                Field.class, fields));
         return available;
     }
 
     private Component buildSelectedTable() {
-        List<TMField> fields = new ArrayList<>();
-        createTMFieldTable(selected, new BeanItemContainer<>(TMField.class, fields));
+        List<Field> fields = new ArrayList<>();
+        createTMFieldTable(selected, new BeanItemContainer<>(Field.class, fields));
         return selected;
     }
 
@@ -131,7 +131,7 @@ public class FieldManagement extends Window implements ItemClickListener,
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         //Process the changes
-                        for (TMField f : (Collection<TMField>) selected.getContainerDataSource().getItemIds()) {
+                        for (Field f : (Collection<Field>) selected.getContainerDataSource().getItemIds()) {
                             if (sm.getTable().getItem(f) == null) {
                                 sm.getTable().addItem(f);
                             }
@@ -162,17 +162,17 @@ public class FieldManagement extends Window implements ItemClickListener,
         return layout;
     }
 
-    private void update(TMField field) {
+    private void update(Field field) {
         if (field == null) {
-            field = new TMField();
+            field = new Field();
         }
-        BeanItem<TMField> item = new BeanItem<>(field);
+        BeanItem<Field> item = new BeanItem<>(field);
         fieldGroup.setItemDataSource(item);
     }
 
     @Override
     public void itemClick(ItemClickEvent event) {
-        update((TMField) event.getItemId());
+        update((Field) event.getItemId());
     }
 
     private Component buildSelectionControls() {
@@ -181,8 +181,8 @@ public class FieldManagement extends Window implements ItemClickListener,
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Set<TMField> selectedValues = (Set<TMField>) available.getValue();
-                for (TMField field : selectedValues) {
+                Set<Field> selectedValues = (Set<Field>) available.getValue();
+                for (Field field : selectedValues) {
                     if (selected.getItem(field) == null) {
                         //Not removing from available for cases you might need mutiple copies of fields
                         selected.addItem(field);
@@ -195,8 +195,8 @@ public class FieldManagement extends Window implements ItemClickListener,
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                Set<TMField> selectedValues = (Set<TMField>) selected.getValue();
-                for (TMField field : selectedValues) {
+                Set<Field> selectedValues = (Set<Field>) selected.getValue();
+                for (Field field : selectedValues) {
                     selected.removeItem(field);
                 }
             }
@@ -211,9 +211,9 @@ public class FieldManagement extends Window implements ItemClickListener,
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
-        Set<TMField> selectedValues = (Set<TMField>) available.getValue();
+        Set<Field> selectedValues = (Set<Field>) available.getValue();
         down.setEnabled(selectedValues != null && selectedValues.size() > 0);
-        selectedValues = (Set<TMField>) selected.getValue();
+        selectedValues = (Set<Field>) selected.getValue();
         up.setEnabled(selectedValues != null && selectedValues.size() > 0);
     }
 }

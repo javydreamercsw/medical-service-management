@@ -17,7 +17,7 @@ import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntit
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
 import net.sourceforge.javydreamercsw.msm.db.InstanceFieldPK;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 
 /**
@@ -44,7 +44,7 @@ public class InstanceFieldJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            TMField tmfieldId = instanceField.getTmfieldId();
+            Field tmfieldId = instanceField.getTmfieldId();
             if (tmfieldId != null) {
                 tmfieldId = em.getReference(tmfieldId.getClass(), tmfieldId.getId());
                 instanceField.setTmfieldId(tmfieldId);
@@ -83,8 +83,8 @@ public class InstanceFieldJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             InstanceField persistentInstanceField = em.find(InstanceField.class, instanceField.getInstanceFieldPK());
-            TMField tmfieldIdOld = persistentInstanceField.getTmfieldId();
-            TMField tmfieldIdNew = instanceField.getTmfieldId();
+            Field tmfieldIdOld = persistentInstanceField.getTmfieldId();
+            Field tmfieldIdNew = instanceField.getTmfieldId();
             ServiceInstance serviceInstanceOld = persistentInstanceField.getServiceInstance();
             ServiceInstance serviceInstanceNew = instanceField.getServiceInstance();
             if (tmfieldIdNew != null) {
@@ -141,7 +141,7 @@ public class InstanceFieldJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The instanceField with id " + id + " no longer exists.", enfe);
             }
-            TMField tmfieldId = instanceField.getTmfieldId();
+            Field tmfieldId = instanceField.getTmfieldId();
             if (tmfieldId != null) {
                 tmfieldId.getInstanceFieldList().remove(instanceField);
                 tmfieldId = em.merge(tmfieldId);

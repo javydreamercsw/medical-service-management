@@ -33,7 +33,7 @@ import net.sourceforge.javydreamercsw.msm.controller.ServiceHasFieldJpaControlle
 import net.sourceforge.javydreamercsw.msm.controller.ServiceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.server.FieldServer;
 import net.sourceforge.javydreamercsw.msm.server.FieldTypeServer;
@@ -107,7 +107,7 @@ public class ServiceManagement extends Window implements Handler,
                                 new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).destroy(shf.getServiceHasFieldPK());
                             }
                             ss.write2DB();
-                            for (TMField f : (Collection<TMField>) table.getContainerDataSource().getItemIds()) {
+                            for (Field f : (Collection<Field>) table.getContainerDataSource().getItemIds()) {
                                 boolean present = false;
                                 for (ServiceHasField shf : ss.getServiceHasFieldList()) {
                                     if (shf.getTmfield().getId().equals(f.getId())) {
@@ -148,8 +148,8 @@ public class ServiceManagement extends Window implements Handler,
                 new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
-                        Set<TMField> selectedValues = (Set<TMField>) table.getValue();
-                        for (TMField field : selectedValues) {
+                        Set<Field> selectedValues = (Set<Field>) table.getValue();
+                        for (Field field : selectedValues) {
                             table.removeItem(field);
                         }
                     }
@@ -230,14 +230,14 @@ public class ServiceManagement extends Window implements Handler,
         }
         BeanItem<Service> item = new BeanItem<>(service);
         getFieldGroup().setItemDataSource(item);
-        List<TMField> fields = new ArrayList<>();
+        List<Field> fields = new ArrayList<>();
         if (service.getServiceHasFieldList() != null) {
             for (ServiceHasField shf : service.getServiceHasFieldList()) {
                 fields.add(shf.getTmfield());
             }
         }
-        BeanItemContainer<TMField> container = new BeanItemContainer<>(
-                TMField.class, fields);
+        BeanItemContainer<Field> container = new BeanItemContainer<>(
+                Field.class, fields);
         getTable().setContainerDataSource(container);
         getTable().setVisibleColumns("sequence", "name", "desc", "fieldTypeId", "rangeId");
         getTable().setColumnHeaders(new String[]{

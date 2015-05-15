@@ -44,7 +44,7 @@ public class ServiceHasField implements Serializable {
     private int index;
     @JoinColumn(name = "field_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private TMField tmfield;
+    private Field tmfield;
     @JoinColumn(name = "service_id", referencedColumnName = "id", insertable = false, updatable = false)
     @OneToOne(optional = false)
     private Service service;
@@ -81,11 +81,11 @@ public class ServiceHasField implements Serializable {
         this.index = index;
     }
 
-    public TMField getTmfield() {
+    public Field getTmfield() {
         return tmfield;
     }
 
-    public void setTmfield(TMField tmfield) {
+    public void setTmfield(Field tmfield) {
         this.tmfield = tmfield;
     }
 

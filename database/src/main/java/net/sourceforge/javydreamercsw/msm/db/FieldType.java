@@ -55,7 +55,7 @@ public class FieldType implements Serializable {
     @Column(name = "name")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "fieldTypeId")
-    private List<TMField> tmfieldList;
+    private List<Field> tmfieldList;
 
     public FieldType() {
     }
@@ -86,11 +86,11 @@ public class FieldType implements Serializable {
     }
 
     @XmlTransient
-    public List<TMField> getTmfieldList() {
+    public List<Field> getTmfieldList() {
         return tmfieldList;
     }
 
-    public void setTmfieldList(List<TMField> tmfieldList) {
+    public void setTmfieldList(List<Field> tmfieldList) {
         this.tmfieldList = tmfieldList;
     }
 

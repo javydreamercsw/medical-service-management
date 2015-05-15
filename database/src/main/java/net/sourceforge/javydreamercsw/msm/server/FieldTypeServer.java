@@ -2,7 +2,7 @@ package net.sourceforge.javydreamercsw.msm.server;
 
 import java.util.ArrayList;
 import net.sourceforge.javydreamercsw.msm.db.FieldType;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.controller.FieldTypeJpaController;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 
@@ -25,7 +25,7 @@ public final class FieldTypeServer extends FieldType implements EntityServer<Fie
     public FieldTypeServer(String name){
         super();
         setName(name);
-        setTmfieldList(new ArrayList<TMField>());
+        setTmfieldList(new ArrayList<Field>());
     }
 
     @Override
@@ -57,7 +57,7 @@ public final class FieldTypeServer extends FieldType implements EntityServer<Fie
         target.setId(source.getId());
         target.setName(source.getName());
         if (target.getTmfieldList() == null) {
-            target.setTmfieldList(new ArrayList<TMField>());
+            target.setTmfieldList(new ArrayList<Field>());
         } else {
             target.getTmfieldList().clear();
         }

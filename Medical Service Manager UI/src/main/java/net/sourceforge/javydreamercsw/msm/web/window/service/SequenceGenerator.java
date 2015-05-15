@@ -5,7 +5,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 
 /**
  *
@@ -18,7 +18,7 @@ public class SequenceGenerator implements Table.ColumnGenerator {
         Service s = ((BeanItem<Service>) ServiceManagement.getFieldGroup().getItemDataSource()).getBean();
         int seq = -1;
         for (ServiceHasField shf : s.getServiceHasFieldList()) {
-            if (shf.getTmfield().getId().equals(((TMField) itemId).getId())) {
+            if (shf.getTmfield().getId().equals(((Field) itemId).getId())) {
                 seq = shf.getIndex();
                 break;
             }

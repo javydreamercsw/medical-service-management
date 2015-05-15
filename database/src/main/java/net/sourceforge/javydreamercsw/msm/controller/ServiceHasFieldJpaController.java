@@ -15,7 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.db.Service;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasFieldPK;
@@ -45,7 +45,7 @@ public class ServiceHasFieldJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            TMField tmfield = serviceHasField.getTmfield();
+            Field tmfield = serviceHasField.getTmfield();
             if (tmfield != null) {
                 tmfield = em.getReference(tmfield.getClass(), tmfield.getId());
                 serviceHasField.setTmfield(tmfield);
@@ -85,8 +85,8 @@ public class ServiceHasFieldJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             ServiceHasField persistentServiceHasField = em.find(ServiceHasField.class, serviceHasField.getServiceHasFieldPK());
-            TMField tmfieldOld = persistentServiceHasField.getTmfield();
-            TMField tmfieldNew = serviceHasField.getTmfield();
+            Field tmfieldOld = persistentServiceHasField.getTmfield();
+            Field tmfieldNew = serviceHasField.getTmfield();
             Service serviceOld = persistentServiceHasField.getService();
             Service serviceNew = serviceHasField.getService();
             if (tmfieldNew != null) {
@@ -143,7 +143,7 @@ public class ServiceHasFieldJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The serviceHasField with id " + id + " no longer exists.", enfe);
             }
-            TMField tmfield = serviceHasField.getTmfield();
+            Field tmfield = serviceHasField.getTmfield();
             if (tmfield != null) {
                 tmfield.getServiceHasFieldList().remove(serviceHasField);
                 tmfield = em.merge(tmfield);
