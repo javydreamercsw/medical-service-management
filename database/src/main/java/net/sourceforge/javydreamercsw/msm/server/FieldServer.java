@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.sourceforge.javydreamercsw.msm.controller.TMFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.db.TMField;
 import net.sourceforge.javydreamercsw.msm.db.InstanceField;
+import net.sourceforge.javydreamercsw.msm.db.Range;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
@@ -29,6 +30,7 @@ public final class FieldServer extends TMField implements EntityServer<TMField> 
         setName(name);
         setInstanceFieldList(new ArrayList<InstanceField>());
         setServiceHasFieldList(new ArrayList<ServiceHasField>());
+        setRangeList(new ArrayList<Range>());
     }
 
     @Override
@@ -74,6 +76,12 @@ public final class FieldServer extends TMField implements EntityServer<TMField> 
             target.getServiceHasFieldList().clear();
         }
         target.getServiceHasFieldList().addAll(source.getServiceHasFieldList());
+        if (target.getRangeList() == null) {
+            target.setRangeList(new ArrayList<Range>());
+        } else {
+            target.getRangeList().clear();
+        }
+        target.getRangeList().addAll(source.getRangeList());
     }
 
     @Override

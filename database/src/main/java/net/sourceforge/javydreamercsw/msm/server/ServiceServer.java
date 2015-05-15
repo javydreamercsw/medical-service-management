@@ -8,6 +8,7 @@ import net.sourceforge.javydreamercsw.msm.controller.ServiceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.db.manager.MSMException;
 
 /**
  *
@@ -78,29 +79,44 @@ public final class ServiceServer extends Service implements EntityServer<Service
         update(this, getEntity());
     }
 
+    /**
+     * Add afield to the service.
+     *
+     * @param field Field to add.
+     * @param index Order on the list of fields. (Field is inserted at the
+     * specified spot.
+     * @throws Exception
+     */
     public void addField(TMField field, int index) throws Exception {
-        ServiceHasField shf = new ServiceHasField(getId(), field.getId());
-        shf.setIndex(index);
-        shf.setTmfield(field);
-        shf.setService(getEntity());
-        //Check if there's a field on that spot
-        boolean exists = false;
-        for (ServiceHasField s : getServiceHasFieldList()) {
-            if (s.getIndex() == index) {
-                exists = true;
-                break;
-            }
-        }
-        if (exists) {
-            //Insert into specified index and push the others
+        if (getId() == null) {
+            throw new MSMException("Service must exist in DB before adding fields to it!");
+        } else if (index - 1 <= getServiceHasFieldList().size()) {
+            ServiceHasField shf = new ServiceHasField(getId(), field.getId());
+            shf.setIndex(index);
+            shf.setTmfield(field);
+            shf.setService(getEntity());
+            //Check if there's a field on that spot
+            boolean exists = false;
             for (ServiceHasField s : getServiceHasFieldList()) {
-                if (s.getIndex() >= index) {
-                    s.setIndex(s.getIndex() + 1);
-                    new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(s);
+                if (s.getIndex() == index) {
+                    exists = true;
+                    break;
                 }
             }
+            if (exists) {
+                //Insert into specified index and push the others
+                for (ServiceHasField s : getServiceHasFieldList()) {
+                    if (s.getIndex() >= index) {
+                        s.setIndex(s.getIndex() + 1);
+                        new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).edit(s);
+                    }
+                }
+            }
+            new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).create(shf);
+            update();
+        } else {
+            throw new MSMException("Invalid index: " + index + ". Size: "
+                    + getServiceHasFieldList().size());
         }
-        new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).create(shf);
-        update();
     }
 }

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,7 +38,7 @@ import net.sourceforge.javydreamercsw.msm.server.EntityListener;
     @NamedQuery(name = "TMField.findById", query = "SELECT t FROM TMField t WHERE t.id = :id"),
     @NamedQuery(name = "TMField.findByName", query = "SELECT t FROM TMField t WHERE t.name = :name")})
 public class TMField implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
     @Id
     @TableGenerator(name = "TMFIELD_GEN",
@@ -57,9 +58,6 @@ public class TMField implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "name")
     private String name;
-    @Lob
-    @Column(name = "desc")
-    private byte[] desc;
     @JoinColumn(name = "field_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private FieldType fieldTypeId;
@@ -70,6 +68,11 @@ public class TMField implements Serializable {
     private List<InstanceField> instanceFieldList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tmfield")
     private List<ServiceHasField> serviceHasFieldList;
+    @Lob
+    @Column(name = "desc")
+    private byte[] desc;
+    @ManyToMany(mappedBy = "tMFieldList")
+    private List<Range> rangeList;
 
     public TMField() {
     }
@@ -97,14 +100,6 @@ public class TMField implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public byte[] getDesc() {
-        return desc;
-    }
-
-    public void setDesc(byte[] desc) {
-        this.desc = desc;
     }
 
     public FieldType getFieldTypeId() {
@@ -161,5 +156,22 @@ public class TMField implements Serializable {
     @Override
     public String toString() {
         return "net.sourceforge.javydreamercsw.msm.db.TMField[ id=" + id + " ]";
+    }
+
+    public byte[] getDesc() {
+        return desc;
+    }
+
+    public void setDesc(byte[] desc) {
+        this.desc = desc;
+    }
+
+    @XmlTransient
+    public List<Range> getRangeList() {
+        return rangeList;
+    }
+
+    public void setRangeList(List<Range> rangeList) {
+        this.rangeList = rangeList;
     }
 }

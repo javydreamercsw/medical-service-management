@@ -1,45 +1,75 @@
 package net.sourceforge.javydreamercsw.msm.web.window.service;
 
-import com.vaadin.data.Item;
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.MouseEventDetails.MouseButton;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Service;
+import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
+import net.sourceforge.javydreamercsw.msm.db.TMField;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
+import net.sourceforge.javydreamercsw.msm.server.FieldServer;
+import net.sourceforge.javydreamercsw.msm.server.FieldTypeServer;
+import net.sourceforge.javydreamercsw.msm.server.ServiceServer;
+import net.sourceforge.javydreamercsw.msm.web.MSMUI;
+import net.sourceforge.javydreamercsw.msm.web.window.field.FieldManagement;
 
 /**
  *
  * @author Javier Ortiz Bultron <javier.ortiz.78@gmail.com>
  */
-public class ServiceManagement extends Window implements Handler {
+public class ServiceManagement extends Window implements Handler, ItemClickListener {
 
-    private final ResourceBundle rb;
     private final HorizontalSplitPanel hsplit = new HorizontalSplitPanel();
     private final Tree tree = new Tree();
+    private final static FieldGroup fieldGroup = new FieldGroup();
+    private final Table table = new Table(null);
+    private static final Logger LOG
+            = Logger.getLogger(ServiceManagement.class.getName());
+    private final List<Button> buttons = new ArrayList<>();
 
-    public ServiceManagement(ResourceBundle bundle) {
-        this.rb = bundle;
+    public ServiceManagement() {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
         mainLayout.setSizeFull();
-        tree.setCaption(bundle.getString("window.service.tree"));
+        tree.setCaption(MSMUI.getResourceBundle().getString("window.service.tree"));
         // Cause valueChange immediately when the user selects
         tree.setImmediate(true);
         tree.addActionHandler(ServiceManagement.this);
+        tree.addItemClickListener(ServiceManagement.this);
 
         hsplit.setSizeFull();
         hsplit.setSplitPosition(25, Unit.PERCENTAGE);
 
+        hsplit.setFirstComponent(tree);
+        hsplit.setSecondComponent(buildForm());
+
         mainLayout.addComponent(hsplit);
 
-        setCaption(bundle.getString("manage.service"));
+        setCaption(MSMUI.getResourceBundle().getString("manage.service"));
 
         update();
 
@@ -48,18 +78,143 @@ public class ServiceManagement extends Window implements Handler {
         setIcon(new ThemeResource("icons/stethoscope.png"));
     }
 
-    private void showEditService(Service service) {
-        if (service == null) {
-            System.out.println("Create");
-        } else {
-            System.out.println("Edit: " + service.getName());
+    private Component buildForm() {
+        VerticalLayout form = new VerticalLayout();
+        //Build controls
+        HorizontalLayout controls = new HorizontalLayout();
+        controls.setSpacing(true);
+        Button save = new Button(MSMUI.getResourceBundle().getString("general.save"),
+                new ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        try {
+                            getFieldGroup().commit();
+                            Service s = ((BeanItem<Service>) getFieldGroup()
+                            .getItemDataSource()).getBean();
+                            ServiceServer ss = new ServiceServer(s);
+                            ss.write2DB();
+                            update();
+                        } catch (CommitException ex) {
+                            LOG.log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            LOG.log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+        Button discard = new Button(MSMUI.getResourceBundle().getString("general.discard"),
+                new ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        getFieldGroup().discard();
+                    }
+                });
+        Button add = new Button(MSMUI.getResourceBundle().getString("general.add") + " "
+                + MSMUI.getResourceBundle().getString("general.field"),
+                new ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        showFieldManagement();
+                    }
+                });
+        buttons.add(save);
+        buttons.add(add);
+        buttons.add(discard);
+        controls.addComponent(save);
+        controls.addComponent(discard);
+        controls.addComponent(add);
+        //--------------
+        form.setSpacing(true);
+        TextField name
+                = new TextField(MSMUI.getResourceBundle().getString("general.name") + ":");
+        //Field Type
+        form.addComponent(controls);
+        form.addComponent(name);
+
+        getFieldGroup().bind(name, "name");
+
+        table.setSelectable(true);
+        table.setWidth(100, Unit.PERCENTAGE);
+        table.setHeight(75, Unit.PERCENTAGE);
+        table.setImmediate(true);
+
+        table.addGeneratedColumn("rangeId", new RangeGenerator());
+        table.addGeneratedColumn("desc", new ByteToStringGenerator());
+        table.addGeneratedColumn("fieldTypeId", new FieldTypeGenerator());
+        table.addGeneratedColumn("sequence", new SequenceGenerator());
+        form.addComponent(table);
+
+        setEnabledButtons(false);
+
+        return form;
+    }
+
+    private void setEnabledButtons(boolean enable) {
+        for (Button b : buttons) {
+            b.setEnabled(enable);
         }
+    }
+
+    private void editService(Service service) {
+        if (service == null) {
+            LOG.fine("Create");
+            updateService(null);
+        } else {
+            LOG.log(Level.FINE, "Edit: {0}", service.getName());
+            updateService(service);
+        }
+    }
+
+    @Override
+    public void itemClick(ItemClickEvent event) {
+        if (event.getButton() == MouseButton.RIGHT) {
+            //Right click
+            tree.select(event.getItemId());
+        }
+        if (!tree.areChildrenAllowed(event.getItemId())) {
+            //A service is selected. Show it on the right side
+            editService((Service) event.getItemId());
+            setEnabledButtons(true);
+        } else {
+            editService(null);
+            setEnabledButtons(false);
+        }
+    }
+
+    private void updateService(Service service) {
+        if (service == null) {
+            service = new Service();
+        }
+        BeanItem<Service> item = new BeanItem<>(service);
+        getFieldGroup().setItemDataSource(item);
+        List<TMField> fields = new ArrayList<>();
+        if (service.getServiceHasFieldList() != null) {
+            for (ServiceHasField shf : service.getServiceHasFieldList()) {
+                fields.add(shf.getTmfield());
+            }
+        }
+        BeanItemContainer<TMField> container = new BeanItemContainer<>(
+                TMField.class, fields);
+        table.setContainerDataSource(container);
+        table.setVisibleColumns("sequence", "name", "desc", "fieldTypeId", "rangeId");
+        table.setColumnHeaders(new String[]{
+            MSMUI.getResourceBundle().getString("general.sequence"),
+            MSMUI.getResourceBundle().getString("general.name"),
+            MSMUI.getResourceBundle().getString("general.desc"),
+            MSMUI.getResourceBundle().getString("general.field.type"),
+            MSMUI.getResourceBundle().getString("general.range.type")});
+    }
+
+    /**
+     * @return the fieldGroup
+     */
+    public static FieldGroup getFieldGroup() {
+        return fieldGroup;
     }
 
     private class CreateService extends Action {
 
         public CreateService() {
-            super(rb.getString("create.service"),
+            super(MSMUI.getResourceBundle().getString("create.service"),
                     new ThemeResource("icons/add_record.png"));
         }
     }
@@ -67,7 +222,7 @@ public class ServiceManagement extends Window implements Handler {
     private class EditService extends Action {
 
         public EditService() {
-            super(rb.getString("edit.service"),
+            super(MSMUI.getResourceBundle().getString("edit.service"),
                     new ThemeResource("icons/edit_record.png"));
         }
     }
@@ -75,14 +230,37 @@ public class ServiceManagement extends Window implements Handler {
     private void update() {
         //Clean the tree
         tree.removeAllItems();
-        Item root = tree.addItem(rb.getString("general.root"));
+        tree.addItem(MSMUI.getResourceBundle().getString("general.root"));
         //Rebuild
-        for (Service s : new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).findServiceEntities()) {
-            Item newItem = tree.addItem(s);
-            newItem.getItemProperty("name").setValue(s.getName());
-            tree.setParent(newItem, root);
+        List<Service> services
+                = new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).findServiceEntities();
+        if (services.isEmpty()) {
+            try {
+                //Create a dummy one
+                ServiceServer ss = new ServiceServer("Dummy");
+                ss.write2DB();
+                for (int i = 0; i < 10; i++) {
+                    FieldServer field = new FieldServer("Field" + i);
+                    field.setDesc(("Field" + i
+                            + " description.").getBytes("UTF-8"));
+                    field.setFieldTypeId(new FieldTypeServer(i % 4 + 1).getEntity());
+                    field.write2DB();
+                    ss.addField(field.getEntity(), i);
+                }
+                ss.write2DB();
+                services.add(ss.getEntity());
+            } catch (Exception ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
         }
-        hsplit.setFirstComponent(tree);
+        for (Service s : services) {
+            tree.addItem(s);
+            tree.setItemCaption(s, s.getName());
+            tree.setParent(s, MSMUI.getResourceBundle().getString("general.root"));
+            tree.setChildrenAllowed(s, false);
+        }
+        //Expand tree
+        tree.expandItemsRecursively(MSMUI.getResourceBundle().getString("general.root"));
     }
 
     @Override
@@ -98,9 +276,13 @@ public class ServiceManagement extends Window implements Handler {
     @Override
     public void handleAction(Action action, Object sender, Object target) {
         if (action instanceof CreateService) {
-            showEditService(null);
+            editService(null);
         } else if (action instanceof EditService) {
-            showEditService((Service) tree.getValue());
+            editService((Service) tree.getValue());
         }
+    }
+
+    private void showFieldManagement() {
+        getUI().addWindow(new FieldManagement());
     }
 }
