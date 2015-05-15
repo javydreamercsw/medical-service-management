@@ -52,7 +52,7 @@ public class MSMUI extends UI {
     private PersonServer p = null;
     private Component left;
     private Component right;
-    private final ResourceBundle rb
+    private final static ResourceBundle rb
             = ResourceBundle.getBundle(
                     "net.sourceforge.javydreamercsw.msm.web.MSMMessages",
                     Locale.getDefault());
@@ -112,6 +112,7 @@ public class MSMUI extends UI {
         loginWindow = new Window();
         loginWindow.setIcon(smallIcon);
         FormLayout form = new FormLayout();
+        form.setSpacing(true);
         loginWindow.setContent(form);
         PropertysetItem user = new PropertysetItem();
         user.addItemProperty("username", new ObjectProperty<>(""));
@@ -165,7 +166,7 @@ public class MSMUI extends UI {
                                     .replaceAll("%n", p.getName())
                                     .replaceAll("%ln", p.getLastname())
                                     .replaceAll("%d", p.getLogin() == null
-                                                    ? "N/A" : p.getLogin().toString()));
+                                                    ? getResourceBundle().getString("general.NA") : p.getLogin().toString()));
                             p.setLogin(new Date());
                             p.setAttempts(0);
                             p.write2DB();
@@ -224,7 +225,7 @@ public class MSMUI extends UI {
      * @return the Resource Bundle
      */
     public ResourceBundle getResource() {
-        return rb;
+        return getResourceBundle();
     }
 
     private void updateMenu() {
@@ -239,8 +240,11 @@ public class MSMUI extends UI {
             left = new TabSheet();
             left.setHeight(100, Unit.PERCENTAGE);
             VerticalLayout adminTab = new VerticalLayout();
+            adminTab.setSpacing(true);
             VerticalLayout staffTab = new VerticalLayout();
+            staffTab.setSpacing(true);
             VerticalLayout patientTab = new VerticalLayout();
+            patientTab.setSpacing(true);
             switch (p.getAccessId().getId()) {
                 case 1://Admin
                     //Load Admin content on tab
@@ -288,6 +292,13 @@ public class MSMUI extends UI {
         }
     }
 
+    /**
+     * @return the rb
+     */
+    public static ResourceBundle getResourceBundle() {
+        return rb;
+    }
+
     @WebServlet(urlPatterns = "/*", name = "MSMUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MSMUI.class, productionMode = false)
     public static class MSMUIServlet extends VaadinServlet {
@@ -313,7 +324,7 @@ public class MSMUI extends UI {
             manageAccount.close();
             removeWindow(manageAccount);
         }
-        manageAccount = new AccountManagement(rb);
+        manageAccount = new AccountManagement(getResourceBundle());
         manageAccount.center();
         manageAccount.setModal(true);
         manageAccount.setWidth(80, Unit.PERCENTAGE);
@@ -327,7 +338,7 @@ public class MSMUI extends UI {
             manageService.close();
             removeWindow(manageService);
         }
-        manageService = new ServiceManagement(rb);
+        manageService = new ServiceManagement();
         manageService.center();
         manageService.setModal(true);
         manageService.setWidth(80, Unit.PERCENTAGE);

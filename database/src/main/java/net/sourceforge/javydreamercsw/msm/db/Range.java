@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -36,6 +38,11 @@ import net.sourceforge.javydreamercsw.msm.server.EntityListener;
     @NamedQuery(name = "Range.findByMin", query = "SELECT r FROM Range r WHERE r.min = :min"),
     @NamedQuery(name = "Range.findByMax", query = "SELECT r FROM Range r WHERE r.max = :max")})
 public class Range implements Serializable {
+    @JoinTable(name = "tmfield_has_range", joinColumns = {
+        @JoinColumn(name = "range_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "tmfield_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<TMField> tMFieldList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -139,6 +146,15 @@ public class Range implements Serializable {
     @Override
     public String toString() {
         return "net.sourceforge.javydreamercsw.msm.db.Range[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public List<TMField> getTMFieldList() {
+        return tMFieldList;
+    }
+
+    public void setTMFieldList(List<TMField> tMFieldList) {
+        this.tMFieldList = tMFieldList;
     }
 
 }
