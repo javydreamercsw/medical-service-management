@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.PersonHasService;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.server.AccessServer;
 import net.sourceforge.javydreamercsw.msm.server.FieldServer;
@@ -77,14 +77,14 @@ public class SystemTest extends AbstractServerTest {
         }
         try {
             //Create fields
-            TMField name = FieldServer.createStringField("Name", "Desc");
+            Field name = FieldServer.createStringField("Name", "Desc");
             assertNotNull(name);
             assertEquals("Name", name.getName());
             assertEquals("Desc", new String(name.getDesc(), "UTF-8"));
             assertTrue(name.getFieldTypeId().getId() == 1);
             assertNull(name.getRangeId());
             assertTrue(name.getServiceHasFieldList().isEmpty());
-            TMField days = FieldServer.createIntField("Days", "Desc", 0, 365);
+            Field days = FieldServer.createIntField("Days", "Desc", 0, 365);
             assertNotNull(days);
             assertEquals("Days", days.getName());
             assertEquals("Desc", new String(days.getDesc(), "UTF-8"));
@@ -93,7 +93,7 @@ public class SystemTest extends AbstractServerTest {
             assertTrue(days.getFieldTypeId().getId() == 2);
             assertNotNull(days.getRangeId());
             assertTrue(days.getServiceHasFieldList().isEmpty());
-            TMField bp = FieldServer.createFloatField("Blood Pressure", "Desc", 60, 100);
+            Field bp = FieldServer.createFloatField("Blood Pressure", "Desc", 60, 100);
             assertNotNull(bp);
             assertEquals("Blood Pressure", bp.getName());
             assertEquals("Desc", new String(bp.getDesc(), "UTF-8"));
@@ -102,7 +102,7 @@ public class SystemTest extends AbstractServerTest {
             assertTrue(bp.getFieldTypeId().getId() == 3);
             assertNotNull(bp.getRangeId());
             assertTrue(bp.getServiceHasFieldList().isEmpty());
-            TMField b = FieldServer.createBoolField("Bool", "Desc");
+            Field b = FieldServer.createBoolField("Bool", "Desc");
             assertNotNull(b);
             assertEquals("Bool", b.getName());
             assertEquals("Desc", new String(b.getDesc(), "UTF-8"));

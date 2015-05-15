@@ -10,7 +10,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -37,20 +37,20 @@ public class FieldTypeJpaController implements Serializable {
 
     public void create(FieldType fieldType) throws PreexistingEntityException, Exception {
         if (fieldType.getTmfieldList() == null) {
-            fieldType.setTmfieldList(new ArrayList<TMField>());
+            fieldType.setTmfieldList(new ArrayList<Field>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            List<TMField> attachedTmfieldList = new ArrayList<TMField>();
-            for (TMField tmfieldListTMFieldToAttach : fieldType.getTmfieldList()) {
+            List<Field> attachedTmfieldList = new ArrayList<Field>();
+            for (Field tmfieldListTMFieldToAttach : fieldType.getTmfieldList()) {
                 tmfieldListTMFieldToAttach = em.getReference(tmfieldListTMFieldToAttach.getClass(), tmfieldListTMFieldToAttach.getId());
                 attachedTmfieldList.add(tmfieldListTMFieldToAttach);
             }
             fieldType.setTmfieldList(attachedTmfieldList);
             em.persist(fieldType);
-            for (TMField tmfieldListTMField : fieldType.getTmfieldList()) {
+            for (Field tmfieldListTMField : fieldType.getTmfieldList()) {
                 FieldType oldFieldTypeIdOfTmfieldListTMField = tmfieldListTMField.getFieldTypeId();
                 tmfieldListTMField.setFieldTypeId(fieldType);
                 tmfieldListTMField = em.merge(tmfieldListTMField);
@@ -78,10 +78,10 @@ public class FieldTypeJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             FieldType persistentFieldType = em.find(FieldType.class, fieldType.getId());
-            List<TMField> tmfieldListOld = persistentFieldType.getTmfieldList();
-            List<TMField> tmfieldListNew = fieldType.getTmfieldList();
+            List<Field> tmfieldListOld = persistentFieldType.getTmfieldList();
+            List<Field> tmfieldListNew = fieldType.getTmfieldList();
             List<String> illegalOrphanMessages = null;
-            for (TMField tmfieldListOldTMField : tmfieldListOld) {
+            for (Field tmfieldListOldTMField : tmfieldListOld) {
                 if (!tmfieldListNew.contains(tmfieldListOldTMField)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
@@ -92,15 +92,15 @@ public class FieldTypeJpaController implements Serializable {
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            List<TMField> attachedTmfieldListNew = new ArrayList<TMField>();
-            for (TMField tmfieldListNewTMFieldToAttach : tmfieldListNew) {
+            List<Field> attachedTmfieldListNew = new ArrayList<Field>();
+            for (Field tmfieldListNewTMFieldToAttach : tmfieldListNew) {
                 tmfieldListNewTMFieldToAttach = em.getReference(tmfieldListNewTMFieldToAttach.getClass(), tmfieldListNewTMFieldToAttach.getId());
                 attachedTmfieldListNew.add(tmfieldListNewTMFieldToAttach);
             }
             tmfieldListNew = attachedTmfieldListNew;
             fieldType.setTmfieldList(tmfieldListNew);
             fieldType = em.merge(fieldType);
-            for (TMField tmfieldListNewTMField : tmfieldListNew) {
+            for (Field tmfieldListNewTMField : tmfieldListNew) {
                 if (!tmfieldListOld.contains(tmfieldListNewTMField)) {
                     FieldType oldFieldTypeIdOfTmfieldListNewTMField = tmfieldListNewTMField.getFieldTypeId();
                     tmfieldListNewTMField.setFieldTypeId(fieldType);
@@ -141,8 +141,8 @@ public class FieldTypeJpaController implements Serializable {
                 throw new NonexistentEntityException("The fieldType with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<TMField> tmfieldListOrphanCheck = fieldType.getTmfieldList();
-            for (TMField tmfieldListOrphanCheckTMField : tmfieldListOrphanCheck) {
+            List<Field> tmfieldListOrphanCheck = fieldType.getTmfieldList();
+            for (Field tmfieldListOrphanCheckTMField : tmfieldListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }

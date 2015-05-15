@@ -45,7 +45,7 @@ public class InstanceField implements Serializable {
     private Integer index;
     @JoinColumn(name = "tmfield_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private TMField tmfieldId;
+    private Field tmfieldId;
     @JoinColumn(name = "service_instance_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private ServiceInstance serviceInstance;
@@ -109,11 +109,11 @@ public class InstanceField implements Serializable {
         this.index = index;
     }
 
-    public TMField getTmfieldId() {
+    public Field getTmfieldId() {
         return tmfieldId;
     }
 
-    public void setTmfieldId(TMField tmfieldId) {
+    public void setTmfieldId(Field tmfieldId) {
         this.tmfieldId = tmfieldId;
     }
 

@@ -37,7 +37,7 @@ import net.sourceforge.javydreamercsw.msm.server.EntityListener;
     @NamedQuery(name = "TMField.findAll", query = "SELECT t FROM TMField t"),
     @NamedQuery(name = "TMField.findById", query = "SELECT t FROM TMField t WHERE t.id = :id"),
     @NamedQuery(name = "TMField.findByName", query = "SELECT t FROM TMField t WHERE t.name = :name")})
-public class TMField implements Serializable {
+public class Field implements Serializable {
     
     private static final long serialVersionUID = 1L;
     @Id
@@ -74,14 +74,14 @@ public class TMField implements Serializable {
     @ManyToMany(mappedBy = "tMFieldList")
     private List<Range> rangeList;
 
-    public TMField() {
+    public Field() {
     }
 
-    public TMField(Integer id) {
+    public Field(Integer id) {
         this.id = id;
     }
 
-    public TMField(Integer id, String name) {
+    public Field(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -146,10 +146,10 @@ public class TMField implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TMField)) {
+        if (!(object instanceof Field)) {
             return false;
         }
-        TMField other = (TMField) object;
+        Field other = (Field) object;
         return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 

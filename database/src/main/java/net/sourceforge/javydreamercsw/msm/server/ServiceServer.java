@@ -3,7 +3,7 @@ package net.sourceforge.javydreamercsw.msm.server;
 import java.util.ArrayList;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceHasFieldJpaController;
 import net.sourceforge.javydreamercsw.msm.db.Service;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.controller.ServiceJpaController;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
 import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
@@ -102,7 +102,7 @@ public final class ServiceServer extends Service implements EntityServer<Service
      * specified spot.
      * @throws Exception
      */
-    public void addField(TMField field, int index) throws Exception {
+    public void addField(Field field, int index) throws Exception {
         if (getId() == null) {
             throw new MSMException("Service must exist in DB before adding fields to it!");
         } else {

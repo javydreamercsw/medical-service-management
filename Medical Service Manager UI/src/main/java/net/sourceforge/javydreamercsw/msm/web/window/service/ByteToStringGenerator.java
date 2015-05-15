@@ -2,7 +2,7 @@ package net.sourceforge.javydreamercsw.msm.web.window.service;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 
 /**
  *
@@ -12,6 +12,6 @@ public class ByteToStringGenerator implements Table.ColumnGenerator {
 
     @Override
     public Object generateCell(Table source, Object itemId, Object columnId) {
-        return new Label(new String(((TMField) itemId).getDesc()));
+        return new Label(new String(((Field) itemId).getDesc()));
     }
 }

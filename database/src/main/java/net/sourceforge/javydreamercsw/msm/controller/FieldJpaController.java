@@ -21,15 +21,15 @@ import net.sourceforge.javydreamercsw.msm.controller.exceptions.IllegalOrphanExc
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.NonexistentEntityException;
 import net.sourceforge.javydreamercsw.msm.controller.exceptions.PreexistingEntityException;
 import net.sourceforge.javydreamercsw.msm.db.ServiceHasField;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 
 /**
  *
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
-public class TMFieldJpaController implements Serializable {
+public class FieldJpaController implements Serializable {
 
-    public TMFieldJpaController(EntityManagerFactory emf) {
+    public FieldJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -38,7 +38,7 @@ public class TMFieldJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(TMField TMField) throws PreexistingEntityException, Exception {
+    public void create(Field TMField) throws PreexistingEntityException, Exception {
         if (TMField.getInstanceFieldList() == null) {
             TMField.setInstanceFieldList(new ArrayList<InstanceField>());
         }
@@ -81,7 +81,7 @@ public class TMFieldJpaController implements Serializable {
                 rangeId = em.merge(rangeId);
             }
             for (InstanceField instanceFieldListInstanceField : TMField.getInstanceFieldList()) {
-                TMField oldTmfieldIdOfInstanceFieldListInstanceField = instanceFieldListInstanceField.getTmfieldId();
+                Field oldTmfieldIdOfInstanceFieldListInstanceField = instanceFieldListInstanceField.getTmfieldId();
                 instanceFieldListInstanceField.setTmfieldId(TMField);
                 instanceFieldListInstanceField = em.merge(instanceFieldListInstanceField);
                 if (oldTmfieldIdOfInstanceFieldListInstanceField != null) {
@@ -90,7 +90,7 @@ public class TMFieldJpaController implements Serializable {
                 }
             }
             for (ServiceHasField serviceHasFieldListServiceHasField : TMField.getServiceHasFieldList()) {
-                TMField oldTmfieldOfServiceHasFieldListServiceHasField = serviceHasFieldListServiceHasField.getTmfield();
+                Field oldTmfieldOfServiceHasFieldListServiceHasField = serviceHasFieldListServiceHasField.getTmfield();
                 serviceHasFieldListServiceHasField.setTmfield(TMField);
                 serviceHasFieldListServiceHasField = em.merge(serviceHasFieldListServiceHasField);
                 if (oldTmfieldOfServiceHasFieldListServiceHasField != null) {
@@ -111,12 +111,12 @@ public class TMFieldJpaController implements Serializable {
         }
     }
 
-    public void edit(TMField TMField) throws IllegalOrphanException, NonexistentEntityException, Exception {
+    public void edit(Field TMField) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            TMField persistentTMField = em.find(TMField.class, TMField.getId());
+            Field persistentTMField = em.find(Field.class, TMField.getId());
             FieldType fieldTypeIdOld = persistentTMField.getFieldTypeId();
             FieldType fieldTypeIdNew = TMField.getFieldTypeId();
             Range rangeIdOld = persistentTMField.getRangeId();
@@ -186,7 +186,7 @@ public class TMFieldJpaController implements Serializable {
             }
             for (InstanceField instanceFieldListNewInstanceField : instanceFieldListNew) {
                 if (!instanceFieldListOld.contains(instanceFieldListNewInstanceField)) {
-                    TMField oldTmfieldIdOfInstanceFieldListNewInstanceField = instanceFieldListNewInstanceField.getTmfieldId();
+                    Field oldTmfieldIdOfInstanceFieldListNewInstanceField = instanceFieldListNewInstanceField.getTmfieldId();
                     instanceFieldListNewInstanceField.setTmfieldId(TMField);
                     instanceFieldListNewInstanceField = em.merge(instanceFieldListNewInstanceField);
                     if (oldTmfieldIdOfInstanceFieldListNewInstanceField != null && !oldTmfieldIdOfInstanceFieldListNewInstanceField.equals(TMField)) {
@@ -197,7 +197,7 @@ public class TMFieldJpaController implements Serializable {
             }
             for (ServiceHasField serviceHasFieldListNewServiceHasField : serviceHasFieldListNew) {
                 if (!serviceHasFieldListOld.contains(serviceHasFieldListNewServiceHasField)) {
-                    TMField oldTmfieldOfServiceHasFieldListNewServiceHasField = serviceHasFieldListNewServiceHasField.getTmfield();
+                    Field oldTmfieldOfServiceHasFieldListNewServiceHasField = serviceHasFieldListNewServiceHasField.getTmfield();
                     serviceHasFieldListNewServiceHasField.setTmfield(TMField);
                     serviceHasFieldListNewServiceHasField = em.merge(serviceHasFieldListNewServiceHasField);
                     if (oldTmfieldOfServiceHasFieldListNewServiceHasField != null && !oldTmfieldOfServiceHasFieldListNewServiceHasField.equals(TMField)) {
@@ -228,9 +228,9 @@ public class TMFieldJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            TMField TMField;
+            Field TMField;
             try {
-                TMField = em.getReference(TMField.class, id);
+                TMField = em.getReference(Field.class, id);
                 TMField.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The TMField with id " + id + " no longer exists.", enfe);
@@ -272,19 +272,19 @@ public class TMFieldJpaController implements Serializable {
         }
     }
 
-    public List<TMField> findTMFieldEntities() {
+    public List<Field> findTMFieldEntities() {
         return findTMFieldEntities(true, -1, -1);
     }
 
-    public List<TMField> findTMFieldEntities(int maxResults, int firstResult) {
+    public List<Field> findTMFieldEntities(int maxResults, int firstResult) {
         return findTMFieldEntities(false, maxResults, firstResult);
     }
 
-    private List<TMField> findTMFieldEntities(boolean all, int maxResults, int firstResult) {
+    private List<Field> findTMFieldEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(TMField.class));
+            cq.select(cq.from(Field.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -296,10 +296,10 @@ public class TMFieldJpaController implements Serializable {
         }
     }
 
-    public TMField findTMField(Integer id) {
+    public Field findTMField(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(TMField.class, id);
+            return em.find(Field.class, id);
         } finally {
             em.close();
         }
@@ -309,7 +309,7 @@ public class TMFieldJpaController implements Serializable {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<TMField> rt = cq.from(TMField.class);
+            Root<Field> rt = cq.from(Field.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

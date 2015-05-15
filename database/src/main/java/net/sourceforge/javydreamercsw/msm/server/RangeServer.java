@@ -2,7 +2,7 @@ package net.sourceforge.javydreamercsw.msm.server;
 
 import java.util.ArrayList;
 import net.sourceforge.javydreamercsw.msm.db.Range;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 import net.sourceforge.javydreamercsw.msm.controller.RangeJpaController;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 
@@ -20,7 +20,7 @@ public final class RangeServer extends Range implements EntityServer<Range> {
         super();
         setMax(max);
         setMin(min);
-        setTmfieldList(new ArrayList<TMField>());
+        setTmfieldList(new ArrayList<Field>());
     }
 
     @Override
@@ -54,7 +54,7 @@ public final class RangeServer extends Range implements EntityServer<Range> {
         target.setMin(source.getMin());
         target.setRangeTypeId(source.getRangeTypeId());
         if (target.getTmfieldList() == null) {
-            target.setTmfieldList(new ArrayList<TMField>());
+            target.setTmfieldList(new ArrayList<Field>());
         } else {
             target.getTmfieldList().clear();
         }

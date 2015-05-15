@@ -2,7 +2,7 @@ package net.sourceforge.javydreamercsw.msm.web.window.service;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import net.sourceforge.javydreamercsw.msm.db.TMField;
+import net.sourceforge.javydreamercsw.msm.db.Field;
 
 /**
  *
@@ -15,7 +15,7 @@ public class FieldTypeGenerator implements Table.ColumnGenerator {
 
     @Override
     public Object generateCell(Table source, Object itemId, Object columnId) {
-        return new Label(((TMField) itemId).getFieldTypeId().getName());
+        return new Label(((Field) itemId).getFieldTypeId().getName());
     }
 
 }

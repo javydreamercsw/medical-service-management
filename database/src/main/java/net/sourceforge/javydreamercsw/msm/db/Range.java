@@ -42,7 +42,7 @@ public class Range implements Serializable {
         @JoinColumn(name = "range_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "tmfield_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<TMField> tMFieldList;
+    private List<Field> tMFieldList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -67,7 +67,7 @@ public class Range implements Serializable {
     @Column(name = "max")
     private float max;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "rangeId")
-    private List<TMField> tmfieldList;
+    private List<Field> tmfieldList;
     @JoinColumn(name = "range_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private RangeType rangeTypeId;
@@ -110,11 +110,11 @@ public class Range implements Serializable {
     }
 
     @XmlTransient
-    public List<TMField> getTmfieldList() {
+    public List<Field> getTmfieldList() {
         return tmfieldList;
     }
 
-    public void setTmfieldList(List<TMField> tmfieldList) {
+    public void setTmfieldList(List<Field> tmfieldList) {
         this.tmfieldList = tmfieldList;
     }
 
@@ -149,11 +149,11 @@ public class Range implements Serializable {
     }
 
     @XmlTransient
-    public List<TMField> getTMFieldList() {
+    public List<Field> getTMFieldList() {
         return tMFieldList;
     }
 
-    public void setTMFieldList(List<TMField> tMFieldList) {
+    public void setTMFieldList(List<Field> tMFieldList) {
         this.tMFieldList = tMFieldList;
     }
 
