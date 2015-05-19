@@ -42,7 +42,7 @@ public class FieldManagement extends Window implements ItemClickListener,
     private final Table available = new Table(null);
     private final Table selected = new Table(null);
     private Button down, up;
-    private ServiceManagement sm;
+    private final ServiceManagement sm;
 
     public FieldManagement(ServiceManagement sm) {
         this.sm = sm;
@@ -151,19 +151,26 @@ public class FieldManagement extends Window implements ItemClickListener,
                         getUI().removeWindow(FieldManagement.this);
                     }
                 });
-//        name = new TextField(MSMUI.getResourceBundle().getString("general.name") + ":");
-//        name.setEnabled(false);
-//        desc = new TextField(MSMUI.getResourceBundle().getString("general.desc") + ":");
-//        desc.setEnabled(false);
-//        desc.setConverter(new ByteArrayToStringConverter());
-//        fieldGroup.bind(name, "name");
-//        fieldGroup.bind(desc, "desc");
-//
-//        layout.addComponent(name);
-//        layout.addComponent(desc);
+        Button create = new Button(MSMUI.getResourceBundle().getString("general.create"),
+                new com.vaadin.ui.Button.ClickListener() {
+                    private static final long serialVersionUID = 5019806363620874205L;
+
+                    @Override
+                    public void buttonClick(Button.ClickEvent event) {
+                        getUI().addWindow(createFieldCreation());
+                    }
+                });
         layout.addComponent(save);
         layout.addComponent(discard);
+        layout.addComponent(create);
         return layout;
+    }
+
+    private Window createFieldCreation() {
+        FieldCreation fieldCreation = new FieldCreation();
+        fieldCreation.center();
+        fieldCreation.setSizeFull();
+        return fieldCreation;
     }
 
     private void update(Field field) {

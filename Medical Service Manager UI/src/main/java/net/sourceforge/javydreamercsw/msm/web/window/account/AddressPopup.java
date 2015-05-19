@@ -15,34 +15,28 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.db.Address;
 import net.sourceforge.javydreamercsw.msm.server.AddressServer;
+import net.sourceforge.javydreamercsw.msm.web.MSMUI;
 
 /**
  *
  * @author Javier Ortiz Bultron <javier.ortiz.78@gmail.com>
  */
 public class AddressPopup extends CustomField<Address> {
-
-    private final ResourceBundle rb;
     private FieldGroup fieldGroup;
     private static final Logger LOG
             = Logger.getLogger(AddressPopup.class.getName());
 
-    public AddressPopup(ResourceBundle rb) {
-        this.rb = rb;
-    }
-
     @Override
     protected Component initContent() {
         FormLayout layout = new FormLayout();
-        final Window window = new Window(rb.getString("message.edit.address"));
-        TextArea street = new TextArea(rb.getString("general.street") + ":");
-        TextField zip = new TextField(rb.getString("general.zip") + ":");
-        CityComponent city = new CityComponent(rb);
+        final Window window = new Window(MSMUI.getResourceBundle().getString("message.edit.address"));
+        TextArea street = new TextArea(MSMUI.getResourceBundle().getString("general.street") + ":");
+        TextField zip = new TextField(MSMUI.getResourceBundle().getString("general.zip") + ":");
+        CityComponent city = new CityComponent();
         layout.addComponent(street);
         layout.addComponent(zip);
         layout.addComponent(city);
@@ -51,7 +45,7 @@ public class AddressPopup extends CustomField<Address> {
         fieldGroup.bind(street, "address");
         fieldGroup.bind(zip, "postalCode");
         fieldGroup.bind(city, "cityId");
-        Button button = new Button(rb.getString("message.edit.address.editor"),
+        Button button = new Button(MSMUI.getResourceBundle().getString("message.edit.address.editor"),
                 new ClickListener() {
 
                     @Override

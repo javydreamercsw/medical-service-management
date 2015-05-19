@@ -24,7 +24,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sourceforge.javydreamercsw.msm.controller.AccessJpaController;
@@ -36,6 +35,7 @@ import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
 import net.sourceforge.javydreamercsw.msm.server.AccessServer;
 import net.sourceforge.javydreamercsw.msm.server.PersonServer;
+import net.sourceforge.javydreamercsw.msm.web.MSMUI;
 
 /**
  *
@@ -47,15 +47,13 @@ public class AccountManagement extends Window {
     private HorizontalLayout tableControls;
     private Table table;
     private HorizontalLayout formControls;
-    private final ResourceBundle rb;
     private final FieldGroup fieldGroup = new FieldGroup();
     private static final Logger LOG
             = Logger.getLogger(AccountManagement.class.getName());
     private final PersonJpaController controller
             = new PersonJpaController(DataBaseManager.getEntityManagerFactory());
 
-    public AccountManagement(ResourceBundle rb) {
-        this.rb = rb;
+    public AccountManagement() {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
@@ -66,7 +64,7 @@ public class AccountManagement extends Window {
         mainLayout.addComponent(buildForm());
         mainLayout.addComponent(buildFormControls());
 
-        setCaption(rb.getString("manage.account"));
+        setCaption(MSMUI.getResourceBundle().getString("manage.account"));
         setClosable(true);
         setContent(mainLayout);
         setIcon(new ThemeResource("icons/patient_record.png"));
@@ -74,14 +72,14 @@ public class AccountManagement extends Window {
 
     private Component buildTableControls() {
         tableControls = new HorizontalLayout();
-        Button add = new Button(rb.getString("general.add"),
+        Button add = new Button(MSMUI.getResourceBundle().getString("general.add"),
                 new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
                         editPerson(new Person());
                     }
                 });
-        Button delete = new Button(rb.getString("general.delete"),
+        Button delete = new Button(MSMUI.getResourceBundle().getString("general.delete"),
                 new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
@@ -93,14 +91,14 @@ public class AccountManagement extends Window {
                                 LOG.log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            Notification.show(rb.getString("general.invalid.operation"),
-                                    rb.getString("general.invalid.operation.desc"),
+                            Notification.show(MSMUI.getResourceBundle().getString("general.invalid.operation"),
+                                    MSMUI.getResourceBundle().getString("general.invalid.operation.desc"),
                                     Notification.Type.WARNING_MESSAGE);
                         }
                         updateTableData();
                     }
                 });
-        Button reset = new Button(rb.getString("general.password.reset"),
+        Button reset = new Button(MSMUI.getResourceBundle().getString("general.password.reset"),
                 new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
@@ -110,8 +108,8 @@ public class AccountManagement extends Window {
                             PersonServer ps = new PersonServer(target);
                             ps.setEncrypted(false);
                             ps.write2DB();
-                            Notification.show(rb.getString("general.password.reset"),
-                                    rb.getString("general.password.reset.desc")
+                            Notification.show(MSMUI.getResourceBundle().getString("general.password.reset"),
+                                    MSMUI.getResourceBundle().getString("general.password.reset.desc")
                                     + " (123456)",
                                     Notification.Type.TRAY_NOTIFICATION);
                             updateTableData();
@@ -128,7 +126,7 @@ public class AccountManagement extends Window {
 
     private Component buildFormControls() {
         formControls = new HorizontalLayout();
-        Button save = new Button(rb.getString("general.save"),
+        Button save = new Button(MSMUI.getResourceBundle().getString("general.save"),
                 new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
@@ -152,7 +150,7 @@ public class AccountManagement extends Window {
                         }
                     }
                 });
-        Button discard = new Button(rb.getString("general.discard"),
+        Button discard = new Button(MSMUI.getResourceBundle().getString("general.discard"),
                 new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
@@ -202,11 +200,11 @@ public class AccountManagement extends Window {
         table.setVisibleColumns("name", "lastname", "username", "ssn",
                 "accessId");
         table.setColumnHeaders(new String[]{
-            rb.getString("general.first.name"),
-            rb.getString("general.last.name"),
-            rb.getString("general.username"),
-            rb.getString("general.ssn"),
-            rb.getString("general.access")});
+            MSMUI.getResourceBundle().getString("general.first.name"),
+            MSMUI.getResourceBundle().getString("general.last.name"),
+            MSMUI.getResourceBundle().getString("general.username"),
+            MSMUI.getResourceBundle().getString("general.ssn"),
+            MSMUI.getResourceBundle().getString("general.access")});
         table.sort(new Object[]{"name", "lastname"}, new boolean[]{
             true, true});
     }
@@ -217,7 +215,7 @@ public class AccountManagement extends Window {
         public Object generateCell(Table source, Object itemId, Object columnId) {
             Label label = new Label();
             label.setValue(((Person) itemId).getAccessId() == null
-                    ? "null" : rb.getString(((Person) itemId).getAccessId().getName()));
+                    ? "null" : MSMUI.getResourceBundle().getString(((Person) itemId).getAccessId().getName()));
             return label;
         }
     }
@@ -226,12 +224,12 @@ public class AccountManagement extends Window {
         form = new GridLayout(5, 2);
 
         TextField firstName
-                = new TextField(rb.getString("general.first.name") + ":");
+                = new TextField(MSMUI.getResourceBundle().getString("general.first.name") + ":");
         TextField lastName
-                = new TextField(rb.getString("general.last.name") + ":");
+                = new TextField(MSMUI.getResourceBundle().getString("general.last.name") + ":");
         TextField userName
-                = new TextField(rb.getString("general.username") + ":");
-        TextField ssn = new TextField(rb.getString("general.ssn") + ":");
+                = new TextField(MSMUI.getResourceBundle().getString("general.username") + ":");
+        TextField ssn = new TextField(MSMUI.getResourceBundle().getString("general.ssn") + ":");
 
         List<Access> accesses = new AccessJpaController(DataBaseManager.getEntityManagerFactory()).findAccessEntities();
         IndexedContainer iContainer = new IndexedContainer();
@@ -240,16 +238,16 @@ public class AccountManagement extends Window {
                 new AccessServer(3).getEntity());
         for (Access a : accesses) {
             Item newItem = iContainer.getItem(iContainer.addItem());
-            newItem.getItemProperty("name").setValue(rb.getString(a.getName()));
+            newItem.getItemProperty("name").setValue(MSMUI.getResourceBundle().getString(a.getName()));
             newItem.getItemProperty("bean").setValue(a);
         }
         final ComboBox access
-                = new ComboBox(rb.getString("general.access"), iContainer);
+                = new ComboBox(MSMUI.getResourceBundle().getString("general.access"), iContainer);
         access.setConverter(new AccessConverter(iContainer));
         access.setItemCaptionPropertyId("name");
         access.setImmediate(true);
 
-        AddressPopup address = new AddressPopup(rb);
+        AddressPopup address = new AddressPopup();
 
         fieldGroup.bind(firstName, "name");
         fieldGroup.bind(lastName, "lastname");
