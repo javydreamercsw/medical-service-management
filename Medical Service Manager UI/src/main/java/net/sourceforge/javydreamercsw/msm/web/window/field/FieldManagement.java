@@ -169,7 +169,9 @@ public class FieldManagement extends Window implements ItemClickListener,
     private Window createFieldCreation() {
         FieldCreation fieldCreation = new FieldCreation();
         fieldCreation.center();
-        fieldCreation.setSizeFull();
+        fieldCreation.setModal(true);
+        fieldCreation.setWidth(25, Unit.PERCENTAGE);
+        fieldCreation.setHeight(25, Unit.PERCENTAGE);
         return fieldCreation;
     }
 
