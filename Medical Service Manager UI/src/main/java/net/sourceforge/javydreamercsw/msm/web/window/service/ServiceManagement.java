@@ -50,13 +50,14 @@ public class ServiceManagement extends Window implements Handler,
 
     private final HorizontalSplitPanel hsplit = new HorizontalSplitPanel();
     private final Tree tree = new Tree();
-    private final static FieldGroup fieldGroup = new FieldGroup();
+    private static FieldGroup fieldGroup;
     private final Table table = new Table(null);
     private static final Logger LOG
             = Logger.getLogger(ServiceManagement.class.getName());
     private final List<Button> buttons = new ArrayList<>();
 
     public ServiceManagement() {
+        fieldGroup = new FieldGroup();
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
@@ -103,11 +104,15 @@ public class ServiceManagement extends Window implements Handler,
                             Service s = ((BeanItem<Service>) getFieldGroup()
                             .getItemDataSource()).getBean();
                             ServiceServer ss = new ServiceServer(s);
-                            for(ServiceHasField shf:ss.getServiceHasFieldList()){
-                                new ServiceHasFieldJpaController(DataBaseManager.getEntityManagerFactory()).destroy(shf.getServiceHasFieldPK());
+                            for (ServiceHasField shf : ss.getServiceHasFieldList()) {
+                                new ServiceHasFieldJpaController(DataBaseManager
+                                        .getEntityManagerFactory())
+                                .destroy(shf.getServiceHasFieldPK());
                             }
+                            ss.getServiceHasFieldList().clear();
                             ss.write2DB();
-                            for (Field f : (Collection<Field>) table.getContainerDataSource().getItemIds()) {
+                            for (Field f
+                            : (Collection<Field>) table.getContainerDataSource().getItemIds()) {
                                 boolean present = false;
                                 for (ServiceHasField shf : ss.getServiceHasFieldList()) {
                                     if (shf.getTmfield().getId().equals(f.getId())) {
@@ -120,6 +125,8 @@ public class ServiceManagement extends Window implements Handler,
                                 }
                             }
                             ss.write2DB();
+                            LOG.log(Level.INFO, "Amount of fields: {0}",
+                                    ss.getServiceHasFieldList().size());
                             update();
                         } catch (CommitException ex) {
                             LOG.log(Level.SEVERE, null, ex);
@@ -295,6 +302,7 @@ public class ServiceManagement extends Window implements Handler,
         List<Service> services
                 = new ServiceJpaController(DataBaseManager.getEntityManagerFactory()).findServiceEntities();
         if (services.isEmpty()) {
+            LOG.info("Creating demo service...");
             try {
                 //Create a dummy one
                 ServiceServer ss = new ServiceServer("Dummy");
@@ -309,6 +317,7 @@ public class ServiceManagement extends Window implements Handler,
                 }
                 ss.write2DB();
                 services.add(ss.getEntity());
+                LOG.info("Done!");
             } catch (Exception ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
