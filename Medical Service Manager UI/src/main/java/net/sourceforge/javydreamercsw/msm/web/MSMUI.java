@@ -321,7 +321,7 @@ public class MSMUI extends UI {
 
     private void showAccountManagementScreen() {
         if (manageAccount == null) {
-            manageAccount = new AccountManagement(getResourceBundle());
+            manageAccount = new AccountManagement();
         } else {
             manageAccount.close();
             removeWindow(manageAccount);
