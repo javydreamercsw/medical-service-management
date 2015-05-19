@@ -31,6 +31,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.annotation.WebServlet;
 import net.sourceforge.javydreamercsw.msm.db.Person;
 import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
@@ -111,6 +113,15 @@ public class MSMUI extends UI {
         }
         loginWindow = new Window();
         loginWindow.setIcon(smallIcon);
+        String facility="Default Facility";
+        try {
+            InitialContext ctx = new InitialContext();
+            facility = (String) ctx.lookup("java:comp/env/msm/facility-name");
+        } catch (NamingException ex) {
+            LOG.log(Level.WARNING, "No configured facility name, "
+                    + "reverting to default.", ex);
+        }
+        loginWindow.setCaption(facility);
         FormLayout form = new FormLayout();
         form.setSpacing(true);
         loginWindow.setContent(form);
@@ -204,8 +215,8 @@ public class MSMUI extends UI {
         form.setVisible(true);
         loginWindow.center();
         loginWindow.setModal(true);
-        loginWindow.setWidth(300, Unit.PIXELS);
-        loginWindow.setHeight(300, Unit.PIXELS);
+        loginWindow.setWidth(25, Unit.PERCENTAGE);
+        loginWindow.setHeight(30, Unit.PERCENTAGE);
         loginWindow.setReadOnly(true);
         loginWindow.setVisible(true);
         addWindow(loginWindow);

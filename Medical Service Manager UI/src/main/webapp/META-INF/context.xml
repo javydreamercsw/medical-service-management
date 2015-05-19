@@ -41,5 +41,7 @@
     <Environment name="msm/demo" override="false" type="java.lang.Boolean" value="false"/>
     <Environment name="msm/demo-period" override="false" type="java.lang.Long" value="86400000"/>
     <!-- ################# ###################### #################-->
+    <!--Customization of application-->
+    <Environment name="msm/facility-name" override="false" type="java.lang.String" value="Medical Service Manager"/>
 </Context>
 

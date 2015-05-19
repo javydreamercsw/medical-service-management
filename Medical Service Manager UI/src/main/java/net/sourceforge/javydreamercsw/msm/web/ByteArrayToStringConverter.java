@@ -28,7 +28,7 @@ public class ByteArrayToStringConverter implements Converter<String, byte[]> {
 
     @Override
     public String convertToPresentation(byte[] value, Class<? extends String> targetType, Locale locale) throws ConversionException {
-        return new String(value);
+        return value == null ? "null" : new String(value);
     }
 
     @Override
