@@ -11,13 +11,15 @@ import net.sourceforge.javydreamercsw.msm.db.manager.DataBaseManager;
  * @author Javier A. Ortiz Bultron javier.ortiz.78@gmail.com
  */
 public final class RangeServer extends Range implements EntityServer<Range> {
+    private static final long serialVersionUID = 8060204591014603991L;
 
     public RangeServer(Range a) {
         update(RangeServer.this, a);
     }
 
-    public RangeServer(float min, float max) {
+    public RangeServer(String name, float min, float max) {
         super();
+        setName(name);
         setMax(max);
         setMin(min);
         setTmfieldList(new ArrayList<Field>());
@@ -49,6 +51,7 @@ public final class RangeServer extends Range implements EntityServer<Range> {
 
     @Override
     public void update(Range target, Range source) {
+        target.setName(source.getName());
         target.setId(source.getId());
         target.setMax(source.getMax());
         target.setMin(source.getMin());

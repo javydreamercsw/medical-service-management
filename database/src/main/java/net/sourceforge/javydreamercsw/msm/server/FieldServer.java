@@ -98,11 +98,11 @@ public final class FieldServer extends Field implements EntityServer<Field> {
     }
 
     public static Field createStringField(String name, String desc) throws MSMException {
-        return createField(name, desc, 0, 0, 1);
+        return createField(name, desc, 1, null);
     }
 
-    private static Field createField(String name, String desc, int min,
-            int max, int type) throws MSMException {
+    private static Field createField(String name, String desc, int type,
+            Range range) throws MSMException {
         Field result = null;
         if (!fieldExist(name)) {
             //Create it
@@ -111,15 +111,7 @@ public final class FieldServer extends Field implements EntityServer<Field> {
             try {
                 newField.setDesc(desc.getBytes("UTF-8"));
                 if (type == 2 || type == 3) {
-                    //Create range
-                    RangeTypeServer rts = new RangeTypeServer(name);
-                    rts.write2DB();
-
-                    RangeServer rs = new RangeServer(min, max);
-                    rs.setRangeTypeId(rts.getEntity());
-                    rs.write2DB();
-
-                    newField.setRangeId(rs.getEntity());
+                    newField.setRangeId(range);
                 }
             } catch (UnsupportedEncodingException ex) {
                 throw new MSMException(ex);
@@ -138,18 +130,18 @@ public final class FieldServer extends Field implements EntityServer<Field> {
         return result;
     }
 
-    public static Field createFloatField(String name, String desc, int min,
-            int max) throws MSMException {
-        return createField(name, desc, min, max, 3);
+    public static Field createFloatField(String name, String desc, 
+            Range range) throws MSMException {
+        return createField(name, desc, 3, range);
     }
 
-    public static Field createIntField(String name, String desc, int min,
-            int max) throws MSMException {
-        return createField(name, desc, min, max, 2);
+    public static Field createIntField(String name, String desc,
+            Range range) throws MSMException {
+        return createField(name, desc, 2, range);
     }
 
     public static Field createBoolField(String name, String desc)
             throws MSMException {
-        return createField(name, desc, 0, 0, 4);
+        return createField(name, desc, 4, null);
     }
 }
