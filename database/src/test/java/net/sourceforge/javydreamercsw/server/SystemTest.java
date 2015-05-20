@@ -11,6 +11,7 @@ import net.sourceforge.javydreamercsw.msm.db.ServiceInstance;
 import net.sourceforge.javydreamercsw.msm.server.AccessServer;
 import net.sourceforge.javydreamercsw.msm.server.FieldServer;
 import net.sourceforge.javydreamercsw.msm.server.PersonServer;
+import net.sourceforge.javydreamercsw.msm.server.RangeServer;
 import net.sourceforge.javydreamercsw.msm.server.ServiceInstanceServer;
 import net.sourceforge.javydreamercsw.msm.server.ServiceServer;
 import static org.junit.Assert.*;
@@ -84,7 +85,10 @@ public class SystemTest extends AbstractServerTest {
             assertTrue(name.getFieldTypeId().getId() == 1);
             assertNull(name.getRangeId());
             assertTrue(name.getServiceHasFieldList().isEmpty());
-            Field days = FieldServer.createIntField("Days", "Desc", 0, 365);
+            RangeServer rs = new RangeServer("Days", 0, 365);
+            rs.write2DB();
+            Field days = FieldServer.createIntField("Days", "Desc",
+                    rs.getEntity());
             assertNotNull(days);
             assertEquals("Days", days.getName());
             assertEquals("Desc", new String(days.getDesc(), "UTF-8"));
@@ -93,7 +97,10 @@ public class SystemTest extends AbstractServerTest {
             assertTrue(days.getFieldTypeId().getId() == 2);
             assertNotNull(days.getRangeId());
             assertTrue(days.getServiceHasFieldList().isEmpty());
-            Field bp = FieldServer.createFloatField("Blood Pressure", "Desc", 60, 100);
+            rs = new RangeServer("Blood Pressure", 60, 100);
+            rs.write2DB();
+            Field bp = FieldServer.createFloatField("Blood Pressure", "Desc",
+                    rs.getEntity());
             assertNotNull(bp);
             assertEquals("Blood Pressure", bp.getName());
             assertEquals("Desc", new String(bp.getDesc(), "UTF-8"));
@@ -125,7 +132,7 @@ public class SystemTest extends AbstractServerTest {
             assertEquals(ss.getId(), si.getServiceId().getId());
             assertTrue(si.getId() >= 1);
             //Create a person
-            PersonServer ps = new PersonServer("Test", "Tester","test1","test");
+            PersonServer ps = new PersonServer("Test", "Tester", "test1", "test");
             ps.setSsn("111-11-1111");
             ps.write2DB();
             //Assign service instance to person

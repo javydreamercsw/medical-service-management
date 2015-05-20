@@ -18,7 +18,7 @@ public class RangeServerTest extends AbstractServerTest {
     @Test
     public void testGetEntity() {
         System.out.println("getEntity");
-        RangeServer instance = new RangeServer(0, 1);
+        RangeServer instance = new RangeServer("test", 0, 1);
         try {
             assertNull(instance.getEntity());
             fail("Should throw an IllegalArgumentException");
